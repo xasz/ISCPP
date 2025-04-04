@@ -12,10 +12,10 @@
         <x-card>
             <div class="grid auto-rows-min gap-4 md:grid-cols-2">
                 <x-a-button href="{{ route('scbillables.index', ['month' => $back->month, 'year' => $back->year]) }}">
-                    {{ _('Back:') . ' ' }}  {{ $back->format('m-Y'); }}
+                    {{ __('Back:') . ' ' }}  {{ $back->format('m-Y'); }}
                 </x-a-button>
                 <x-a-button href="{{ route('scbillables.index', ['month' => $forward->month, 'year' => $forward->year]) }}">
-                    {{ _('Next:') . ' ' }} {{ $forward->format('m-Y'); }}
+                    {{ __('Next:') . ' ' }} {{ $forward->format('m-Y'); }}
                 </x-a-button>
             </div>
         </x-card>

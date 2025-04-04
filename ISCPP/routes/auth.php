@@ -9,9 +9,15 @@ Route::middleware('guest')->group(function () {
     Volt::route('login', 'auth.login')
         ->name('login');
 
-    if(User::count() === 0) {
-        Volt::route('register', 'auth.register')
-            ->name('register');
+    
+    try{
+
+        if(User::count() === 0) {
+            Volt::route('register', 'auth.register')
+                ->name('register');
+        }
+    }catch(\Exception $e) {
+        // fails if not migrated already
     }
     
     Volt::route('forgot-password', 'auth.forgot-password')
