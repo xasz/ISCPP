@@ -3,6 +3,7 @@
 use App\Services\APICrendentialService;
 use App\Services\SCService;
 use Livewire\Volt\Component;
+use App\Jobs\RefreshSCTenants;
 
 
 new class extends Component {
@@ -10,15 +11,28 @@ new class extends Component {
     public $clientSecret;
 
     public $message;
+    public $message2;
+
     public $testResult;
 
     public $validated = false;
 
+    
+    public function mount()
+    {
+        $cred = APICrendentialService::new()->getCredentials('sc');
+        if($cred != null){
+            $this->clientId = $cred->clientid;
+            $this->clientSecret = '';
+        }
+    }
+
+
     public function save()
     {
         APICrendentialService::new()->saveCredentials('sc', $this->clientId, $this->clientSecret);
-        $this->clientSecret = fake()->uuid();
-        $this->clientId = __('Value saved and cleared');
+        $this->clientSecret = '';
+        $this->clientId = __('Value saved');
         $this->message = $this->clientId;
     }
 
@@ -41,6 +55,12 @@ new class extends Component {
             $this->testResult = $e->getMessage();
             throw $e;
         }
+    }
+
+    public function runTenantRefresh(SCService $scService)
+    {
+        RefreshSCTenants::dispatch();
+        $this->message2 = __('Tenant refresh triggered');
     }
     
 }; ?>
@@ -80,6 +100,14 @@ new class extends Component {
         </div>
         <div>
             {{ $message }}
+        <div>
+
+        <hr>
+        <div>
+            <x-a-button wire:click="runTenantRefresh">Trigger Tenant Refresh (Automatically Done every 15 Minutes)</x-a-button>
+        </div>
+        <div>
+            {{ $message2 }}
         <div>
     </section>
 </x-card>
