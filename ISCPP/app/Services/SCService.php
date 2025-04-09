@@ -36,6 +36,17 @@ class SCService
         $this->connect();
 
         $whoami = $this->whoami();
+        
+
+        if(!isset($whoami['idType'])){
+            $this->disconnect();
+            $error = "Unkown";
+            if(isset($whoami['error'])){
+                $error = $whoami['error'];
+            }
+            Event::throwError('sctenants', "Sophos Partner Authentification failed - Error: " . $error);
+        }
+
         if($whoami['idType'] != 'partner'){
             $this->disconnect();
             Event::throwError('sctenants', "Sophos Partner Authentification successfull - But not no partner account - Account Type: " . $whoami['idType']);

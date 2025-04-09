@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Exception;
 
 class Event extends Model
 {
@@ -39,7 +40,7 @@ class Event extends Model
     public static function throwError(string $event, string $message): void
     {
         self::log($event, 'error', ['message' => $message]);
-        throw new \Exception($message);
+        throw new Exception($message);
     }
 
 }

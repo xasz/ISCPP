@@ -58,22 +58,9 @@ new class extends Component {
     
 }; ?>
 
-<x-card>
-    <section>
-        <header>
-            <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">
-                {{ __('Halo Service Settings') }}
-            </h2>
-
-            <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
-                {{ __('This will be used for injecting Data to Halo') }}
-            </p>
-        </header>
-        
+<x-card title="Halo Service Settings" subtitle="This will be used for injecting Data to Halo">
         <div class="relative overflow-x-auto mt-2">
-
             <x-card-details-switch  label="Enable Halo billing Integration" wire:model.live="enabled" />
-            
             @if ($enabled)
                 <x-card-details-input label="Instance Name" wire:model="instance"/>
                 <x-card-details-input label="Instance Url" wire:model="url"/>
@@ -81,7 +68,7 @@ new class extends Component {
                 <x-card-details-input label="scope" wire:model="scope"/>
                 <x-card-details-input label="clientId" wire:model="clientId"/>
                 <x-card-details-input type="password" label="Client Secret" wire:model="clientSecret"/>
-                <x-card>         
+                <x-subcard>         
                     <div>
                         <h2>
                         {{ __('Test the current credentials. (The one saved, not the one entered above)') }}
@@ -91,7 +78,7 @@ new class extends Component {
                             {{ $testResult }}
                         </div>
                     </div>
-                </x-card>
+                </x-subcard>
             @endif
             <div class="grid justify-items-end mt-4">
                 <x-a-button wire:click="save">{{ __('Save') }}</x-a-button>
@@ -100,5 +87,4 @@ new class extends Component {
                 {{ $message }}
             <div>
         </div>
-    </section>
 </x-card>

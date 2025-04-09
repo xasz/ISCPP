@@ -5,7 +5,7 @@
         <x-card-simple-info title="Term" value="{{ $tenantsCount['term'] }}" />
         <x-card-simple-info title="Trail" value="{{ $tenantsCount['trail'] }}" />
     </div>
-    <x-card>
+    <x-card title="Tenants">
         <x-table.table>
             <x-table.thead>
                 <tr>

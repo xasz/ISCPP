@@ -53,40 +53,30 @@ new class extends Component {
     
 }; ?>
 
-<x-card>
-    <section>
-        <header>
-            <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">
-                {{ __('Webhook Alert Settings') }}
-            </h2>
-            <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
-                {{ __('This will post a webhook with the specified payload.') }}
-            </p>
-        </header>
-        <div class="relative overflow-x-auto mt-2">
-            <x-card-details-switch  label="Enable Webhooks to forward alerts to external systems." wire:model.live="webhookEnabled" />
-            @if ($webhookEnabled)
-                <x-card-details-input label="Url" wire:model="webhookUrl"/>
-                <x-card-details-input label="header" wire:model="webhookHeader"/>
-                <div class="py-2">
-                    {{ $message }}
+<x-card title="Webhook Alert Settings" subtitle="This will post a webhook with the specified payload">
+    <div class="relative overflow-x-auto mt-2">
+        <x-card-details-switch  label="Enable Webhooks to forward alerts to external systems." wire:model.live="webhookEnabled" />
+        @if ($webhookEnabled)
+            <x-card-details-input label="Url" wire:model="webhookUrl"/>
+            <x-card-details-input label="header" wire:model="webhookHeader"/>
+            <div class="py-2">
+                {{ $message }}
+            <div>
+            <x-subcard>        
                 <div>
-                <x-card>        
+                    <h2>
+                    {{ __('Test the current credentials. (The one saved, not the one entered above)') }}
+                    </h2>
+                    <x-card-details-json :json="$this->webhookPayload"/>
+                    <x-a-button wire:click="test">Test</x-a-button>
                     <div>
-                        <h2>
-                        {{ __('Test the current credentials. (The one saved, not the one entered above)') }}
-                        </h2>
-                        <x-card-details-json :json="$this->webhookPayload"/>
-                        <x-a-button wire:click="test">Test</x-a-button>
-                        <div>
-                            {{ $testResult }}
-                        </div>
+                        {{ $testResult }}
                     </div>
-                </x-card>
-            @endif
-            <div class="grid justify-items-end mt-4">
-                <x-a-button wire:click="save">Save</x-a-button>
-            </div>
+                </div>
+            </x-subcard>
+        @endif
+        <div class="grid justify-items-end mt-4">
+            <x-a-button wire:click="save">Save</x-a-button>
         </div>
-    </section>
+    </div>
 </x-card>
