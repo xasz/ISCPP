@@ -6,15 +6,16 @@ use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
 
 Route::middleware('guest')->group(function () {
-    Volt::route('login', 'auth.login')
-        ->name('login');
+
 
     
     try{
-
         if(User::count() === 0) {
-            Volt::route('register', 'auth.register')
-                ->name('register');
+            Volt::route('login', 'auth.register')
+                ->name('login');
+        }else{
+            Volt::route('login', 'auth.login')
+            ->name('login');
         }
     }catch(\Exception $e) {
         // fails if not migrated already
