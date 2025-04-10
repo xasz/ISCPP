@@ -10,7 +10,7 @@ Route::middleware('guest')->group(function () {
 
     
     try{
-        if(User::count() === 0) {
+        if(User::count() == 0) {
             Volt::route('login', 'auth.register')
                 ->name('login');
         }else{
