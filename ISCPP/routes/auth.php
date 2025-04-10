@@ -11,8 +11,8 @@ Route::middleware('guest')->group(function () {
     
     try{
         if(User::count() == 0) {
-            Volt::route('login', 'auth.register')
-                ->name('login');
+            Volt::route('register', 'auth.register')
+                ->name('register');
         }
     }catch(\Exception $e) {
         // fails if not migrated already
