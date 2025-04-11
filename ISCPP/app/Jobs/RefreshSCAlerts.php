@@ -38,7 +38,6 @@ class RefreshSCAlerts implements ShouldQueue, ShouldBeUniqueUntilProcessing
         $from = $tenant->SCAlerts()->orderBy('raisedAt', 'desc')->first()->raisedAt ?? now()->subDays(10);
         Event::logInfo('scalerts', 'Fetching alerts for tenant ' . $tenant->id);
         
-        $scService->initialize();
         try{
             $alerts = $scService->alerts($tenant, $from);
 

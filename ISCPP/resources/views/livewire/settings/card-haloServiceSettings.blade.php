@@ -43,6 +43,11 @@ new class extends Component {
             $this->message = __('Client Secret is required');
             return;
         }
+        if($this->clientId == null){
+            $this->message = __('Client ID is required');
+            return;
+        }
+        
 
         $settings->enabled = $this->enabled;
         $settings->instance = $this->instance;

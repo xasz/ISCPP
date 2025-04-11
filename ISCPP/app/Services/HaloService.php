@@ -34,8 +34,7 @@ class HaloService
         return 'https://' . $this->settings->url . '/api';
     }
 
-    public
-     function authenticate(){
+    public function authenticate(){
       
         $client = new Client();
         $response = $client->post($this->authTokenUrl(), [

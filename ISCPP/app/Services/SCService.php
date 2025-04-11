@@ -4,42 +4,54 @@ namespace App\Services;
 
 use App\Models\Event;
 use App\Models\SCTenant;
+use App\Settings\SCServiceSettings;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+
 
 class SCService
 {
     private $baseUrl = 'https://api.central.sophos.com';
     private $authUrl = 'https://id.sophos.com/api/v2/oauth2/token';
 
-    private $partnerID = null;
-    private $bearerToken = null;
-    private $bearerTokenExpires = null;
+    private SCServiceSettings $settings;
 
-
-    private APICrendentialService $credService;
-
-    public function __construct(APICrendentialService $credService) 
+    public function __construct(SCServiceSettings $settings) 
     {
-        $this->credService = $credService;
+        $this->settings = $settings;
     }
 
-
-    public function initialize(){
-
-        if(now()->timestamp < $this->bearerTokenExpires){
-            return;
+    /**
+    * Connect to the Sophos Partner API
+    */
+    private function authenticate()
+    {
+        if(!$this->settings->clientId || !$this->settings->clientSecret){
+            Event::throwError('sctentant', 'Sophos Central Partner credentials not found');
         }
 
-        $this->connect();
+        $response = Http::asForm()->post($this->authUrl, [
+            'client_id' => $this->settings->clientId,
+            'client_secret' => decrypt($this->settings->clientSecret),
+            'grant_type' => 'client_credentials',
+            'scope' => 'token'
+        ]);
+            
+        if(!$response->successful()){
+            Event::throwError('sc', 'Sophos Partner Authentification failed');
+        }
+        
+        $data = $response->json();
+        $this->settings->token = $data['access_token'];
+        $this->settings->token_expires_at = time() + $data['expires_in'];
+        $this->settings->refresh_token = $data['refresh_token'];
+
+        Log::info("Sophos Central Connection successfull - established");
 
         $whoami = $this->whoami();
-        
-
         if(!isset($whoami['idType'])){
-            $this->disconnect();
             $error = "Unkown";
             if(isset($whoami['error'])){
                 $error = $whoami['error'];
@@ -48,61 +60,11 @@ class SCService
         }
 
         if($whoami['idType'] != 'partner'){
-            $this->disconnect();
             Event::throwError('sctenants', "Sophos Partner Authentification successfull - But not no partner account - Account Type: " . $whoami['idType']);
         }
         
-        $this->partnerID = $whoami['id'];
-    }
-    /**
-    * Connect to the Sophos Partner API
-    */
-    private function connect()
-    {
-        $cred = $this->credService->getCredentials('sc');
-
-        if($cred == null){
-            Event::throwError('sctentant', 'Sophos Partner Credentials not found');
-        }
-
-        if(now()->timestamp > $cred->token_expires_at){
-            $this->disconnect();
-            $response = Http::asForm()->post($this->authUrl, [
-                'client_id' => $cred->clientid,
-                'client_secret' => decrypt($cred->clientsecret),
-                'grant_type' => 'client_credentials',
-                'scope' => 'token'
-            ]);
-
-                
-            if(!$response->successful()){
-                Event::throwError('sc', 'Sophos Partner Authentification failed');
-            }
-
-            
-            $data = $response->json();
-            $cred->token = $data['access_token'];
-            $cred->token_expires_at = Carbon::createFromTimestamp(time() + $data['expires_in']);
-            
-
-            $this->credService->updateToken('sc', $cred->token, $data['refresh_token'], $cred->token_expires_at);
-            Log::info("Sophos Central Connection successfull: ");
-        }
-
-        $this->bearerToken = $cred->token;
-        $this->bearerTokenExpires = $cred->token_expires_at->timestamp ?? Carbon::createFromTimestamp($cred->token_expires_at)->timestamp;
-    }
-
-    /**
-    * Disconnect from the Sophos Partner API
-    * Resetting the bearer token and partner ID
-    *
-    * @param bool $keepCredentials - keep the clientID and clientSecret
-    */
-    public function disconnect(){
-        $this->bearerToken = null;
-        $this->bearerTokenExpires = null;
-        $this->partnerID = null;
+        $this->settings->partnerId = $whoami['id'];
+        $this->settings->save();
     }
 
     /**
@@ -118,11 +80,11 @@ class SCService
     * If the token is expired, it will be regenerated
     */
     private function bearer(){
-        if($this->bearerToken == null || time() > $this->bearerTokenExpires ){
+        if (time() >= $this->settings->token_expires_at) {
             Log::info("Sophos Partner Bearer Token expired, regenerating...");
-            $this->connect();
+            $this->authenticate();
         }
-        return $this->bearerToken;
+        return $this->settings->token;
     }
 
     /**
@@ -161,7 +123,7 @@ class SCService
                     $response = $http->post($url, $query);
                     break;
                 default:
-                    throw "{$method} not supported";
+                    throw new Excpetion("{$method} not supported");
                 break;
             }
 
@@ -270,7 +232,7 @@ class SCService
             $query['pageTotal'] = $options['pageByKey'];
         }
 
-        $preparedOptions = ['partnerID' => $this->partnerID];
+        $preparedOptions = ['partnerID' => $this->settings->partnerId ];
 
         if(isset($options['raw']) && $options['raw'] == true){
             return $this->send($method, $url, $query, $preparedOptions);

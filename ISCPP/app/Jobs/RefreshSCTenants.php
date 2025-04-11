@@ -20,8 +20,6 @@ class RefreshSCTenants implements ShouldQueue, ShouldBeUniqueUntilProcessing
         try{            
             Event::log('sctentants', 'info', ['message' => 'SC Tenants refresh initiated']);
             
-            $scService->initialize();
-
             $tenants = $scService->tenants();        
             $ids = $tenants->map(function ($tenant) {
                 return $tenant['id'];

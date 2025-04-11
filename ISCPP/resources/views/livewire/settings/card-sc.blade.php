@@ -4,6 +4,7 @@ use App\Services\APICrendentialService;
 use App\Services\SCService;
 use Livewire\Volt\Component;
 use App\Jobs\RefreshSCTenants;
+use App\Settings\SCServiceSettings;
 
 
 new class extends Component {
@@ -11,7 +12,6 @@ new class extends Component {
     public $clientSecret;
 
     public $message;
-    public $message2;
 
     public $testResult;
     public $testResultMessage;
@@ -20,49 +20,41 @@ new class extends Component {
     public $validated = false;
 
     
-    public function mount()
+    public function mount(SCServiceSettings $settings)
     {
-        $cred = APICrendentialService::new()->getCredentials('sc');
-        if($cred != null){
-            $this->clientId = $cred->clientid;
-            $this->clientSecret = '';
-        }
+        $this->clientSecret = null;
+        $this->clientId = $settings->clientId;
     }
 
 
-    public function save()
+    public function save(SCServiceSettings $settings)
     {
-        APICrendentialService::new()->saveCredentials('sc', $this->clientId, $this->clientSecret);
+        if($this->clientSecret == null){
+            $this->message = __('Client Secret is required');
+            return;
+        }
+        
+        if($this->clientId == null){
+            $this->message = __('Client ID is required');
+            return;
+        }
+        $settings->clientSecret = encrypt($this->clientSecret);
+        $settings->clientId = $this->clientId;
+        $settings->save();
         $this->clientSecret = '';
-        $this->clientId = __('Value saved');
-        $this->message = $this->clientId;
+        $this->message = __('Saved');
     }
 
     public function test(SCService $scService)
     {
         try{
-            $cred = APICrendentialService::new()->getCredentials('sc');
-            if($cred == null){
-                $this->testResultMessage = __('No credentials found');
-                return;
-            }
-
-            $scService->initialize();
             $who = $scService->whoami();
             $this->testResult = collect($who)->toJson();
-
             $this->validated = ($who['idType'] ?? 'unkown') == 'partner';
-            
             $this->testResultMessage = __('Credentials are valid');
         } catch (Exception $e) {
             $this->testResultMessage = $e->getMessage();
         }
-    }
-
-    public function runTenantRefresh(SCService $scService)
-    {
-        RefreshSCTenants::dispatch();
-        $this->message2 = __('Tenant refresh triggered');
     }
     
 }; ?>
@@ -74,6 +66,9 @@ new class extends Component {
         <div class="grid justify-items-end mt-4">
             <x-a-button wire:click="save">Save</x-a-button>
         </div>
+        <div>
+            {{ $message }}
+        <div>
         
         <x-card-hr/>
 
@@ -95,15 +90,8 @@ new class extends Component {
                 @endif
             </div>
         </x-subcard>
-        <div>
-            {{ $message }}
-        <div>
         <x-card-hr/>
-
-        <div>
-            <x-a-button wire:click="runTenantRefresh">Trigger Tenant Refresh (Automatically Done every 15 Minutes)</x-a-button>
-        </div>
-        <div>
-            {{ $message2 }}
-        <div>
+        <flux:text>
+            {{ __('Credentials are used to fetch data from Sophos Central. Please make sure you have the correct permissions set in Sophos Central. The jobs for updating are autoscheduled every 15 minutes') }}
+        </flux:text>
 </x-card>
