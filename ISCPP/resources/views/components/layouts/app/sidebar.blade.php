@@ -35,6 +35,9 @@
             <flux:spacer />
 
             <flux:navlist variant="outline">
+                <flux:navlist.item  :href="route('usermanagement.index')" :current="request()->routeIs('generalsettings.index')" wire:navigate>
+                    User Management
+                </flux:navlist.item>
                 <flux:navlist.item  :href="route('generalsettings.index')" :current="request()->routeIs('generalsettings.index')" wire:navigate>
                     General Settings
                 </flux:navlist.item>

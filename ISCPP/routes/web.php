@@ -9,6 +9,7 @@ use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\SCFirewallController;
 use App\Http\Controllers\SCEndpointController;
 use App\Http\Controllers\SCBillableController;
+use App\Http\Controllers\UserManagementController;
 use App\Http\Controllers\WebhookLogController;
 use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
@@ -64,6 +65,10 @@ Route::middleware(['auth', 'verified'])->controller(WebhookLogController::class)
 
 Route::middleware(['auth', 'verified'])->controller(EventController::class)->group(function () {
     Route::get('/events', 'index')->name('events.index');
+});
+
+Route::middleware(['auth', 'verified'])->controller(UserManagementController::class)->group(function () {
+    Route::get('/usermanagement', 'index')->name('usermanagement.index');
 });
 
 Route::middleware(['auth', 'verified'])->controller(SettingsController::class)->group(function () {
