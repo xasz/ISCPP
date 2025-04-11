@@ -10,10 +10,9 @@
         </x-slot>
         <x-slot name="content">            
             <x-tab-panel name="manager">
-
+                <livewire:usermanagement.card-manager />
             </x-tab-panel>     
             <x-tab-panel name="invitation">
-
             </x-tab-panel>
         </x-slot>
     </x-tab-container>
