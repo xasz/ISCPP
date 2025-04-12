@@ -4,6 +4,7 @@ use App\Jobs\RefreshSCAlerts;
 use App\Jobs\RefreshSCTenants;
 use App\Models\Event;
 use App\Models\SCTenant;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Schedule;
 
 Schedule::job(RefreshSCTenants::class)
@@ -11,11 +12,5 @@ Schedule::job(RefreshSCTenants::class)
 
 
 Schedule::call(function () {
-    $tenants = SCTenant::all();
-
-    Event::logInfo("console", "Dispatching SCAlertRefresh for ". $tenants->count() . " tenants");
-    
-    $tenants->each(function ($tenant) {
-        RefreshSCAlerts::dispatch($tenant);
-    });
-})->everyThirtyMinutes();
+    Artisan::call('app:queue-refresh-scalerts-jobs-for-all-tenants');
+})->everyFifteenMinutes();

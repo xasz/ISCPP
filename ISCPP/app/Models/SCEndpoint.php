@@ -13,5 +13,16 @@ class SCEndpoint extends Model
     protected $fillable = [
         'id',
         'hostname',
+        'tamperProtectionEnabled',
+        'lastSeen',
+        'tenantId',
+        'type',
+        'rawData',
+        'healthStatus',
     ];
+    
+    public function SCTenant()
+    {
+        return $this->belongsTo(SCTenant::class, 'tenantId');
+    }
 }

@@ -9,7 +9,7 @@ class SCEndpointController extends Controller
 {
     public function index()
     {
-        $scendpoints = SCEndpoint::orderBy('name', 'desc')
+        $scendpoints = SCEndpoint::orderBy('hostname', 'desc')
             ->paginate(50);
         $endpointsCount = [
             'all' => SCEndpoint::count(),

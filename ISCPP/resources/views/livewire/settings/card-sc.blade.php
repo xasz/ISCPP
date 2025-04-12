@@ -60,34 +60,39 @@ new class extends Component {
 }; ?>
 
 <x-card title="Sophos Central Credentials" subtitle="SPlease enter valid Sophos Central (Super Admin) Partner Credentials">
-        
         <x-card-details-input label="Client ID" wire:model="clientId" />
         <x-card-details-input type="password" label="Client Secret" wire:model="clientSecret"/>
         <div class="grid justify-items-end mt-4">
             <x-a-button wire:click="save">Save</x-a-button>
         </div>
-        <div>
+        <flux:text>
             {{ $message }}
-        <div>
-        
+        </flux:text>
         <x-card-hr/>
 
         <x-subcard>
             <div class="space-y-4">
-                <p class="text-sm text-gray-600 dark:text-gray-400">
-                    {{ __('Test the current credentials (The one saved, not the one entered above):') }}
-                </p>
-                <x-a-button wire:click="test">
-                    {{ __('Test Credentials') }}
-                </x-a-button>
-                @if($testResult)
+                <flux:text>
+                    {{ __('Test the current saved credentials (Please hit save first, when you entered new credentials):') }}
+                </flux:text>
+                <div wire:loading>
+                    <flux:text>
+                        {{ __('Testing...') }}
+                    </flux:text>
+                </div>
+                <div wire:loading.remove>
+                    <x-a-button wire:click="test">
+                        {{ __('Test Credentials') }}
+                    </x-a-button>
+                    @if($testResult)
                     <x-card-details-json :json="$testResult" />
-                @endif
-                @if($testResultMessage)
-                    <div class="text-sm text-gray-600 dark:text-gray-400">
-                        {{ $testResultMessage }}
-                    </div>
-                @endif
+                    @endif
+                    @if($testResultMessage)
+                        <div class="text-sm text-gray-600 dark:text-gray-400">
+                            {{ $testResultMessage }}
+                        </div>
+                    @endif
+                </div>
             </div>
         </x-subcard>
         <x-card-hr/>
