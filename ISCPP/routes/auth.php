@@ -4,13 +4,11 @@ use App\Http\Controllers\Auth\VerifyEmailController;
 use App\Models\User;
 use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
+use App\Http\Controllers\UserManagementController;
 
 Route::middleware('guest')->group(function () {
-
-
-    
     try{
-        if(User::count() == 0) {
+        if(User::count() == 0 ) {
             Volt::route('register', 'auth.register')
                 ->name('register');
         }
@@ -27,6 +25,12 @@ Route::middleware('guest')->group(function () {
     Volt::route('reset-password/{token}', 'auth.reset-password')
         ->name('password.reset');
 
+    // Invitation routes
+    Route::get('invitation/{token}', [UserManagementController::class, 'showAcceptForm'])
+        ->name('invitation.accept');
+    
+    Route::post('invitation', [UserManagementController::class, 'acceptInvitation'])
+        ->name('invitation.process');
 });
 
 Route::middleware('auth')->group(function () {
