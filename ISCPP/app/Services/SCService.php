@@ -123,7 +123,7 @@ class SCService
                     $response = $http->post($url, $query);
                     break;
                 default:
-                    throw new Excpetion("{$method} not supported");
+                    throw new Exception("{$method} not supported");
                 break;
             }
 
@@ -314,6 +314,12 @@ class SCService
         );
     }
 
+    public function endpoints(SCTenant $tenant){        
+        return $this->tenantGet($tenant, '/endpoint/v1/endpoints', [
+            'pageByKey' => true,
+        ]);
+    }
+    
     public function fakebillingUsage(int $month, int $year){
 
         $date = now()->setYear($year)->setMonth($month);
@@ -355,4 +361,5 @@ class SCService
 
         return $data->toArray();
     }
+
 }
