@@ -61,7 +61,7 @@
             </tbody>
         </x-table.table>
         <div class="py-4">
-            {{ $scbillables->links() }}
+            {{ $scbillables->appends(request()->query())->links()}}
         </div>
     </x-card>
 </x-layouts.app>
