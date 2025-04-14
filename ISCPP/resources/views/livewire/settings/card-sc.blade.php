@@ -41,6 +41,7 @@ new class extends Component {
         $settings->clientSecret = encrypt($this->clientSecret);
         $settings->clientId = $this->clientId;
         $settings->save();
+        
         $this->clientSecret = '';
         $this->message = __('Saved');
     }

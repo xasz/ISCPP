@@ -2,6 +2,7 @@
 
 use App\Settings\WebhookSettings;
 use App\Settings\HaloServiceSettings;
+use App\Settings\SCServiceSettings;
 
 return [
 
@@ -12,6 +13,7 @@ return [
     'settings' => [
         WebhookSettings::class,
         HaloServiceSettings::class,
+        SCServiceSettings::class,
     ],
 
     /*
