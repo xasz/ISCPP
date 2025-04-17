@@ -1,1 +1,0 @@
-<flux:switch {{ $attributes }}/>
