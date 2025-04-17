@@ -1,23 +1,21 @@
 <?php
 
 use App\Http\Controllers\Auth\VerifyEmailController;
+use App\Http\Middleware\EnsureNoUsersExists;
 use App\Models\User;
 use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
 use App\Http\Controllers\UserManagementController;
 
 Route::middleware('guest')->group(function () {
-    try{
-        if(User::count() == 0 ) {
-            Volt::route('register', 'auth.register')
-                ->name('register');
-        }
-    }catch(\Exception $e) {
-        // fails if not migrated already
-    }
+    
+
+    Volt::route('register', 'auth.register')
+        ->name('register')
+        ->middleware(EnsureNoUsersExists::class);
     
     Volt::route('login', 'auth.login')
-    ->name('login');
+        ->name('login');
     
     Volt::route('forgot-password', 'auth.forgot-password')
         ->name('password.request');
