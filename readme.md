@@ -1,11 +1,37 @@
 # ISCPP - Improved Sophos Central Partner Center
+This project aims to leverage the Sophos Central API to develop a tool that addresses some missing features that could benefit MSPs. 
+Additionally, it seeks to integrate with PSA systems to enhance billing processes.
 
-This projects targets to leverage the Sophos Central API to build a tool for some missing features i have noticed a MSP could need.
-Furthermore i want to integration with PSA Systems for Billing.
+This is software is still in alpha, but have passed some first live tests.
+Thanks to the testers and there feedback.
+I understand there is still much work to be done, but I wanted to release ISCPP to allow users to start benefiting from its features and provide valuable feedback. Your input will help shape the future of this project and ensure it meets the needs of its users effectively.
 
 
-This is personal side project.
-I am not associated with Sophos, Halo oder NinjaRMM.
+## Fast overview over alle tenants
+
+![alt text](docs/images/tenants.png)
+
+## Webhooks for Sophos Central Alerts
+
+![alt text](docs/images/alerts.png)
+
+## Sophos Central Billing Integration for Halo
+
+![alt text](docs/images/centralbilling.png)
+
+Halo Monthly Usage can be imported via the pusher
+
+> Currently this is a two click two step process. First fetch the data from Sophos Central, then push it to halo. I want to make it zero clicks in the future.
+
+## Alot for to come
+
+Please be patient, i got lots of ideas ;)
+
+## Who am i
+I am a senior technician at a German MSP with a passion for automation and programming. 
+Please note that I am not affiliated with Sophos, Halo, or NinjaRMM.
+
+This project is a personal endeavor, and while I strive to ensure the application is secure and reliable to the best of my abilities and knowledge, I cannot accept liability for any misuse or issues that may arise.
 
 ## Plans
 
@@ -13,6 +39,8 @@ I have a lot of ideas and a small amount of time.
 The current state of the project is an alpha and use at your own risk.
 At that point in time i cannot give any paid support or promised.
 I give my best to look at you problems.
+
+Please feel free to open any issue or ping me on discord with ideas.
 
 ### Current Target
 
@@ -30,11 +58,27 @@ I give my best to look at you problems.
 - NinjaRMM > Sophos Endpoint Installation
 - Halo PSA > Endpoint Matching
 - Sophos > Firewall Mass Update Scheduling
-- Multiuser > Currently there is only one user, this need to change soon with some permissions
-- MFA
 
+# Installation on Laravel Cloud
 
-# Installation
+Laravel Cloud is the easiest method to deploy ISCPP.
+
+1. Create or login to your account on github.com and Fork this repository. (The fork is currently needed, because Laravel Cloud can only use own repositories)
+2. Create or login to cloud.laravel.com
+3. `New Application` and choose the forked repository
+4. Add `Posgres 17` database
+5. Click on the CPU Worker and enable `Scheduler` and add `php artisan queue:work database` as background job
+6. Click deploy
+7. Go do Settings > Deployment and add:
+```
+npm install
+npm run build
+```
+8. Done - Check Settings > Domains for access
+
+> I am currently not able to host instances for you, i will investigate that in the future.
+
+# Local Installation
 
 This is a PHP Laravel Application with Postgres as backend and based on the Laravel 12 Livewire starterkit. 
 I target to be fully compatible with laravel cloud, for as easy as possible setup.
