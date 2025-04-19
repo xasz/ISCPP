@@ -143,7 +143,7 @@ php artisan serve
 
 # First Setup
 
-On the initial setup, when no user exist the login route gets forwarded to the register route.
+On the initial setup, when no user exists you need to manually call the `/register` route to add your first user.
 This route is disabled after the first user is added.
 
 Setup your Sophos Central Cerdentials in The `General Settings`
