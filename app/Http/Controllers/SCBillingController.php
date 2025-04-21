@@ -19,4 +19,13 @@ class SCBillingController extends Controller
     {
         return view('scbilling.haloPusher');
     }
+    public function haloSettings()
+    {
+
+        return view('scbilling.haloSettings',
+            [
+                'SCTenants' => SCTenant::where('haloclient_id', '<=', 0)->get(),
+            ]
+        );
+    }
 }

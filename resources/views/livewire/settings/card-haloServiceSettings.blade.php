@@ -39,6 +39,13 @@ new class extends Component {
 
     public function save(HaloServiceSettings $settings)
     {
+        if($this->enabled == false){
+            $settings->enabled = false;
+            $settings->save();
+            $this->message = __('Disabled');
+            return;
+        }
+
         if($this->clientSecret == null){
             $this->message = __('Client Secret is required');
             return;
@@ -58,7 +65,7 @@ new class extends Component {
         $settings->save();
         $this->clientSecret = '';
 
-        $this->message = __('Saved');        
+        $this->message = __('Saved - please reload the page');        
     }
     
 }; ?>

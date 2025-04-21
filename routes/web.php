@@ -11,6 +11,7 @@ use App\Http\Controllers\SCEndpointController;
 use App\Http\Controllers\SCBillableController;
 use App\Http\Controllers\UserManagementController;
 use App\Http\Controllers\WebhookLogController;
+use App\Http\Middleware\IsHaloIntegrationEnabled;
 use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
 use App\Http\Middleware\Google2FAMiddleware;
@@ -61,7 +62,8 @@ Route::middleware($protectedMiddleware)->controller(SCAlertController::class)->g
 
 Route::middleware($protectedMiddleware)->controller(SCBillingController::class)->group(function () {
     Route::get('/scbilling/fetcher', 'fetcher')->name('scbilling.fetcher');
-    Route::get('/scbilling/haloPusher', 'haloPusher')->name('scbilling.haloPusher');
+    Route::get('/scbilling/haloPusher', 'haloPusher')->middleware(IsHaloIntegrationEnabled::class)->name('scbilling.haloPusher');
+    Route::get('/scbilling/haloSettings', 'haloSettings')->middleware(IsHaloIntegrationEnabled::class)->name('scbilling.haloSettings');
 });
 
 Route::middleware($protectedMiddleware)->controller(SCBillableController::class)->group(function () {
