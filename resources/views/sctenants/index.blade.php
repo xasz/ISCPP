@@ -1,5 +1,5 @@
 <x-layouts.app>
-    <div class="grid auto-rows-min gap-4 md:grid-cols-4">            
+    <div class="grid grid-cols-2">            
         <x-card-simple-info title="Tenants" value="{{ $tenantsCount['all'] }}" />
         <x-card-simple-info title="Usage" value="{{ $tenantsCount['usage'] }}" />
         <x-card-simple-info title="Term" value="{{ $tenantsCount['term'] }}" />

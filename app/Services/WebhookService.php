@@ -9,17 +9,37 @@ use Illuminate\Support\Facades\Http;
 
 class WebhookService {
 
+    public static function generatedPayload(SCAlert $alert){
+        $settings = app(WebhookSettings::class);
+        $payload = json_decode($alert->rawData, true); // Ensure associative array
+
+        if ($settings->enableHaloData && $alert->SCTenant) {
+            $payload['halo'] = [
+            'client_id' => $alert->SCTenant->haloclient_id,
+            ];
+        }
+        return $payload;
+    }
+
     public function runWebhook(SCAlert $alert) : ?Response{
 
         $settings = app(WebhookSettings::class);
         $url = $settings->url;
+        $payload = $this->generatedPayload($alert);
 
-        $payload = $settings->payload;
-        $payload = $alert->rawData;
         $response = null;
-        
         try{
-            $response = Http::asJson()->post($url, json_decode($payload));
+            $response = Http::asJson();
+            
+            if($settings->basicAuthEnabled){
+                $response = $response->withBasicAuth(
+                    $settings->basicAuthUsername,
+                    $settings->basicAuthPassword
+                );
+            }
+
+            $response = $response->post($url, $payload);
+            
             $alert->webhookLog()->create([
                 'payload' => $payload,
                 'url' => $url,

@@ -60,44 +60,42 @@ new class extends Component {
     
 }; ?>
 
-<x-card title="Sophos Central Credentials" subtitle="SPlease enter valid Sophos Central (Super Admin) Partner Credentials">
-        <x-card-details-input label="Client ID" wire:model="clientId" />
-        <x-card-details-input type="password" label="Client Secret" wire:model="clientSecret"/>
-        <div class="grid justify-items-end mt-4">
-            <x-a-button wire:click="save">Save</x-a-button>
-        </div>
-        <flux:text>
-            {{ $message }}
-        </flux:text>
-        <x-card-hr/>
-
-        <x-subcard>
-            <div class="space-y-4">
-                <flux:text>
-                    {{ __('Test the current saved credentials (Please hit save first, when you entered new credentials):') }}
-                </flux:text>
-                <div wire:loading>
-                    <flux:text>
-                        {{ __('Testing...') }}
-                    </flux:text>
-                </div>
-                <div wire:loading.remove>
-                    <x-a-button wire:click="test">
-                        {{ __('Test Credentials') }}
-                    </x-a-button>
-                    @if($testResult)
-                    <x-card-details-json :json="$testResult" />
-                    @endif
-                    @if($testResultMessage)
-                        <div class="text-sm text-gray-600 dark:text-gray-400">
-                            {{ $testResultMessage }}
-                        </div>
-                    @endif
-                </div>
+<div class="grid grid-cols-2 w-full gap-3">
+    <x-card class="w-1/2" title="Sophos Central Credentials" subtitle="SPlease enter valid Sophos Central (Super Admin) Partner Credentials">
+            <x-card-details-input label="Client ID" wire:model="clientId" />
+            <x-card-details-input type="password" label="Client Secret" wire:model="clientSecret"/>
+            <div class="grid justify-items-end mt-4">
+                <x-a-button wire:click="save">Save</x-a-button>
             </div>
-        </x-subcard>
-        <x-card-hr/>
-        <flux:text>
-            {{ __('Credentials are used to fetch data from Sophos Central. Please make sure you have the correct permissions set in Sophos Central. The jobs for updating are autoscheduled every 15 minutes') }}
-        </flux:text>
-</x-card>
+            <flux:text>
+                {{ $message }}
+            </flux:text>
+            <x-card-hr/>
+            <flux:text>
+                {{ __('Credentials are used to fetch data from Sophos Central. Please make sure you have the correct permissions set in Sophos Central. The jobs for updating are autoscheduled every 15 minutes') }}
+            </flux:text>
+    </x-card>
+
+    <x-card class="w-1/2" title="Test Sophos Central Credentials" subtitle="Test the current credentials (Please hit save first, when you entered new credentials)">
+        <div class="space-y-4">
+            <div wire:loading>
+                <flux:text>
+                    {{ __('Testing...') }}
+                </flux:text>
+            </div>
+            <div wire:loading.remove>
+                <x-a-button wire:click="test">
+                    {{ __('Test Credentials') }}
+                </x-a-button>
+                @if($testResult)
+                <x-card-details-json :json="$testResult" />
+                @endif
+                @if($testResultMessage)
+                    <div class="text-sm text-gray-600 dark:text-gray-400">
+                        {{ $testResultMessage }}
+                    </div>
+                @endif
+            </div>
+        </div>
+    </x-card>
+</div>
