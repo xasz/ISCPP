@@ -319,6 +319,10 @@ class SCService
             'pageByKey' => true,
         ]);
     }
+
+    public function downloads(SCTenant $tenant){        
+        return $this->tenantGet($tenant, '/endpoint/v1/downloads');
+    }
     
     public function fakebillingUsage(int $month, int $year){
 
@@ -361,5 +365,6 @@ class SCService
 
         return $data->toArray();
     }
+
 
 }

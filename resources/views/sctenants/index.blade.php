@@ -1,10 +1,18 @@
 <x-layouts.app>
-    <div class="grid grid-cols-2">            
+    <div class="grid grid-cols-4 gap-4">            
         <x-card-simple-info title="Tenants" value="{{ $tenantsCount['all'] }}" />
         <x-card-simple-info title="Usage" value="{{ $tenantsCount['usage'] }}" />
         <x-card-simple-info title="Term" value="{{ $tenantsCount['term'] }}" />
         <x-card-simple-info title="Trail" value="{{ $tenantsCount['trail'] }}" />
     </div>
+
+    <x-card title="Filter">
+        <form action="{{ route('sctenants.index') }}" method="GET" >
+            <x-card-details-input label="Name" name="filterTenantName" value="{{ request('filterTenantName') }}" />
+            <x-a-button type="submit">Filter</x-a-button>
+        </form>
+    </x-card>
+
     <x-card title="Tenants">
         <x-table.table>
             <x-table.thead>
@@ -33,7 +41,7 @@
             </tbody>
         </x-table.table>
         <div class="py-4">
-            {{ $sctenants->links() }}
+            {{ $sctenants->appends(request()->query())->links() }}
         </div>
     </x-card>
 </x-layouts.app>

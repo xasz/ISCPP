@@ -9,8 +9,18 @@ class SCTenantController extends Controller
 {
     public function index(HaloService $haloService)
     {
+
+        $validated = collect(request()->validate([
+            'filterTenantName' => 'nullable|string|max:255',
+        ]));
+
         $sctenants = SCTenant::orderBy('name', 'desc')
+            ->when($validated->has('filterTenantName'), function ($query) use ($validated) {
+                $query->where('name', 'ILIKE', '%' . $validated['filterTenantName'] . '%')
+                    ->orWhere('showAs', 'ILIKE', '%' . $validated['filterTenantName'] . '%');
+            })
             ->paginate(50);
+
         $tenantsCount = [
             'all' => SCTenant::count(),
             'usage' => SCTenant::where('billingType', 'usage')->count(),
