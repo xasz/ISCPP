@@ -2,6 +2,15 @@
     <div class="grid auto-rows-min gap-4 md:grid-cols-4">            
         <x-card-simple-info title="Endpoints" value="{{ $endpointsCount['all'] }}" />
     </div>
+
+    <x-card title="Filter">
+        <form action="{{ route('scendpoints.index') }}" method="GET" >
+            <x-card-details-input label="Hostname" name="filterHostname" value="{{ request('filterHostname') }}" />
+            <x-a-button type="submit">Filter</x-a-button>
+        </form>
+    </x-card>
+
+
     <x-card>
         <x-table.table>
             <x-table.thead>
@@ -28,7 +37,7 @@
             </tbody>
         </x-table.table>
         <div class="py-4">
-            {{ $scendpoints->links() }}
+            {{ $scendpoints->appends(request()->query())->links() }}
         </div>
     </x-card>
 </x-layouts.app>
