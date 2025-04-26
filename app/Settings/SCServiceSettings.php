@@ -2,6 +2,7 @@
 
 namespace App\Settings;
 
+use Carbon\Carbon;
 use Spatie\LaravelSettings\Settings;
 
 class SCServiceSettings extends Settings
@@ -14,6 +15,14 @@ class SCServiceSettings extends Settings
     public ?string $token = null;
     public ?string $refresh_token = null;
     public ?string $token_expires_at = null;
+
+    public ?bool $alertsScheduleEnabled = true;
+    public ?bool $endpointsScheduleEnabled = false;
+    public ?bool $firewallsScheduleEnabled = false;
+
+    public ?Carbon $lastAlertsSchedule = null;
+    public ?Carbon $lastEndpointsSchedule = null;
+    public ?Carbon $lastFirewallsSchedule = null;
         
     public static function group(): string
     {

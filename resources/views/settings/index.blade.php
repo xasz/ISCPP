@@ -4,6 +4,7 @@
         <flux:text class="text-gray-600 dark:text-gray-400">Configure your system integration settings</flux:text>
     </div>
     <livewire:settings.card-sc />
+    <livewire:settings.card-sc-features />
     <x-tab-container defaultTab="webhook">
         <x-slot name="tabs">
             <x-tab-button name="webhook" label="Webhook Alerts" />

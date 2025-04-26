@@ -72,7 +72,7 @@ new class extends Component {
             </flux:text>
             <x-card-hr/>
             <flux:text>
-                {{ __('Credentials are used to fetch data from Sophos Central. Please make sure you have the correct permissions set in Sophos Central. The jobs for updating are autoscheduled every 15 minutes') }}
+                {{ __('Credentials are used to fetch data from Sophos Central. Please make sure you have the correct permissions set in Sophos Central.') }}
             </flux:text>
     </x-card>
 
