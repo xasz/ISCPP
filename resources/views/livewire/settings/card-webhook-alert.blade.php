@@ -41,6 +41,11 @@ new class extends Component {
     }
 
     private function updatePayload(){
+        $alert = SCAlert::latest()->first();
+        if($alert == null){
+            $this->webhookPayload = '[]';
+            return;
+        }
         $this->webhookPayload = json_encode(WebhookService::generatedPayload(SCAlert::latest()->first())) ?? '[]';
     }
 
