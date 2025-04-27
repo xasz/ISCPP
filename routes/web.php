@@ -12,6 +12,8 @@ use App\Http\Controllers\SCBillableController;
 use App\Http\Controllers\UserManagementController;
 use App\Http\Controllers\WebhookLogController;
 use App\Http\Middleware\IsHaloIntegrationEnabled;
+use App\Http\Middleware\IsSCAlertsIntegrationEnabled;
+use App\Http\Middleware\IsSCEndpointsScheduleEnabled;
 use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
 use App\Http\Middleware\Google2FAMiddleware;
@@ -37,55 +39,80 @@ Route::middleware(['auth'])->group(function () {
 });
 
 // All protected routes below use the common middleware group
-Route::middleware($protectedMiddleware)->controller(DashboardController::class)->group(function () {
-    Route::get('/dashboard', 'index')->name('dashboard');
-});
+Route::middleware($protectedMiddleware)->group(function () {
 
-Route::middleware($protectedMiddleware)->controller(SCTenantController::class)->group(function () {
-    Route::get('/sctenants/{id}', 'show')->name('sctenants.show');
-    Route::get('/sctenants', 'index')->name('sctenants.index');
+    Route::controller(DashboardController::class)->group(function () {
+        Route::get('/dashboard', 'index')->name('dashboard');
+    });
+    
+    Route::controller(SCTenantController::class)->group(function () {
+        Route::get('/sctenants/{id}', 'show')->name('sctenants.show');
+        Route::get('/sctenants', 'index')->name('sctenants.index');
+    });
+    
+    Route::middleware(IsSCAlertsIntegrationEnabled::class)
+    ->group(function () {
+        Route::controller(SCFirewallController::class)->group(function () {
+            Route::get('/scfirewalls', 'index')
+            ->name('scfirewalls.index');
+        });
+    });
+    
+    Route::middleware(IsSCEndpointsScheduleEnabled::class)
+    ->group(function () {
+        Route::controller(SCEndpointController::class)->group(function () {
+            Route::get('/scendpoints', 'index')->name('scendpoints.index');
+        });
+    });
+    
+    Route::middleware(IsSCAlertsIntegrationEnabled::class)
+    ->group(function () {
+        Route::controller(SCAlertController::class)->group(function () {
+            Route::get('/scalerts/{id}', 'show')->name('scalerts.show');
+            Route::get('/scalerts/{id}/dispatch', 'dispatchAndShow')->name('scalerts.dispatchAndShow');
+            Route::get('/scalerts', 'index')->name('scalerts.index');
+        });
+        
+    });
+    
+    Route::controller(SCBillingController::class)
+    ->group(function () {
+        Route::get('/scbilling/fetcher', 'fetcher')->name('scbilling.fetcher');
+    });
+    
+    Route::middleware(IsHaloIntegrationEnabled::class)
+    ->group(function () {
+        Route::controller(SCBillingController::class)->group(function () {
+            Route::get('/scbilling/haloPusher', 'haloPusher')->name('scbilling.haloPusher');
+            Route::get('/scbilling/haloSettings', 'haloSettings')->name('scbilling.haloSettings');
+            Route::get('/scbillables/dispatchToHaloAndShowTenant/{year}/{month}/{id}', 'dispatchToHaloAndShowTenant')
+            ->name('scbillables.dispatchToHaloAndShowTenant');
+        });
+    });
+    
+    
+    Route::controller(SCBillableController::class)
+    ->group(function () {
+        Route::get('/scbillables/{id}', 'show')->name('scbillables.show');
+        Route::get('/scbillables', 'index')->name('scbillables.index');
+        
+    });
+    
+    Route::controller(WebhookLogController::class)->group(function () {
+        Route::get('/webhookLogs', 'index')->name('webhookLogs.index');
+    });
+    
+    Route::controller(EventController::class)->group(function () {
+        Route::get('/events', 'index')->name('events.index');
+    });
+    
+    Route::controller(UserManagementController::class)->group(function () {
+        Route::get('/usermanagement', 'index')->name('usermanagement.index');
+    });
+    
+    Route::controller(SettingsController::class)->group(function () {
+        Route::get('/generalsettings', 'index')->name('generalsettings.index');
+    });
+    
 });
-
-Route::middleware($protectedMiddleware)->controller(SCFirewallController::class)->group(function () {
-    Route::get('/scfirewalls', 'index')->name('scfirewalls.index');
-});
-
-Route::middleware($protectedMiddleware)->controller(SCEndpointController::class)->group(function () {
-    Route::get('/scendpoints', 'index')->name('scendpoints.index');
-});
-
-Route::middleware($protectedMiddleware)->controller(SCAlertController::class)->group(function () {
-    Route::get('/scalerts/{id}', 'show')->name('scalerts.show');
-    Route::get('/scalerts/{id}/dispatch', 'dispatchAndShow')->name('scalerts.dispatchAndShow');
-    Route::get('/scalerts', 'index')->name('scalerts.index');
-});
-
-Route::middleware($protectedMiddleware)->controller(SCBillingController::class)->group(function () {
-    Route::get('/scbilling/fetcher', 'fetcher')->name('scbilling.fetcher');
-    Route::get('/scbilling/haloPusher', 'haloPusher')->middleware(IsHaloIntegrationEnabled::class)->name('scbilling.haloPusher');
-    Route::get('/scbilling/haloSettings', 'haloSettings')->middleware(IsHaloIntegrationEnabled::class)->name('scbilling.haloSettings');
-});
-
-Route::middleware($protectedMiddleware)->controller(SCBillableController::class)->group(function () {
-    Route::get('/scbillables/{id}', 'show')->name('scbillables.show');
-    Route::get('/scbillables', 'index')->name('scbillables.index');
-    Route::get('/scbillables/dispatchToHaloAndShowTenant/{year}/{month}/{id}', 'dispatchToHaloAndShowTenant')->name('scbillables.dispatchToHaloAndShowTenant');
-});
-
-Route::middleware($protectedMiddleware)->controller(WebhookLogController::class)->group(function () {
-    Route::get('/webhookLogs', 'index')->name('webhookLogs.index');
-});
-
-Route::middleware($protectedMiddleware)->controller(EventController::class)->group(function () {
-    Route::get('/events', 'index')->name('events.index');
-});
-
-Route::middleware($protectedMiddleware)->controller(UserManagementController::class)->group(function () {
-    Route::get('/usermanagement', 'index')->name('usermanagement.index');
-});
-
-Route::middleware($protectedMiddleware)->controller(SettingsController::class)->group(function () {
-    Route::get('/generalsettings', 'index')->name('generalsettings.index');
-});
-
 require __DIR__.'/auth.php';
