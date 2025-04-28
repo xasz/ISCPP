@@ -6,41 +6,12 @@
     <body class="min-h-screen bg-white dark:bg-zinc-800">
         <flux:sidebar sticky stashable class="border-r border-zinc-200 bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900">
             <flux:sidebar.toggle class="lg:hidden" icon="x-mark" />
-
+            
             <a href="{{ route('dashboard') }}" class="mr-5 flex items-center space-x-2" wire:navigate>
                 <x-app-logo class="size-8" href="#"></x-app-logo>
             </a>
 
-            <flux:navlist variant="outline">
-                <flux:navlist.group heading="Platform" class="grid">
-                    <flux:navlist.item icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>Dashboard</flux:navlist.item>
-                </flux:navlist.group>
-                <flux:navlist.group heading="Central" class="grid">
-                    <flux:navlist.item icon="building-office" :href="route('sctenants.index')" :current="request()->routeIs('sctenants.index')" wire:navigate>SC Tenants</flux:navlist.item>
-                    @if(resolve(App\Settings\SCServiceSettings::class)->alertsScheduleEnabled)
-                    <flux:navlist.item icon="bell-alert" :href="route('scalerts.index')" :current="request()->routeIs('scalerts.index')" wire:navigate>SC Alerts</flux:navlist.item>
-                    @endif
-                    @if(resolve(App\Settings\SCServiceSettings::class)->endpointsScheduleEnabled)
-                    <flux:navlist.item icon="computer-desktop" :href="route('scendpoints.index')" :current="request()->routeIs('scendpoints.index')" wire:navigate>SC Endpoints</flux:navlist.item>
-                    @endif
-                    @if(resolve(App\Settings\SCServiceSettings::class)->firewallsScheduleEnabled)
-                    <flux:navlist.item icon="fire" :href="route('scfirewalls.index')" :current="request()->routeIs('scfirewalls.index')" wire:navigate>SC Firewalls (soon)</flux:navlist.item>
-                    @endif
-
-                </flux:navlist.group>
-                <flux:navlist.group heading="Central Billing" class="grid">
-                    <flux:navlist.item icon="arrow-down-on-square" :href="route('scbilling.fetcher')" :current="request()->routeIs('scbilling.fetcher')" wire:navigate>Fetcher</flux:navlist.item>
-                    <flux:navlist.item icon="document-check" :href="route('scbillables.index')" :current="request()->routeIs('scbilling.index')" wire:navigate>Viewer</flux:navlist.item>
-                    @if(resolve(App\Settings\HaloServiceSettings::class)->enabled)
-                        <flux:navlist.item icon="banknotes" :href="route('scbilling.haloPusher')" :current="request()->routeIs('scbilling.haloPusher')" wire:navigate>Halo Pusher</flux:navlist.item>
-                        <flux:navlist.item icon="ellipsis-horizontal" :href="route('scbilling.haloSettings')" :current="request()->routeIs('scbilling.haloSettings')" wire:navigate>Halo Settings</flux:navlist.item>
-                    @endif
-                </flux:navlist.group>    
-                <flux:navlist.group heading="Events" class="grid">
-                    <flux:navlist.item icon="cake" :href="route('events.index')" :current="request()->routeIs('events.index')" wire:navigate>System</flux:navlist.item>
-                    <flux:navlist.item icon="bolt" :href="route('webhookLogs.index')" :current="request()->routeIs('webhookLogs.index')" wire:navigate>SC Alert Webhooks</flux:navlist.item>
-                </flux:navlist.group>  
-            </flux:navlist>
+            <livewire:layout.sidebar-fluxmenu />
 
             <flux:spacer />
 
@@ -51,7 +22,6 @@
                 <flux:navlist.item  :href="route('generalsettings.index')" :current="request()->routeIs('generalsettings.index')" wire:navigate>
                     General Settings
                 </flux:navlist.item>
-
             </flux:navlist>
 
             <!-- Desktop User Menu -->

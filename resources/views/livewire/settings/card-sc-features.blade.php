@@ -45,6 +45,8 @@ new class extends Component {
         $settings->firewallsScheduleEnabled = $this->firewallsScheduleEnabled;
         $settings->save();
         $this->message = __('Saved - Please reload the page if you are missing menus');
+
+        $this->dispatch('featureSet-changed');
     }
 
 }; ?>
