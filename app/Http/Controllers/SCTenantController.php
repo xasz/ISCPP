@@ -12,12 +12,16 @@ class SCTenantController extends Controller
 
         $validated = collect(request()->validate([
             'filterTenantName' => 'nullable|string|max:255',
+            'filterTenantType' => 'nullable|string|in:usage,trail,term',
         ]));
 
         $sctenants = SCTenant::orderBy('name', 'desc')
             ->when($validated->has('filterTenantName'), function ($query) use ($validated) {
                 $query->where('name', 'ILIKE', '%' . $validated['filterTenantName'] . '%')
                     ->orWhere('showAs', 'ILIKE', '%' . $validated['filterTenantName'] . '%');
+            })
+            ->when($validated->has('filterTenantType'), function ($query) use ($validated) {
+                $query->where('billingType', 'ILIKE', $validated['filterTenantType']);
             })
             ->paginate(50);
 

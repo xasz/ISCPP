@@ -1,9 +1,25 @@
 <x-layouts.app>
     <div class="grid grid-cols-4 gap-4">            
-        <x-card-simple-info title="Tenants" value="{{ $tenantsCount['all'] }}" />
-        <x-card-simple-info title="Usage" value="{{ $tenantsCount['usage'] }}" />
-        <x-card-simple-info title="Term" value="{{ $tenantsCount['term'] }}" />
-        <x-card-simple-info title="Trail" value="{{ $tenantsCount['trail'] }}" />
+        <x-card-simple-info title="Tenants" value="{{ $tenantsCount['all'] }}">
+            <x-slot name="menu">
+                <flux:menu.item href="{{ route('sctenants.index',[ 'filterTenantType' => '']) }}">Filter</flux:menu.item>
+            </x-slot>
+        </x-card-simple-info>
+        <x-card-simple-info title="Usage" value="{{ $tenantsCount['usage'] }}">
+            <x-slot name="menu">
+                <flux:menu.item href="{{ route('sctenants.index',[ 'filterTenantType' => 'usage']) }}">Filter</flux:menu.item>
+            </x-slot>
+        </x-card-simple-info>
+        <x-card-simple-info title="Term" value="{{ $tenantsCount['term'] }}">
+            <x-slot name="menu">
+                <flux:menu.item href="{{ route('sctenants.index',[ 'filterTenantType' => 'term']) }}">Filter</flux:menu.item>
+            </x-slot>
+        </x-card-simple-info>
+        <x-card-simple-info title="Trail" value="{{ $tenantsCount['trail'] }}" >
+            <x-slot name="menu">
+                <flux:menu.item href="{{ route('sctenants.index',[ 'filterTenantType' => 'trail']) }}">Filter</flux:menu.item>
+            </x-slot>
+        </x-card-simple-info>
     </div>
 
     <x-card title="Filter">
