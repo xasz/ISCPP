@@ -40,8 +40,14 @@ class SCTenant extends Model
     {
         return $this->hasMany(SCBillable::class, 'tenantId');
     }
-    function SCTenantDownloads()
+
+    function SCTenantDownload()
     {
         return $this->hasOne(SCTenantDownload::class, 'tenantId');
+    }
+
+    function SCTenantHealthscore()
+    {
+        return $this->hasOne(SCTenantHealthscore::class, 'tenantId');
     }
 }

@@ -15,6 +15,7 @@
                 <x-tab-button name="alerts" label="Alerts" />
                 <x-tab-button name="billables" label="Billables" />
                 <x-tab-button name="downloads" label="Downloads" />
+                <x-tab-button name="healthscore" label="Healthscore" />
                 @if(app(App\Settings\HaloServiceSettings::class)->enabled)
                     <x-tab-button name="halo" label="Halo Settings" />
                 @endif
@@ -62,14 +63,29 @@
                     </x-card>
                 </x-tab-panel>
 
+                
                 <!-- Downloads Tab -->
                 <x-tab-panel name="downloads">
                     <x-card class="overflow-hidden" title="Downloads"> 
-                        @if($sctenant->SCTenantDownloads()->count() > 0)
+                        @if($sctenant->SCTenantDownload()->count() > 0)
                             <x-card-details-json :json="$sctenant->rawData" />
                         @else
                             <flux:text>
                                 {{ __('No downloads available for this tenant.') }}
+                            </flux:text>
+                        @endif
+                    </x-card>
+                </x-tab-panel>
+
+
+                <!-- Downloads Tab -->
+                <x-tab-panel name="healthscore">
+                    <x-card class="overflow-hidden" title="Healthscore"> 
+                        @if($sctenant->SCTenantHealthscore()->count() > 0)
+                            <x-card-details-json :json="$sctenant->rawData" />
+                        @else
+                            <flux:text>
+                                {{ __('No Healthscore available for this tenant.') }}
                             </flux:text>
                         @endif
                     </x-card>
