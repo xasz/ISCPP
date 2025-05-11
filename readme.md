@@ -22,6 +22,12 @@ I understand there is still much work to be done, but I wanted to release ISCPP 
 
 ![alt text](docs/images/centralbilling.png)
 
+
+## Overall Tenant Health Reporting
+
+![image](https://github.com/user-attachments/assets/6a2b5031-aa49-400c-829d-feb56b28199b)
+
+
 ## Alot more
 
 - Sophos Health Overview
