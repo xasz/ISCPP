@@ -25,12 +25,11 @@ class RefreshSCTenantDownload implements ShouldQueue, ShouldBeUniqueUntilProcess
     public function handle(SCService $scService): void
     {
         try{            
-            Event::log('sctentant-download', 'info', ['message' => 'SCTenantDownload for tenant id ' . $this->tenantID . ' refresh initiated']);
-            
-            $tenant = SCTenant::find($this->tenantID)->first();
+            Event::log('sctentant-download', 'info', ['message' => 'SCTenantDownload for tenant refresh initiated', 'tenantId' => $this->tenantID]);
+            $tenant = SCTenant::findOrFail($this->tenantID);
             $data = $scService->tenantDownloads($tenant);
             $tenant->SCTenantDownload()->updateOrCreate(
-                ['tenantId' => $tenant],
+                ['tenantId' => $this->tenantID],
                 [
                     'rawData' => $data,
                     'updated_at' => now(),
@@ -38,10 +37,10 @@ class RefreshSCTenantDownload implements ShouldQueue, ShouldBeUniqueUntilProcess
             );
         }
         catch(\Exception $e){
-            Event::log('sctentant-download', 'error', ['message' => $e->getMessage()]);
+            Event::log('sctentant-download', 'error', ['message' => $e->getMessage(), 'tenantId' => $this->tenantID]);
         }
 
-        Event::log('sctentant-download', 'info', ['message' => 'SCTenantDownload refreshed']);   
+        Event::log('sctentant-download', 'info', ['message' => 'SCTenantDownload refreshed', 'tenantId' => $this->tenantID]);   
     }
     
     public function uniqueId(): string

@@ -321,11 +321,11 @@ class SCService
     }
 
     public function tenantDownloads(SCTenant $tenant){        
-        return $this->tenantGet($tenant, '/endpoint/v1/downloads');
+        return collect($this->tenantGet($tenant, '/endpoint/v1/downloads'));
     }
     
     public function tenantHealthscore(SCTenant $tenant){        
-        return $this->tenantGet($tenant, '/account-health-check/v1/health-check');
+        return collect($this->tenantGet($tenant, '/account-health-check/v1/health-check', ['raw' => true]));
     }
 
     public function fakebillingUsage(int $month, int $year){

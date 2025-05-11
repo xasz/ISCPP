@@ -28,8 +28,14 @@ new class extends Component {
             @if(resolve(App\Settings\SCServiceSettings::class)->firewallsScheduleEnabled)
             <flux:navlist.item icon="fire" :href="route('scfirewalls.index')" :current="request()->routeIs('scfirewalls.index')" wire:navigate>SC Firewalls (soon)</flux:navlist.item>
             @endif
-
         </flux:navlist.group>
+
+        <flux:navlist.group heading="Tools" class="grid">
+            @if(resolve(App\Settings\SCServiceSettings::class)->healthscoresScheduleEnabled)
+            <flux:navlist.item icon="heart" :href="route('sctenants.healthscores')" :current="request()->routeIs('sctenants.healthscores')" wire:navigate>Tenant Healthscores</flux:navlist.item>
+            @endif
+        </flux:navlist.group>
+
         <flux:navlist.group heading="Central Billing" class="grid">
             <flux:navlist.item icon="arrow-down-on-square" :href="route('scbilling.fetcher')" :current="request()->routeIs('scbilling.fetcher')" wire:navigate>Fetcher</flux:navlist.item>
             <flux:navlist.item icon="document-check" :href="route('scbillables.index')" :current="request()->routeIs('scbilling.index')" wire:navigate>Viewer</flux:navlist.item>

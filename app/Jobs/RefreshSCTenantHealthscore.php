@@ -25,23 +25,22 @@ class RefreshSCTenantHealthscore implements ShouldQueue, ShouldBeUniqueUntilProc
     public function handle(SCService $scService): void
     {
         try{            
-            Event::log('sctentant-healthscore', 'info', ['message' => 'SCTenantHealthscore refresh initiated']);
-            
-            $tenant = SCTenant::find($this->tenantID)->first();
+            Event::log('sctentant-healthscore', 'info', ['message' => 'SCTenantHealthscore refresh initiated', 'tenantId' => $this->tenantID]);
+            $tenant = SCTenant::findOrFail($this->tenantID);
             $data = $scService->tenantHealthscore($tenant);
             $tenant->SCTenantHealthscore()->updateOrCreate(
-                ['tenantId' => $tenant],
+                ['tenantId' => $this->tenantID],
                 [
                     'rawData' => $data,
                     'updated_at' => now(),
+                    'tenantId' => $this->tenantID,
                 ]
             );
         }
         catch(\Exception $e){
-            Event::log('sctentant-healthscore', 'error', ['message' => $e->getMessage()]);
+            Event::log('sctentant-healthscore', 'error', ['message' => $e->getMessage(), 'tenantId' => $this->tenantID]);
         }
-
-        Event::log('sctentant-healthscore', 'info', ['message' => 'SCTenantHealthscore refreshed']);   
+        Event::log('sctentant-healthscore', 'info', ['message' => 'SCTenantHealthscore refreshed', 'tenantId' => $this->tenantID]);   
     }
     
     public function uniqueId(): string
