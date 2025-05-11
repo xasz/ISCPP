@@ -320,10 +320,14 @@ class SCService
         ]);
     }
 
-    public function downloads(SCTenant $tenant){        
-        return $this->tenantGet($tenant, '/endpoint/v1/downloads');
+    public function tenantDownloads(SCTenant $tenant){        
+        return collect($this->tenantGet($tenant, '/endpoint/v1/downloads'));
     }
     
+    public function tenantHealthscore(SCTenant $tenant){        
+        return collect($this->tenantGet($tenant, '/account-health-check/v1/health-check', ['raw' => true]));
+    }
+
     public function fakebillingUsage(int $month, int $year){
 
         $date = now()->setYear($year)->setMonth($month);

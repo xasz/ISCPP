@@ -17,6 +17,7 @@ use App\Http\Middleware\IsSCEndpointsScheduleEnabled;
 use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
 use App\Http\Middleware\Google2FAMiddleware;
+use App\Http\Middleware\IsSCTenantHealthscoresScheduleEnabled;
 
 // Define a protected route group middleware that includes 2FA verification
 $protectedMiddleware = ['auth', 'verified', Google2FAMiddleware::class];
@@ -45,6 +46,13 @@ Route::middleware($protectedMiddleware)->group(function () {
         Route::get('/dashboard', 'index')->name('dashboard');
     });
     
+    Route::middleware(IsSCTenantHealthscoresScheduleEnabled::class)
+    ->group(function () {
+        Route::controller(SCTenantController::class)->group(function () {
+            Route::get('/sctenants/healthscores', 'healthscores')->name('sctenants.healthscores');
+        });
+    });
+
     Route::controller(SCTenantController::class)->group(function () {
         Route::get('/sctenants/{id}', 'show')->name('sctenants.show');
         Route::get('/sctenants', 'index')->name('sctenants.index');
@@ -65,6 +73,7 @@ Route::middleware($protectedMiddleware)->group(function () {
         });
     });
     
+
     Route::middleware(IsSCAlertsIntegrationEnabled::class)
     ->group(function () {
         Route::controller(SCAlertController::class)->group(function () {

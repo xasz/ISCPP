@@ -36,7 +36,7 @@ class SCTenantController extends Controller
 
     public function show(string $id)
     {
-        $sctenant = SCTenant::findOrFail($id);
+        $sctenant = SCTenant::with('SCTenantDownload')->with('SCTenantHealthscore')->findOrFail($id);
         $scalerts = $sctenant->SCAlerts()->orderByDesc('raisedAt')->paginate(50);
         $scbillables = $sctenant->SCBillables()
             ->where('year', '>=', now()->format('Y'))
@@ -45,5 +45,12 @@ class SCTenantController extends Controller
         return view('sctenants.show', 
             compact('sctenant',
                 'scalerts', 'scbillables'));
+    }
+
+    public function healthscores()
+    {
+        $sctenants = SCTenant::orderBy('name', 'desc')
+            ->paginate(50);
+        return view('sctenants.healthscores', compact('sctenants'));
     }
 }

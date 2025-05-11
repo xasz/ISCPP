@@ -8,10 +8,12 @@ use App\Settings\SCServiceSettings;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Schedule;
 
+// Tenants
 Schedule::job(RefreshSCTenants::class)
     ->everyThirtyMinutes();
 
 
+// Alerts
 Schedule::call(function () {
     Artisan::call('app:queue-refresh-scalerts-jobs-for-all-tenants');
     $settings = resolve(SCServiceSettings::class);
@@ -24,6 +26,7 @@ Schedule::call(function () {
     return resolve(SCServiceSettings::class)->alertsScheduleEnabled;
 });
 
+// Endpoints
 Schedule::call(function () {
     Artisan::call('app:queue-refresh-scentpoinds-jobs-for-all-tenants');
     $settings = resolve(SCServiceSettings::class);
@@ -34,4 +37,30 @@ Schedule::call(function () {
 ->everyThirtyMinutes()
 ->when(function () {
     return resolve(SCServiceSettings::class)->endpointsScheduleEnabled;
+});
+
+// Downloads
+Schedule::call(function () {
+    Artisan::call('app:queue-refresh-downloads-jobs-for-all-tenants');
+    $settings = resolve(SCServiceSettings::class);
+    $settings->lastDownloadsSchedule = now();
+    $settings->save();
+})
+->name('queue-refresh-downloads-jobs-for-all-tenants')
+->hourly()
+->when(function () {
+    return resolve(SCServiceSettings::class)->downloadsScheduleEnabled;
+});
+
+// Healthscores
+Schedule::call(function () {
+    Artisan::call('app:queue-refresh-healthscores-jobs-for-all-tenants');
+    $settings = resolve(SCServiceSettings::class);
+    $settings->lastHealthscoresSchedule = now();
+    $settings->save();
+})
+->name('queue-refresh-healthscores-jobs-for-all-tenants')
+->everyThirtyMinutes()
+->when(function () {
+    return resolve(SCServiceSettings::class)->healthscoresScheduleEnabled;
 });

@@ -1,5 +1,8 @@
-@props(['json'])
+@props(['json' =>'', 'arr' => null])
 @php
+    if($arr) {
+        $json = json_encode($arr);
+    }
     $pretty = collect(json_decode($json, true))->toJson(JSON_PRETTY_PRINT);
 @endphp    
 <div class="mb-2 overflow-scroll">

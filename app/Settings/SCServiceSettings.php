@@ -20,10 +20,18 @@ class SCServiceSettings extends Settings
     public ?bool $endpointsScheduleEnabled = false;
     public ?bool $firewallsScheduleEnabled = false;
 
+    public ?bool $downloadsScheduleEnabled = true;
+    public ?bool $healthscoresScheduleEnabled = true;
+
+
     public ?Carbon $lastAlertsSchedule = null;
     public ?Carbon $lastEndpointsSchedule = null;
     public ?Carbon $lastFirewallsSchedule = null;
         
+    public ?Carbon $lastDownloadsSchedule = null;
+
+    public ?Carbon $lastHealthscoresSchedule = null;
+    
     public static function group(): string
     {
         return 'sc_service';

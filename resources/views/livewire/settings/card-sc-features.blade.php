@@ -14,10 +14,15 @@ new class extends Component {
     public bool $alertsScheduleEnabled = true;
     public bool $endpointsScheduleEnabled = false;
     public bool $firewallsScheduleEnabled = false;
+    public bool $tenantsScheduleEnabled = true;
+    public bool $downloadsScheduleEnabled = true;
+    public bool $healthscoresScheduleEnabled = true;
 
     public ?Carbon $lastAlertsSchedule = null;
     public ?Carbon $lastEndpointsSchedule = null;
     public ?Carbon $lastFirewallsSchedule = null;
+    public ?Carbon $lastDownloadsSchedule = null;
+    public ?Carbon $lastHealthscoresSchedule = null;
 
     
     public function mount(SCServiceSettings $settings)
@@ -25,11 +30,14 @@ new class extends Component {
         $this->alertsScheduleEnabled = $settings->alertsScheduleEnabled;
         $this->endpointsScheduleEnabled = $settings->endpointsScheduleEnabled;
         $this->firewallsScheduleEnabled = $settings->firewallsScheduleEnabled;
+        $this->downloadsScheduleEnabled = $settings->downloadsScheduleEnabled;
+        $this->healthscoresScheduleEnabled = $settings->healthscoresScheduleEnabled;
 
         $this->lastAlertsSchedule = $settings->lastAlertsSchedule;
         $this->lastEndpointsSchedule = $settings->lastEndpointsSchedule;
         $this->lastFirewallsSchedule = $settings->lastFirewallsSchedule;
-
+        $this->lastDownloadsSchedule = $settings->lastDownloadsSchedule;
+        $this->lastHealthscoresSchedule = $settings->lastHealthscoresSchedule;
     }
 
     public function updated()
@@ -43,6 +51,9 @@ new class extends Component {
         $settings->alertsScheduleEnabled = $this->alertsScheduleEnabled;
         $settings->endpointsScheduleEnabled = $this->endpointsScheduleEnabled;
         $settings->firewallsScheduleEnabled = $this->firewallsScheduleEnabled;
+        $settings->downloadsScheduleEnabled = $this->downloadsScheduleEnabled;
+        $settings->healthscoresScheduleEnabled = $this->healthscoresScheduleEnabled;
+
         $settings->save();
         $this->message = __('Saved - Please reload the page if you are missing menus');
 
@@ -56,6 +67,19 @@ new class extends Component {
     <x-card-details-switch  label="Enable Tenants Schedule" checked disabled/>
     <flux:text>
         {{ __('The jobs for updating tenants are autoscheduled every 30 minutes') }}
+    </flux:text>
+
+
+    <x-card-details-switch  label="Enable Downloads Schedule" wire:model.live="downloadsScheduleEnabled" />
+    <flux:text>
+        {{ 'Last Run: ' . ($lastDownloadsSchedule != null ? $lastDownloadsSchedule->toString() : 'never') }}
+        {{ __('The jobs for updating downloads are autoscheduled every 60 minutes') }}
+    </flux:text>
+
+    <x-card-details-switch  label="Enable Healthscores Schedule" wire:model.live="healthscoresScheduleEnabled" />
+    <flux:text>
+        {{ 'Last Run: ' . ($lastHealthscoresSchedule != null ? $lastHealthscoresSchedule->toString() : 'never') }}
+        {{ __('The jobs for updating healthscores are autoscheduled every 30 minutes') }}
     </flux:text>
 
     <x-card-details-switch  label="Enable Alerts Schedule" wire:model.live="alertsScheduleEnabled" />
