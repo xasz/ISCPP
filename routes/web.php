@@ -12,6 +12,7 @@ use App\Http\Controllers\SCBillableController;
 use App\Http\Controllers\UserManagementController;
 use App\Http\Controllers\WebhookLogController;
 use App\Http\Middleware\IsHaloIntegrationEnabled;
+use App\Http\Middleware\IsNinjaIntegrationEnabled;
 use App\Http\Middleware\IsSCAlertsIntegrationEnabled;
 use App\Http\Middleware\IsSCEndpointsScheduleEnabled;
 use Illuminate\Support\Facades\Route;
@@ -46,36 +47,28 @@ Route::middleware($protectedMiddleware)->group(function () {
         Route::get('/dashboard', 'index')->name('dashboard');
     });
     
-    Route::middleware(IsSCTenantHealthscoresScheduleEnabled::class)
-    ->group(function () {
+    Route::middleware(IsSCTenantHealthscoresScheduleEnabled::class)->group(function () {
         Route::controller(SCTenantController::class)->group(function () {
             Route::get('/sctenants/healthscores', 'healthscores')->name('sctenants.healthscores');
         });
     });
 
-    Route::controller(SCTenantController::class)->group(function () {
-        Route::get('/sctenants/{id}', 'show')->name('sctenants.show');
-        Route::get('/sctenants', 'index')->name('sctenants.index');
-    });
     
-    Route::middleware(IsSCAlertsIntegrationEnabled::class)
-    ->group(function () {
+    Route::middleware(IsSCAlertsIntegrationEnabled::class)->group(function () {
         Route::controller(SCFirewallController::class)->group(function () {
             Route::get('/scfirewalls', 'index')
             ->name('scfirewalls.index');
         });
     });
     
-    Route::middleware(IsSCEndpointsScheduleEnabled::class)
-    ->group(function () {
+    Route::middleware(IsSCEndpointsScheduleEnabled::class)->group(function () {
         Route::controller(SCEndpointController::class)->group(function () {
             Route::get('/scendpoints', 'index')->name('scendpoints.index');
         });
     });
     
 
-    Route::middleware(IsSCAlertsIntegrationEnabled::class)
-    ->group(function () {
+    Route::middleware(IsSCAlertsIntegrationEnabled::class)->group(function () {
         Route::controller(SCAlertController::class)->group(function () {
             Route::get('/scalerts/{id}', 'show')->name('scalerts.show');
             Route::get('/scalerts/{id}/dispatch', 'dispatchAndShow')->name('scalerts.dispatchAndShow');
@@ -84,24 +77,29 @@ Route::middleware($protectedMiddleware)->group(function () {
         
     });
     
-    Route::controller(SCBillingController::class)
-    ->group(function () {
+    Route::controller(SCBillingController::class)->group(function () {
         Route::get('/scbilling/fetcher', 'fetcher')->name('scbilling.fetcher');
     });
     
-    Route::middleware(IsHaloIntegrationEnabled::class)
-    ->group(function () {
+    Route::middleware(IsHaloIntegrationEnabled::class)->group(function () {
         Route::controller(SCBillingController::class)->group(function () {
             Route::get('/scbilling/haloPusher', 'haloPusher')->name('scbilling.haloPusher');
-            Route::get('/scbilling/haloSettings', 'haloSettings')->name('scbilling.haloSettings');
             Route::get('/scbillables/dispatchToHaloAndShowTenant/{year}/{month}/{id}', 'dispatchToHaloAndShowTenant')
             ->name('scbillables.dispatchToHaloAndShowTenant');
         });
+
+        Route::controller(SCTenantController::class)->group(function () {
+            Route::get('/sctenants/haloMatchingHelper', 'haloMatchingHelper')->name('sctenants.haloMatchingHelper');
+        });
     });
     
+    Route::middleware(IsNinjaIntegrationEnabled::class)->group(function () {
+        Route::controller(SCTenantController::class)->group(function () {
+            Route::get('/sctenants/ninjaMatchingHelper', 'ninjaMatchingHelper')->name('sctenants.ninjaMatchingHelper');
+        });
+    });
     
-    Route::controller(SCBillableController::class)
-    ->group(function () {
+    Route::controller(SCBillableController::class)->group(function () {
         Route::get('/scbillables/{id}', 'show')->name('scbillables.show');
         Route::get('/scbillables', 'index')->name('scbillables.index');
         
@@ -121,6 +119,11 @@ Route::middleware($protectedMiddleware)->group(function () {
     
     Route::controller(SettingsController::class)->group(function () {
         Route::get('/generalsettings', 'index')->name('generalsettings.index');
+    });
+
+    Route::controller(SCTenantController::class)->group(function () {
+        Route::get('/sctenants/{id}', 'show')->name('sctenants.show');
+        Route::get('/sctenants', 'index')->name('sctenants.index');
     });
     
 });

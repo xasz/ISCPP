@@ -53,4 +53,22 @@ class SCTenantController extends Controller
             ->paginate(50);
         return view('sctenants.healthscores', compact('sctenants'));
     }
+
+    public function haloMatchingHelper()
+    {
+        return view('sctenants.haloMatchingHelper',
+            [
+                'SCTenants' => SCTenant::where('haloclient_id', '<=', 0)->get(),
+            ]
+        );
+    }
+
+    public function ninjaMatchingHelper()
+    {
+        return view('sctenants.ninjaMatchingHelper',
+            [
+                'SCTenants' => SCTenant::where('ninjaorg_id', '<=', 0)->get(),
+            ]
+        );
+    }
 }

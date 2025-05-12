@@ -20,7 +20,7 @@
                 <livewire:settings.card-haloServiceSettings />
             </x-tab-panel>
             <x-tab-panel name="ninja">
-                Comming soon
+                <livewire:settings.card-ninjaServiceSettings />
             </x-tab-panel>
             <x-tab-panel name="commands">
                 <livewire:settings.card-commands />
