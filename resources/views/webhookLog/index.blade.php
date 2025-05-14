@@ -1,5 +1,3 @@
-
-
 <x-layouts.app>
     <x-table.table>
         <x-table.thead>
@@ -19,7 +17,7 @@
                     <x-table.td>{{ $webhookLog->url }}</x-table.td>
                     <x-table.td>{{ $webhookLog->statusCode }}</x-table.td>
                     <x-table.td>{{ $webhookLog->response }}</x-table.td>
-                    <x-table.td>{{ $webhookLog->payload }}</x-table.td>
+                    <x-table.td>{{ json_encode($webhookLog->payload) }}</x-table.td>
                     <x-table.td>
                         <x-table.a href="{{ route('scalerts.show', $webhookLog->sc_alert_id) }}">
                             {{ $webhookLog->sc_alert_id }}
