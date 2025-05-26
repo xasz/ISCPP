@@ -55,7 +55,7 @@ new class extends Component {
         $settings->healthscoresScheduleEnabled = $this->healthscoresScheduleEnabled;
 
         $settings->save();
-        $this->message = __('Saved - Please reload the page if you are missing menus');
+        $this->message = __('Saved');
 
         $this->dispatch('featureSet-changed');
     }
@@ -68,37 +68,42 @@ new class extends Component {
     <flux:text>
         {{ __('The jobs for updating tenants are autoscheduled every 30 minutes') }}
     </flux:text>
-
+    <x-card-hr/>
 
     <x-card-details-switch  label="Enable Downloads Schedule" wire:model.live="downloadsScheduleEnabled" />
     <flux:text>
         {{ 'Last Run: ' . ($lastDownloadsSchedule != null ? $lastDownloadsSchedule->toString() : 'never') }}
         {{ __('The jobs for updating downloads are autoscheduled every 60 minutes') }}
     </flux:text>
+    <x-card-hr/>
 
     <x-card-details-switch  label="Enable Healthscores Schedule" wire:model.live="healthscoresScheduleEnabled" />
     <flux:text>
         {{ 'Last Run: ' . ($lastHealthscoresSchedule != null ? $lastHealthscoresSchedule->toString() : 'never') }}
         {{ __('The jobs for updating healthscores are autoscheduled every 30 minutes') }}
     </flux:text>
+    <x-card-hr/>
 
     <x-card-details-switch  label="Enable Alerts Schedule" wire:model.live="alertsScheduleEnabled" />
     <flux:text>
         {{ 'Last Run: ' . ($lastAlertsSchedule != null ? $lastAlertsSchedule->toString() : 'never') }}
         {{ __('The jobs for updating alerts are autoscheduled every 15 minutes') }}
     </flux:text>
+    <x-card-hr/>
 
     <x-card-details-switch  label="Enable Endpoints Schedule" wire:model.live="endpointsScheduleEnabled" />
     <flux:text>
         {{ 'Last Run: ' . ($lastEndpointsSchedule != null ? $lastEndpointsSchedule->toString() : 'never') }}
         {{ __('The jobs for updating endpoints are autoscheduled every 30 minutes') }}
-    </flux:text>
-    
+    </flux:text>    
+    <x-card-hr/>
+
     <x-card-details-switch  label="Enable Firewalls Schedule" wire:model.live="firewallsScheduleEnabled" />
     <flux:text>
         {{ 'Last Run: ' . ($lastFirewallsSchedule != null ? $lastFirewallsSchedule->toString() : 'never') }}
         {{ __('The jobs for updating firewalls are autoscheduled every 30 minutes') }}
     </flux:text>
+    <x-card-hr/>
 
     <div class="grid justify-items-end mt-4">
         <x-a-button wire:click="save">Save</x-a-button>

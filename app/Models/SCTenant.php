@@ -25,6 +25,7 @@ class SCTenant extends Model
         'apiHost',
         'rawData',
         'haloclient_id',
+        'ninjaorg_id',
     ];
 
     protected $casts = [

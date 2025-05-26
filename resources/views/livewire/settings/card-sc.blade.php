@@ -44,6 +44,8 @@ new class extends Component {
         
         $this->clientSecret = '';
         $this->message = __('Saved');
+
+        $this->dispatch('featureSet-changed');
     }
 
     public function test(SCService $scService)

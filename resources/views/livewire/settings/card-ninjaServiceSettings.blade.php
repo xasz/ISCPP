@@ -2,14 +2,13 @@
 
 use Illuminate\Support\Facades\Http;
 use Livewire\Volt\Component;
-use App\Settings\HaloServiceSettings;
-use App\Services\HaloService;
+use App\Settings\NinjaServiceSettings;
+use App\Services\NinjaService;
 
 new class extends Component {
     
     public $enabled;
     public $instance;
-    public $url;
     public $scope;
     public $clientSecret;
     public $clientId;
@@ -17,27 +16,26 @@ new class extends Component {
     public $message;
     public $testResult;
 
-    public function mount(HaloServiceSettings $settings)
+    public function mount(NinjaServiceSettings $settings)
     {
         $this->enabled = $settings->enabled;
         $this->instance = $settings->instance;
-        $this->url = $settings->url;
         $this->scope = $settings->scope;
         $this->clientSecret = null;
         $this->clientId = $settings->clientId;
     }
 
-    public function test(HaloService $hService)
+    public function test(NinjaService $nService)
     {
         try{
-            $hService->test();
-            $this->testResult = __("Halo connection successfull");
+            $nService->test();
+            $this->testResult = __("Ninja connection successfull");
         } catch (Exception $e) {
             $this->testResult = $e->getMessage();
         }
     }
 
-    public function save(HaloServiceSettings $settings)
+    public function save(NinjaServiceSettings $settings)
     {
         if($this->enabled == false){
             $settings->enabled = false;
@@ -58,27 +56,23 @@ new class extends Component {
 
         $settings->enabled = $this->enabled;
         $settings->instance = $this->instance;
-        $settings->url = $this->url;
         $settings->scope = $this->scope;
         $settings->clientSecret = encrypt($this->clientSecret);
         $settings->clientId = $this->clientId;
         $settings->save();
         $this->clientSecret = '';
 
-        $this->message = __('Saved');  
-
-        $this->dispatch('featureSet-changed');      
+        $this->message = __('Saved');        
+        $this->dispatch('featureSet-changed');
     }
     
 }; ?>
 
-<x-card title="Halo Service Settings" subtitle="This will be used for injecting Data to Halo">
+<x-card title="NinjaOne Service Settings (Preview Only)" subtitle="This will be used for injecting Data to NinjaOne">
         <div class="relative overflow-x-auto mt-2">
-            <x-card-details-switch  label="Enable Halo billing Integration" wire:model.live="enabled" />
+            <x-card-details-switch  label="Enable Ninja Deployment Integration" wire:model.live="enabled" />
             @if ($enabled)
                 <x-card-details-input label="Instance Name" wire:model="instance"/>
-                <x-card-details-input label="Instance Url" wire:model="url"/>
-
                 <x-card-details-input label="scope" wire:model="scope"/>
                 <x-card-details-input label="clientId" wire:model="clientId"/>
                 <x-card-details-input type="password" label="Client Secret" wire:model="clientSecret"/>

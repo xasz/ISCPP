@@ -90,6 +90,8 @@ new class extends Component {
         $this->message = __('Saved');        
         $settings->basicAuthUsername = '';
         $this->updatePayload();
+
+        $this->dispatch('featureSet-changed');
     }
     
 }; ?>

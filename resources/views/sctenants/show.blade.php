@@ -19,6 +19,9 @@
                 @if(app(App\Settings\HaloServiceSettings::class)->enabled)
                     <x-tab-button name="halo" label="Halo Settings" />
                 @endif
+                @if(app(App\Settings\NinjaServiceSettings::class)->enabled)
+                    <x-tab-button name="ninja" label="NinjaOne Settings" />
+                @endif
                 <x-tab-button name="raw" label="Raw" />
             </x-slot>
             
@@ -128,6 +131,13 @@
                     <livewire:sctenant.card-halosettings :sctenant="$sctenant" />
                 </x-tab-panel>
                 @endif
+                <!-- Halo Settings Tab -->
+                @if(app(App\Settings\NinjaServiceSettings::class)->enabled)
+                <x-tab-panel name="ninja">
+                    <livewire:sctenant.card-ninjasettings :sctenant="$sctenant" />
+                </x-tab-panel>
+                @endif
+                
                 
                 <!-- Raw Data Tab -->
                 <x-tab-panel name="raw">

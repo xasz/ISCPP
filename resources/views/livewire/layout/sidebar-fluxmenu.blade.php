@@ -34,6 +34,12 @@ new class extends Component {
             @if(resolve(App\Settings\SCServiceSettings::class)->healthscoresScheduleEnabled)
             <flux:navlist.item icon="heart" :href="route('sctenants.healthscores')" :current="request()->routeIs('sctenants.healthscores')" wire:navigate>Tenant Healthscores</flux:navlist.item>
             @endif
+            @if(resolve(App\Settings\HaloServiceSettings::class)->enabled)
+                <flux:navlist.item icon="ellipsis-horizontal" :href="route('sctenants.haloMatchingHelper')" :current="request()->routeIs('sctenants.haloMatchingHelper')" wire:navigate>Halo Matchhelper</flux:navlist.item>
+            @endif
+            @if(resolve(App\Settings\NinjaServiceSettings::class)->enabled)
+                <flux:navlist.item icon="ellipsis-horizontal" :href="route('sctenants.ninjaMatchingHelper')" :current="request()->routeIs('sctenants.ninjaMatchingHelper')" wire:navigate>Ninja Matchhelper</flux:navlist.item>
+            @endif
         </flux:navlist.group>
 
         <flux:navlist.group heading="Central Billing" class="grid">
@@ -41,7 +47,6 @@ new class extends Component {
             <flux:navlist.item icon="document-check" :href="route('scbillables.index')" :current="request()->routeIs('scbilling.index')" wire:navigate>Viewer</flux:navlist.item>
             @if(resolve(App\Settings\HaloServiceSettings::class)->enabled)
                 <flux:navlist.item icon="banknotes" :href="route('scbilling.haloPusher')" :current="request()->routeIs('scbilling.haloPusher')" wire:navigate>Halo Pusher</flux:navlist.item>
-                <flux:navlist.item icon="ellipsis-horizontal" :href="route('scbilling.haloSettings')" :current="request()->routeIs('scbilling.haloSettings')" wire:navigate>Halo Settings</flux:navlist.item>
             @endif
         </flux:navlist.group>    
         <flux:navlist.group heading="Events" class="grid">
