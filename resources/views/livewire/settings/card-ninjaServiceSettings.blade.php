@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Http;
 use Livewire\Volt\Component;
 use App\Settings\NinjaServiceSettings;
+use App\Services\NinjaService;
 
 new class extends Component {
     
@@ -61,12 +62,13 @@ new class extends Component {
         $settings->save();
         $this->clientSecret = '';
 
-        $this->message = __('Saved - please reload the page');        
+        $this->message = __('Saved');        
+        $this->dispatch('featureSet-changed');
     }
     
 }; ?>
 
-<x-card title="NinjaOne Service Settings" subtitle="This will be used for injecting Data to NinjaOne">
+<x-card title="NinjaOne Service Settings (Preview Only)" subtitle="This will be used for injecting Data to NinjaOne">
         <div class="relative overflow-x-auto mt-2">
             <x-card-details-switch  label="Enable Ninja Deployment Integration" wire:model.live="enabled" />
             @if ($enabled)

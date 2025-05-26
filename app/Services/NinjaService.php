@@ -3,12 +3,10 @@
 namespace App\Services;
 
 use App\Settings\NinjaServiceSettings;
-use DateTime;
 use Exception;
 use GuzzleHttp\Client;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
-use Carbon\Carbon;
 
 class NinjaService
 {
@@ -22,25 +20,21 @@ class NinjaService
         $this->authenticate();        
     }
 
-    private function authUrl(){
-        return 'https://' . $this->settings->url . '/auth';
+    private function url(){
+        return 'https://' . $this->settings->instance . '.ninjarmm.com';
     }
-
     private function authTokenUrl(){
-        return $this->authUrl() . '/token';
+        return $this->url() . '/oauth/token';
     }
 
     private function apiUrl(){
-        return 'https://' . $this->settings->url . '/api';
+        return $this->url() . '/api';
     }
 
     public function authenticate(){
       
         $client = new Client();
         $response = $client->post($this->authTokenUrl(), [
-            'query' => [
-                'tenant' => $this->settings->instance
-            ],
             'form_params' => [
                 'client_id' => $this->settings->clientId,
                 'client_secret' => decrypt($this->settings->clientSecret),
@@ -52,7 +46,7 @@ class NinjaService
         $content = $response->getBody()->getContents();
         $result = json_decode($content);
         if(property_exists($result, 'access_token') == false){
-            throw new Exception("Halo PSA Authentification failed");
+            throw new Exception("NinjaOne Authentification failed");
         }
 
         $this->settings->token = $result->access_token;
@@ -63,50 +57,22 @@ class NinjaService
     private function bearer()
     {
         if (time() >= $this->settings->token_expires_at) {
-            Log::warning("Halo API Token Expired, Regenerating...");
+            Log::warning("NinjaOne API Token Expired, Regenerating...");
             $this->authenticate();
         }
         return $this->settings->token;
     }
 
-    public function haloGet(string $endpoint, array $body = null)
+    public function ninjaGet(string $endpoint, array $body = null)
     {
         $response = Http::withToken($this->bearer())->retry(10, 2000)->get($this->apiUrl().'/'.$endpoint, $body);
         return $response;
     }
 
-    public function haloPost(string $endpoint, $json = null)
+    public function ninjaPost(string $endpoint, $json = null)
     {
         $response = Http::withToken($this->bearer())->retry(10, 2000)->post($this->apiUrl().'/'.$endpoint, $json);
         return $response;
     }
 
-    public function haloGetPaginate(string $endpoint, $params, $item)
-    {   
-        $pageNumber = 1;
-        $pageSize = 50;
-        $totalPages = 1;
-
-        $params = collect([
-            'pageinate' => true,
-            'page_size' => $pageSize,
-            'page_no' => $pageNumber
-        ])->merge(collect($params))->toArray();
-
-        $items = collect();
-
-        do{
-            $response = Http::withToken($this->bearer())
-                ->withQueryParameters($params)        
-                ->retry(10, 2000)
-                ->get($this->apiUrl().'/'.$endpoint);
-            if($response->ok()){
-                $totalPages = ceil($response->json()['record_count'] / $pageSize);   
-                $items = $items->merge(collect($response->json()[$item]));
-            }
-            $pageNumber++;
-        }while($pageNumber < $totalPages);
-        
-        return $items;
-    }
 }

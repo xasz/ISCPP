@@ -65,7 +65,9 @@ new class extends Component {
         $settings->save();
         $this->clientSecret = '';
 
-        $this->message = __('Saved - please reload the page');        
+        $this->message = __('Saved');  
+
+        $this->dispatch('featureSet-changed');      
     }
     
 }; ?>

@@ -12,7 +12,7 @@
                 </x-table.thead>
                 @foreach ($awareness as $aware)
                     <x-table.tr>
-                        <x-table.td>{{ $aware['message'] }}</x-table.td>
+                        <x-table.td><flux:badge class="mr-2" color="amber">!</flux:badge> {{ $aware['message'] }}</x-table.td>
                     </x-table.tr>
                 @endforeach
             </x-table>
