@@ -10,57 +10,52 @@ use Illuminate\Support\Facades\Schedule;
 
 // Tenants
 Schedule::job(RefreshSCTenants::class)
-    ->everyThirtyMinutes();
-
+->hourly();
 
 // Alerts
 Schedule::call(function () {
-    Artisan::call('app:queue-refresh-scalerts-jobs-for-all-tenants');
-    $settings = resolve(SCServiceSettings::class);
-    $settings->lastAlertsSchedule = now();
-    $settings->save();
+    if(resolve(SCServiceSettings::class)->alertsScheduleEnabled){
+        Artisan::call('app:queue-refresh-scalerts-jobs-for-all-tenants');
+        $settings = resolve(SCServiceSettings::class);
+        $settings->lastAlertsSchedule = now();
+        $settings->save();
+    }
 })
 ->name('queue-refresh-scalerts-jobs-for-all-tenants')
-->everyFifteenMinutes()
-->when(function () {
-    return resolve(SCServiceSettings::class)->alertsScheduleEnabled;
-});
+->everyThirtyMinutes();
 
 // Endpoints
 Schedule::call(function () {
-    Artisan::call('app:queue-refresh-scentpoinds-jobs-for-all-tenants');
-    $settings = resolve(SCServiceSettings::class);
-    $settings->lastEndpointsSchedule = now();
-    $settings->save();
+    if(resolve(SCServiceSettings::class)->endpointsScheduleEnabled){
+        Artisan::call('app:queue-refresh-scentpoinds-jobs-for-all-tenants');
+        $settings = resolve(SCServiceSettings::class);
+        $settings->lastEndpointsSchedule = now();
+        $settings->save();
+    }
 })
 ->name('queue-refresh-scentpoinds-jobs-for-all-tenants')
-->everyThirtyMinutes()
-->when(function () {
-    return resolve(SCServiceSettings::class)->endpointsScheduleEnabled;
-});
+->hourly();
 
 // Downloads
 Schedule::call(function () {
-    Artisan::call('app:queue-refresh-downloads-jobs-for-all-tenants');
-    $settings = resolve(SCServiceSettings::class);
-    $settings->lastDownloadsSchedule = now();
-    $settings->save();
+    if(resolve(SCServiceSettings::class)->downloadsScheduleEnabled){
+        Artisan::call('app:queue-refresh-downloads-jobs-for-all-tenants');
+        $settings = resolve(SCServiceSettings::class);
+        $settings->lastDownloadsSchedule = now();
+        $settings->save();
+    }
 })
 ->name('queue-refresh-downloads-jobs-for-all-tenants')
-->hourly()
-->when(function () {
-    return resolve(SCServiceSettings::class)->downloadsScheduleEnabled;
-});
+->hourly();
 
 // Healthscores
 Schedule::call(function () {
-    Artisan::call('app:queue-refresh-healthscores-jobs-for-all-tenants');
-    $settings = resolve(SCServiceSettings::class);
-    $settings->lastHealthscoresSchedule = now();
-    $settings->save();
+    if(resolve(SCServiceSettings::class)->healthscoresScheduleEnabled){
+        Artisan::call('app:queue-refresh-healthscores-jobs-for-all-tenants');
+        $settings = resolve(SCServiceSettings::class);
+        $settings->lastHealthscoresSchedule = now();
+        $settings->save();
+    }
 })
 ->name('queue-refresh-healthscores-jobs-for-all-tenants')
-->everyThirtyMinutes()
-->when(function () {
-    return resolve(SCServiceSettings::class)->healthscoresScheduleEnabled;
-});
+->hourly();
