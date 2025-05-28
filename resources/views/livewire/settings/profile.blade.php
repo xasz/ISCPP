@@ -112,6 +112,14 @@ new class extends Component {
             </div>
         </form>
 
+        <section class="mt-10 space-y-6">
+            <div class="relative mb-5">
+                <flux:heading>{{ __('Region') }}</flux:heading>
+                <flux:subheading>{{ __('Timezone setting is currently set per ISCPP instance') }}</flux:subheading>
+            </div>
+                <flux:input label="{{ __('Timezone') }}" value="{{ auth()->user()->timezone() }}" type="text" readonly />
+        </section>
+        
         <livewire:settings.delete-user-form />
     </x-settings.layout>
 </section>
