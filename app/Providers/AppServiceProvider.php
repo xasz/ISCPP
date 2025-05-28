@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Models\SCAlert;
 use App\Observers\SCAlertObserver;
+use DB;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\ServiceProvider;
 
@@ -28,10 +29,11 @@ class AppServiceProvider extends ServiceProvider
 
         if (!file_exists($dbPath)) {
             file_put_contents($dbPath, '');
-
+            $migratoinPath = "2025_05_27_094735_jobs_to_sqlite";
+            DB::table('migrations')->where('migration', $migratoinPath)->delete();
             Artisan::call('migrate', [
                 '--force' => true,
-                '--path' => 'database/migrations/2025_05_27_094735_jobs_to_sqlite.php',
+                '--path' => 'database/migrations/' . $migratoinPath . '.php',
             ]);
         }
     }
