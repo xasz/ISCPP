@@ -91,7 +91,7 @@ new class extends Component {
 
     <x-card-details-switch  label="Enable Endpoints Schedule" wire:model.live="endpointsScheduleEnabled" />
     <flux:text>
-        {{ 'Last Run: ' . ($lastEndpointsSchedule != null ? ISCPPFormat::formatDateWithSeconds($astEndpointsSchedule) : 'never') }}
+        {{ 'Last Run: ' . ($lastEndpointsSchedule != null ? ISCPPFormat::formatDateWithSeconds($lastEndpointsSchedule) : 'never') }}
         {{ __('The jobs for updating endpoints are autoscheduled hour') }}
     </flux:text>    
     <x-card-hr/>
