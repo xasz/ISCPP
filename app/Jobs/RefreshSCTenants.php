@@ -14,6 +14,7 @@ use Illuminate\Foundation\Queue\Queueable;
 class RefreshSCTenants implements ShouldQueue, ShouldBeUniqueUntilProcessing
 {
     use Queueable;
+    public $tries = 2;
 
     public function handle(SCService $scService): void
     {

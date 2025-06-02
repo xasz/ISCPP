@@ -2,6 +2,7 @@
 
 namespace App\Settings;
 
+use Carbon\Carbon;
 use Spatie\LaravelSettings\Settings;
 
 class HaloServiceSettings extends Settings
@@ -15,7 +16,7 @@ class HaloServiceSettings extends Settings
     public ?string $clientId = '';
 
     public ?string $token = '';
-    public ?string $token_expires_at = '';
+    public ?int $token_expires_at = null;
         
     public static function group(): string
     {

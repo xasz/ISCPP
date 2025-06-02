@@ -16,7 +16,7 @@ class PushToHaloSCTenantSCBillables implements ShouldQueue, ShouldBeUniqueUntilP
 {
     use Queueable;
 
-    public $tries = 5;
+    public $tries = 1;
 
     public function __construct(
         public SCTenant $sctenant,

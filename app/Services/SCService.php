@@ -48,7 +48,7 @@ class SCService
         $this->settings->token_expires_at = time() + $data['expires_in'];
         $this->settings->refresh_token = $data['refresh_token'];
 
-        Log::info("Sophos Central Connection successfull - established");
+        Event::logInfo("sc", "Sophos Central Connection successfull - established");
 
         $whoami = $this->whoami();
         if(!isset($whoami['idType'])){
@@ -80,8 +80,8 @@ class SCService
     * If the token is expired, it will be regenerated
     */
     private function bearer(){
-        if (time() >= $this->settings->token_expires_at) {
-            Log::info("Sophos Partner Bearer Token expired, regenerating...");
+        if ($this->settings->token_expires_at == null ||time() >= $this->settings->token_expires_at) {
+            Event::logInfo("sc", "Sophos Partner Bearer Token expired, regenerating...");
             $this->authenticate();
         }
         return $this->settings->token;
@@ -130,7 +130,7 @@ class SCService
             if($response->tooManyRequests()){
                 $attempt++;
                 $backoff = rand(0, min($cap, $base * $attempt));
-                Log::info("Sophos Partner API Rate Limit reached, backoff for {$backoff} ms");
+                Event::logInfo("sc", "Sophos Partner API Rate Limit reached, backoff for {$backoff} ms");
                 if($backoff > $cap){
                     $backoff = $cap;
                 }
@@ -274,7 +274,7 @@ class SCService
     }
 
     public function tenantGet(SCTenant $tenant, $url, $options = []){
-        return $this->tenantSend('GET',$tenant, $url, $options);
+        return $this->tenantSend('GET', $tenant, $url, $options);
     }
 
     public function tenantPost(SCTenant $tenant, $url, $options = []){
@@ -320,8 +320,9 @@ class SCService
         ]);
     }
 
-    public function tenantDownloads(SCTenant $tenant){        
-        return collect($this->tenantGet($tenant, '/endpoint/v1/downloads'));
+    public function tenantDownloads(SCTenant $tenant){       
+
+        return collect($this->tenantGet($tenant, '/endpoint/v1/downloads', ['raw' => true]));
     }
     
     public function tenantHealthscore(SCTenant $tenant){        

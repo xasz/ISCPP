@@ -16,6 +16,7 @@ class RefreshSCTenantHealthscore implements ShouldQueue, ShouldBeUniqueUntilProc
     use Queueable;
 
     protected $tenantID;
+    public $tries = 2;
 
     public function __construct(SCTenant $tenant)
     {

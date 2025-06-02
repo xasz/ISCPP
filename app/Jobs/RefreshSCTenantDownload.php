@@ -16,6 +16,7 @@ class RefreshSCTenantDownload implements ShouldQueue, ShouldBeUniqueUntilProcess
     use Queueable;
 
     protected $tenantID;
+    public $tries = 2;
 
     public function __construct(SCTenant $tenant)
     {

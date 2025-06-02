@@ -15,6 +15,7 @@ class RefreshSCEndpoints implements ShouldQueue, ShouldBeUniqueUntilProcessing
     use Queueable;
 
     protected $tenantID;
+    public $tries = 2;
 
     public function __construct(SCTenant $tenant)
     {

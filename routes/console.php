@@ -27,7 +27,7 @@ Schedule::call(function () {
 // Endpoints
 Schedule::call(function () {
     if(resolve(SCServiceSettings::class)->endpointsScheduleEnabled){
-        Artisan::call('app:queue-refresh-scentpoinds-jobs-for-all-tenants');
+        Artisan::call('app:queue-refresh-scendpoints-jobs-for-all-tenants');
         $settings = resolve(SCServiceSettings::class);
         $settings->lastEndpointsSchedule = now();
         $settings->save();

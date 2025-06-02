@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\SCTenant;
 use App\Services\HaloService;
+use App\Services\SCService;
+use Illuminate\Support\Facades\Http;
 
 class SCTenantController extends Controller
 {
@@ -34,9 +36,10 @@ class SCTenantController extends Controller
         return view('sctenants.index', compact('sctenants', 'tenantsCount'));
     }
 
-    public function show(string $id)
+    public function show(SCService $service, string $id)
     {
         $sctenant = SCTenant::with('SCTenantDownload')->with('SCTenantHealthscore')->findOrFail($id);
+        
         $scalerts = $sctenant->SCAlerts()->orderByDesc('raisedAt')->paginate(50);
         $scbillables = $sctenant->SCBillables()
             ->where('year', '>=', now()->format('Y'))

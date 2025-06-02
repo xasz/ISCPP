@@ -40,6 +40,17 @@ new class extends Component {
     {
         RefreshSCTenants::dispatch();
     }
+    
+    public function dumpPostgresQueue()
+    {
+        dump(DB::connection(env('DB_CONNECTION'))->table('jobs')->get());
+    }
+    
+    public function dumpSqliteQueue()
+    {
+        dump(DB::connection('sqlite')->table('jobs')->get());
+    }
+
 
     public function test(SCService $scService)
     {
@@ -58,6 +69,8 @@ new class extends Component {
         <div>
             <x-a-button wire:click="runTenantRefresh">Trigger Tenant Refresh (Automatically Done every 15 Minutes)</x-a-button>
         </div>
+        <x-a-button wire:click="dumpPostgresQueue">dumpPostgresQueue</x-a-button>
+        <x-a-button wire:click="dumpSqliteQueue">dumpSqliteQueue</x-a-button>
         <div wire:loading> 
             Loading ...
         </div>

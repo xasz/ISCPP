@@ -40,6 +40,9 @@ new class extends Component {
         }
         $settings->clientSecret = encrypt($this->clientSecret);
         $settings->clientId = $this->clientId;
+        $settings->token_expires_at = time();
+        $settings->token = null;
+        $settings->refresh_token = null;
         $settings->save();
         
         $this->clientSecret = '';

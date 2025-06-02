@@ -14,7 +14,7 @@ class SCServiceSettings extends Settings
 
     public ?string $token = null;
     public ?string $refresh_token = null;
-    public ?string $token_expires_at = null;
+    public ?int $token_expires_at = null;
 
     public ?bool $alertsScheduleEnabled = true;
     public ?bool $endpointsScheduleEnabled = false;

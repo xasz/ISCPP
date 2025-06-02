@@ -4,8 +4,8 @@ namespace App\Providers;
 
 use App\Models\SCAlert;
 use App\Observers\SCAlertObserver;
-use DB;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider

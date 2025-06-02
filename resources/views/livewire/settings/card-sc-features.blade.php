@@ -1,11 +1,9 @@
 <?php
 
-use App\Services\APICrendentialService;
-use App\Services\SCService;
 use Livewire\Volt\Component;
 use App\Settings\SCServiceSettings;
 use Carbon\Carbon;
-
+use App\Services\ISCPPFormat;
 
 new class extends Component {
     
@@ -72,36 +70,36 @@ new class extends Component {
 
     <x-card-details-switch  label="Enable Downloads Schedule" wire:model.live="downloadsScheduleEnabled" />
     <flux:text>
-        {{ 'Last Run: ' . ($lastDownloadsSchedule != null ? $lastDownloadsSchedule->toString() : 'never') }}
-        {{ __('The jobs for updating downloads are autoscheduled every 60 minutes') }}
+        {{ 'Last Run: ' . ($lastDownloadsSchedule != null ? ISCPPFormat::formatDateWithSeconds($lastDownloadsSchedule) : 'never') }}
+        {{ __('The jobs for updating downloads are autoscheduled every 6 hours') }}
     </flux:text>
     <x-card-hr/>
 
     <x-card-details-switch  label="Enable Healthscores Schedule" wire:model.live="healthscoresScheduleEnabled" />
     <flux:text>
-        {{ 'Last Run: ' . ($lastHealthscoresSchedule != null ? $lastHealthscoresSchedule->toString() : 'never') }}
-        {{ __('The jobs for updating healthscores are autoscheduled every 30 minutes') }}
+        {{ 'Last Run: ' . ($lastHealthscoresSchedule != null ? ISCPPFormat::formatDateWithSeconds($lastHealthscoresSchedule) : 'never') }}
+        {{ __('The jobs for updating healthscores are autoscheduled every 6 hours') }}
     </flux:text>
     <x-card-hr/>
 
     <x-card-details-switch  label="Enable Alerts Schedule" wire:model.live="alertsScheduleEnabled" />
     <flux:text>
-        {{ 'Last Run: ' . ($lastAlertsSchedule != null ? $lastAlertsSchedule->toString() : 'never') }}
-        {{ __('The jobs for updating alerts are autoscheduled every 15 minutes') }}
+        {{ 'Last Run: ' . ($lastAlertsSchedule != null ? ISCPPFormat::formatDateWithSeconds($lastAlertsSchedule) : 'never') }}
+        {{ __('The jobs for updating alerts are autoscheduled every hour') }}
     </flux:text>
     <x-card-hr/>
 
     <x-card-details-switch  label="Enable Endpoints Schedule" wire:model.live="endpointsScheduleEnabled" />
     <flux:text>
-        {{ 'Last Run: ' . ($lastEndpointsSchedule != null ? $lastEndpointsSchedule->toString() : 'never') }}
-        {{ __('The jobs for updating endpoints are autoscheduled every 30 minutes') }}
+        {{ 'Last Run: ' . ($lastEndpointsSchedule != null ? ISCPPFormat::formatDateWithSeconds($astEndpointsSchedule) : 'never') }}
+        {{ __('The jobs for updating endpoints are autoscheduled hour') }}
     </flux:text>    
     <x-card-hr/>
 
     <x-card-details-switch  label="Enable Firewalls Schedule" wire:model.live="firewallsScheduleEnabled" />
     <flux:text>
-        {{ 'Last Run: ' . ($lastFirewallsSchedule != null ? $lastFirewallsSchedule->toString() : 'never') }}
-        {{ __('The jobs for updating firewalls are autoscheduled every 30 minutes') }}
+        {{ 'Last Run: ' . ($lastFirewallsSchedule != null ? ISCPPFormat::formatDateWithSeconds($lastFirewallsSchedule) : 'never') }}
+        {{ __('The jobs for updating firewalls are autoscheduled every hour') }}
     </flux:text>
     <x-card-hr/>
 

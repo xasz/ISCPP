@@ -56,8 +56,8 @@ class NinjaService
 
     private function bearer()
     {
-        if (time() >= $this->settings->token_expires_at) {
-            Log::warning("NinjaOne API Token Expired, Regenerating...");
+        if ($this->settings->token_expires_at == null || time() >= $this->settings->token_expires_at) {
+            Event::logInfo("ninja", "NinjaOne API Token Expired, Regenerating...");
             $this->authenticate();
         }
         return $this->settings->token;

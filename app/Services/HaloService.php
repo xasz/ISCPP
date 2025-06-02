@@ -2,12 +2,10 @@
 
 namespace App\Services;
 
-use DateTime;
+use App\Models\Event;
 use Exception;
 use GuzzleHttp\Client;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Log;
-use Carbon\Carbon;
 use App\Settings\HaloServiceSettings;
 
 class HaloService
@@ -62,8 +60,8 @@ class HaloService
 
     private function bearer()
     {
-        if (time() >= $this->settings->token_expires_at) {
-            Log::warning("Halo API Token Expired, Regenerating...");
+        if ($this->settings->token_expires_at == null || time() >= $this->settings->token_expires_at) {
+            Event::logInfo("halo", "Halo API Token Expired, Regenerating...");
             $this->authenticate();
         }
         return $this->settings->token;
