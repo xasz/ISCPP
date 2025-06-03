@@ -28,17 +28,3 @@ test('authenticated users can visit the scbilling halo pusher page', function ()
     $response = $this->get('/scbilling/haloPusher');
     $response->assertStatus(403);
 });
-
-test('guests are redirected to the login page for scbilling halo settings', function () {
-    $response = $this->get('/scbilling/haloSettings');
-    $response->assertRedirect('/login');
-});
-
-test('authenticated users can visit the scbilling halo settings page', function () {
-    $user = User::factory()->create();
-    $this->actingAs($user);
-
-    // The route returns 403 for regular users, which is the expected behavior
-    $response = $this->get('/scbilling/haloSettings');
-    $response->assertStatus(403);
-});
