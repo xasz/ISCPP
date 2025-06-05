@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Schedule;
 
 Schedule::call(function () {
     Log::info('hourly schedule started');
-    
+    /*
     // Refresh all tenants
     RefreshSCTenants::dispatch();
     
@@ -30,13 +30,14 @@ Schedule::call(function () {
         $settings->lastEndpointsSchedule = now();
         $settings->save();
     }
+    */
 })
 ->name('schedule-hourly')
 ->hourly();
 
 Schedule::call(function () {
 
-    Log::info('every six hours schedule started');
+/*    Log::info('every six hours schedule started');
 
     // Refresh all healthscores
     if(resolve(SCServiceSettings::class)->healthscoresScheduleEnabled){
@@ -53,6 +54,7 @@ Schedule::call(function () {
         $settings->lastDownloadsSchedule = now();
         $settings->save();
     }
+        */
 })
 ->name('schedule-everySixHours')
 ->everySixHours();
