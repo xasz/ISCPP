@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schedule;
 
+
+
 Schedule::call(function () {
     Log::info('hourly schedule started');
     /*
