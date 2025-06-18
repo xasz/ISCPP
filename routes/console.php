@@ -10,10 +10,10 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schedule;
 
 
-
+    /*
 Schedule::call(function () {
     Log::info('hourly schedule started');
-    /*
+
     // Refresh all tenants
     RefreshSCTenants::dispatch();
     
@@ -32,10 +32,11 @@ Schedule::call(function () {
         $settings->lastEndpointsSchedule = now();
         $settings->save();
     }
-    */
+
 })
 ->name('schedule-hourly')
 ->hourly();
+    */
 
 Schedule::call(function () {
 
