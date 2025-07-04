@@ -1,5 +1,4 @@
 <?php
-$queueDB = env('DB_QUEUE_CONNECTION', 'sqlite');
 return [
 
     /*
@@ -36,12 +35,22 @@ return [
 
         'database' => [
             'driver' => 'database',
-            'connection' => $queueDB,
+            'connection' => env('DB_CONNECTION'),
             'table' => env('DB_QUEUE_TABLE', 'jobs'),
             'queue' => env('DB_QUEUE', 'default'),
             'retry_after' => (int) env('DB_QUEUE_RETRY_AFTER', 90),
             'after_commit' => false,
         ],
+
+        'sqlite' => [
+            'driver' => 'database',
+            'connection' => 'sqlite',
+            'table' => env('DB_QUEUE_TABLE', 'jobs'),
+            'queue' => env('DB_QUEUE', 'default'),
+            'retry_after' => (int) env('DB_QUEUE_RETRY_AFTER', 90),
+            'after_commit' => false,
+        ],
+
 
         'beanstalkd' => [
             'driver' => 'beanstalkd',
@@ -86,7 +95,7 @@ return [
     */
 
     'batching' => [
-        'database' => $queueDB,
+        'database' => env('DB_CONNECTION'),
         'table' => 'job_batches',
     ],
 
@@ -105,7 +114,7 @@ return [
 
     'failed' => [
         'driver' => env('QUEUE_FAILED_DRIVER', 'database-uuids'),
-        'database' => $queueDB,
+        'database' => env('DB_CONNECTION'),
         'table' => 'failed_jobs',
     ],
 

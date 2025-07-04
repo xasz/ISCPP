@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schedule;
 
 
-    /*
+    
 Schedule::call(function () {
     Log::info('hourly schedule started');
 
@@ -36,11 +36,11 @@ Schedule::call(function () {
 })
 ->name('schedule-hourly')
 ->hourly();
-    */
+    
 
 Schedule::call(function () {
 
-/*    Log::info('every six hours schedule started');
+    Log::info('every six hours schedule started');
 
     // Refresh all healthscores
     if(resolve(SCServiceSettings::class)->healthscoresScheduleEnabled){
@@ -57,7 +57,7 @@ Schedule::call(function () {
         $settings->lastDownloadsSchedule = now();
         $settings->save();
     }
-        */
+        
 })
 ->name('schedule-everySixHours')
 ->everySixHours();
