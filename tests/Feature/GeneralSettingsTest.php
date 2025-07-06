@@ -13,7 +13,6 @@ test('authenticated users can visit the general settings page', function () {
     $user = User::factory()->create();
     $this->actingAs($user);
     
-    
     $response = $this->get('/generalsettings');
     $response->assertStatus(200);
 });

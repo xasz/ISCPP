@@ -29,11 +29,17 @@ class AppServiceProvider extends ServiceProvider
 
         if (!file_exists($dbPath)) {
             file_put_contents($dbPath, '');
-            $migratoinPath = "2025_05_27_094735_jobs_to_sqlite";
-            DB::table('migrations')->where('migration', $migratoinPath)->delete();
+            
+            DB::table('migrations')->where('migration', "0001_01_01_000002_jobs_to_sqlite")->delete();
             Artisan::call('migrate', [
                 '--force' => true,
-                '--path' => 'database/migrations/' . $migratoinPath . '.php',
+                '--path' => 'database/migrations/' . "0001_01_01_000002_jobs_to_sqlite" . '.php',
+            ]);
+            
+            DB::table('migrations')->where('migration', '0001_01_01_000001_create_cache_table_to_sqlite')->delete();
+            Artisan::call('migrate', [
+                '--force' => true,
+                '--path' => 'database/migrations/' . "0001_01_01_000001_create_cache_table_to_sqlite" . '.php',
             ]);
         }
     }

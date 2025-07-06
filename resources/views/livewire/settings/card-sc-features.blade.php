@@ -64,7 +64,7 @@ new class extends Component {
     
     <x-card-details-switch  label="Enable Tenants Schedule" checked disabled/>
     <flux:text>
-        {{ __('The jobs for updating tenants are autoscheduled every 30 minutes') }}
+        {{ __('The jobs for updating tenants are autoscheduled every hour') }}
     </flux:text>
     <x-card-hr/>
 
