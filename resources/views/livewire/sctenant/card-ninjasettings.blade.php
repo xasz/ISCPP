@@ -31,6 +31,10 @@ new class extends Component {
         $this->message = __('Saved');        
     }
     
+    public function pushDownloadsToNinjaOne()
+    {
+
+    }
 }; ?>
 
 <x-card>

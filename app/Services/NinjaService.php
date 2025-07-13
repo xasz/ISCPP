@@ -75,4 +75,14 @@ class NinjaService
         return $response;
     }
 
+    public function patchOrganizationCustomField(string $organizationId, string $fieldName, string $value)
+    {
+        $response = Http::withToken($this->bearer())
+            ->retry(10, 2000)
+            ->patch($this->apiUrl().'/organizations/'.$organizationId.'/custom-fields/', [
+                $fieldName => $value,
+            ]);
+        return $response;
+    }
+
 }

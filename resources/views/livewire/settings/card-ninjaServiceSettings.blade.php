@@ -13,6 +13,11 @@ new class extends Component {
     public $clientSecret;
     public $clientId;
 
+    public $autoPushCentralEndpointInstallerUrl;
+    public $windowsSophosCentralEndpointInstallerUrl;
+    public $linuxSophosCentralEndpointInstallerUrl;
+    public $macSophosCentralEndpointInstallerUrl;
+
     public $message;
     public $testResult;
 
@@ -23,6 +28,11 @@ new class extends Component {
         $this->scope = $settings->scope;
         $this->clientSecret = null;
         $this->clientId = $settings->clientId;
+
+        $this->autoPushCentralEndpointInstallerUrl = $settings->autoPushCentralEndpointInstallerUrl;
+        $this->windowsSophosCentralEndpointInstallerUrl = $settings->windowsSophosCentralEndpointInstallerUrl;
+        $this->linuxSophosCentralEndpointInstallerUrl = $settings->linuxSophosCentralEndpointInstallerUrl;
+        $this->macSophosCentralEndpointInstallerUrl = $settings->macSophosCentralEndpointInstallerUrl;
     }
 
     public function test(NinjaService $nService)
@@ -59,6 +69,12 @@ new class extends Component {
         $settings->scope = $this->scope;
         $settings->clientSecret = encrypt($this->clientSecret);
         $settings->clientId = $this->clientId;
+
+        $settings->autoPushCentralEndpointInstallerUrl = $this->autoPushCentralEndpointInstallerUrl;
+        $settings->windowsSophosCentralEndpointInstallerUrl = $this->windowsSophosCentralEndpointInstallerUrl;
+        $settings->linuxSophosCentralEndpointInstallerUrl = $this->linuxSophosCentralEndpointInstallerUrl;
+        $settings->macSophosCentralEndpointInstallerUrl = $this->macSophosCentralEndpointInstallerUrl;
+
         $settings->save();
         $this->clientSecret = '';
 
@@ -87,6 +103,12 @@ new class extends Component {
                         </div>
                     </div>
                 </x-subcard>
+
+                <x-card-details-switch label="Auto Push Central Endpoint Installer" wire:model.live="autoPushCentralEndpointInstallerUrl" />
+                <x-card-details-input label="Windows Sophos Central Endpoint Installer URL" wire:model="windowsSophosCentralEndpointInstallerUrl"/>
+                <x-card-details-input label="Linux Sophos Central Endpoint Installer URL" wire:model="linuxSophosCentralEndpointInstallerUrl"/>
+                <x-card-details-input label="Mac Sophos Central Endpoint Installer URL" wire:model="macSophosCentralEndpointInstallerUrl"/>
+                
             @endif
             <div class="grid justify-items-end mt-4">
                 <x-a-button wire:click="save">{{ __('Save') }}</x-a-button>
