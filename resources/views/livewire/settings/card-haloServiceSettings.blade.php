@@ -85,7 +85,7 @@ new class extends Component {
                 <x-subcard>         
                     <div>
                         <h2>
-                        {{ __('Test the current credentials. (The one saved, not the one entered above)') }}
+                        {{ __('Test the current credentials. (Please save first)') }}
                         </h2>
                         <x-a-button wire:click="test">{{ __('Test')}}</x-a-button>
                         <div>

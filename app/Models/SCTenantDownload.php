@@ -20,4 +20,15 @@ class SCTenantDownload extends Model
         return $this->belongsTo(SCTenant::class, 'tenantId');
     }
     
+    public function getWindowsInstallerUrl(){
+        return collect($this->rawData['installers'])->where('platform', 'windows')->where('type', 'computer')->pluck('downloadUrl')->first();
+    }
+
+    public function getLinuxInstallerUrl(){
+        return collect($this->rawData['installers'])->where('platform', 'linux')->where('type', 'server')->pluck('downloadUrl')->first();
+    }
+    
+    public function getMacOSInstallerUrl(){
+        return collect($this->rawData['installers'])->where('platform', 'macOS')->where('type', 'computer')->pluck('downloadUrl')->first();
+    }
 }

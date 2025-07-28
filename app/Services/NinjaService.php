@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\Event;
 use App\Settings\NinjaServiceSettings;
 use Exception;
 use GuzzleHttp\Client;
@@ -34,6 +35,7 @@ class NinjaService
     public function authenticate(){
       
         $client = new Client();
+
         $response = $client->post($this->authTokenUrl(), [
             'form_params' => [
                 'client_id' => $this->settings->clientId,
@@ -42,7 +44,6 @@ class NinjaService
                 'scope' => $this->settings->scope,
             ],
         ]);
-
         $content = $response->getBody()->getContents();
         $result = json_decode($content);
         if(property_exists($result, 'access_token') == false){
@@ -79,10 +80,17 @@ class NinjaService
     {
         $response = Http::withToken($this->bearer())
             ->retry(10, 2000)
-            ->patch($this->apiUrl().'/organizations/'.$organizationId.'/custom-fields/', [
+            ->get($this->apiUrl().'/v2/organization/'.$organizationId.'/custom-fields');
+
+        $body = [
                 $fieldName => $value,
-            ]);
-        return $response;
+        ];
+        dump(collect($body)->toJson());
+
+        $response = Http::withToken($this->bearer())
+            ->retry(10, 2000)
+            ->patch($this->apiUrl().'/v2/organization/'.$organizationId.'/custom-fields', $body );
+        dump($response->status());
     }
 
 }

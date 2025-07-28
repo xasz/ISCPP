@@ -88,6 +88,18 @@ new class extends Component {
         <div class="relative overflow-x-auto mt-2">
             <x-card-details-switch  label="Enable Ninja Deployment Integration" wire:model.live="enabled" />
             @if ($enabled)
+                <flux:text>
+                    The NinjaOne API key interface is somewhat experimental and may change in the future.
+                    <br>
+                    To this date you need to create a new API key in NinjaOne with the following settings:
+                    <ul>
+                        <li>Type: OAuth 2.0 (Not the Legacy One)</li>
+                        <li>Application Type - Machine-To-Machine</li>
+                        <li>Scope: <code>monitoring control management</code></li>
+                        <li>Url: http://localhost (Does not matter)</li>
+                        <li>Grant Type: Client Credentials</li>
+                    </ul>
+                </flux:text>
                 <x-card-details-input label="Instance Name" wire:model="instance"/>
                 <x-card-details-input label="scope" wire:model="scope"/>
                 <x-card-details-input label="clientId" wire:model="clientId"/>
@@ -95,7 +107,7 @@ new class extends Component {
                 <x-subcard>         
                     <div>
                         <h2>
-                        {{ __('Test the current credentials. (The one saved, not the one entered above)') }}
+                        {{ __('Test the current credentials. (Please save first)') }}
                         </h2>
                         <x-a-button wire:click="test">{{ __('Test')}}</x-a-button>
                         <div>
