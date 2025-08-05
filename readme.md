@@ -45,3 +45,10 @@ https://github.com/users/xasz/projects/1
 Look here: https://github.com/xasz/ISCPP/wiki/1.-Installation
 
 > I am currently not able to host instances for you, but you will set this up in minutes.
+
+# Need Help - Sure
+
+Join the really new discord server.
+
+https://discord.gg/GqTMtdMY
+
