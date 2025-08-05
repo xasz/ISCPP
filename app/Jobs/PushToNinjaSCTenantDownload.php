@@ -29,7 +29,7 @@ class PushToNinjaSCTenantDownload implements ShouldQueue, ShouldBeUniqueUntilPro
     /**
      * Execute the job.
      */
-    public function handle(NinjaService $ninjaService): void
+    public function handle(NinjaService $ninjaService, NinjaServiceSettings $ninjaSettings): void
     {
         Event::log("SCTenantDownload", "info" , [
             'message' => 'Start sending SCBillables for SCTenant to Halo',
@@ -45,11 +45,20 @@ class PushToNinjaSCTenantDownload implements ShouldQueue, ShouldBeUniqueUntilPro
             return;
         }
 
-        $ninjaService->patchOrganizationCustomField(
-            $this->sctenant->ninjaorg_id,
-            'windowsSophosCentralEndpointInstallerUrl',
-            $this->sctenant->SCTenantDownload->getWindowsInstallerUrl()
-        );
+        $fields = [
+                $ninjaSettings->windowsSophosCentralEndpointInstallerUrl => $this->sctenant->SCTenantDownload->getWindowsInstallerUrl(),
+                $ninjaSettings->linuxSophosCentralEndpointInstallerUrl => $this->sctenant->SCTenantDownload->getLinuxInstallerUrl(),
+                $ninjaSettings->macSophosCentralEndpointInstallerUrl => $this->sctenant->SCTenantDownload->getMacOSInstallerUrl(),
+        ];
+
+        Event::log("SCTenantDownload", "info" , [
+            'message' => __('Pushed successfull'),
+            'SCTenantID' => $this->sctenant->id,
+            'ninjaorg_id' => $this->sctenant->ninjaorg_id,
+            'fields' => $fields,
+        ]);
+
+        $ninjaService->patchOrganizationCustomFields($this->sctenant->ninjaorg_id, $fields);
 
         Event::log("SCTenantDownload", "info" , [
             'message' => __('SCTenantDownload pushed successfull'),
@@ -60,12 +69,10 @@ class PushToNinjaSCTenantDownload implements ShouldQueue, ShouldBeUniqueUntilPro
     public function failed(Throwable $exception): void
     {                 
         $settings = app(NinjaServiceSettings::class);
-        Event::log("scbillables", "error" , [
-            'message' => __('SCBillable sent to halo failed - no more retry'),
+        Event::log("SCTenantDownload", "error" , [
+            'message' => __('SCTenantDownload Push to Ninja failed- no more retry'),
             'SCTenantID' => $this->sctenant->id,
             'ninjaorg_id' => $this->sctenant->ninjaorg_id,
-            'ninjaOne_windowsurl_targetfield' => $settings->windowsSophosCentralEndpointInstallerUrl,
-            'ninjaOne_windowsUrl_targetvalue' => $this->sctenant->SCTenantDownload->getWindowsInstallerUrl(),
         ]);    
     }
 
