@@ -41,7 +41,7 @@ new class extends Component {
         try {
             $job = new PushToNinjaSCTenantDownload($sctenant);
             dispatch($job);
-            $this->message = __('Pushed to NinjaOne successfully');
+            $this->message = __('Job scheduled successfully - See Eventlog for details');
         } catch (Exception $e) {
             $this->message = __('Failed to push to NinjaOne: ') . $e->getMessage();
         }

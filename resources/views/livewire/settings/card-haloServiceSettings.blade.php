@@ -77,7 +77,7 @@ new class extends Component {
             <x-card-details-switch  label="Enable Halo billing Integration" wire:model.live="enabled" />
             @if ($enabled)
                 <x-card-details-input label="Instance Name" wire:model="instance"/>
-                <x-card-details-input label="Instance Url" wire:model="url"/>
+                <x-card-details-input label="Instance Url (https:// will always prepended)" wire:model="url"/>
 
                 <x-card-details-input label="scope" wire:model="scope"/>
                 <x-card-details-input label="clientId" wire:model="clientId"/>
