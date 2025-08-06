@@ -7,7 +7,6 @@ use App\Settings\NinjaServiceSettings;
 use Exception;
 use GuzzleHttp\Client;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Log;
 
 class NinjaService
 {
@@ -64,7 +63,7 @@ class NinjaService
         return $this->settings->token;
     }
 
-    public function ninjaGet(string $endpoint, array $body = null)
+    public function ninjaGet(string $endpoint, ?array $body = null)
     {
         $response = Http::withToken($this->bearer())->retry(10, 2000)->get($this->apiUrl().'/'.$endpoint, $body);
         return $response;
@@ -78,19 +77,32 @@ class NinjaService
 
     public function patchOrganizationCustomField(string $organizationId, string $fieldName, string $value)
     {
-        $response = Http::withToken($this->bearer())
-            ->retry(10, 2000)
-            ->get($this->apiUrl().'/v2/organization/'.$organizationId.'/custom-fields');
-
         $body = [
                 $fieldName => $value,
         ];
-        dump(collect($body)->toJson());
-
         $response = Http::withToken($this->bearer())
             ->retry(10, 2000)
             ->patch($this->apiUrl().'/v2/organization/'.$organizationId.'/custom-fields', $body );
-        dump($response->status());
+        return $response;
+    }
+
+    /**
+     * Patch organization custom fields with a map of field names and values.
+     *
+     * @param string $organizationId
+     * @param array $map => [
+     *     'field_name' => 'value',
+     *     'field_name2' => 'value2',
+     *     ...
+     * ]
+     * @return \Illuminate\Http\Client\Response
+     */
+    public function patchOrganizationCustomFields(string $organizationId, array $map)
+    {
+        $response = Http::withToken($this->bearer())
+            ->retry(10, 2000)
+            ->patch($this->apiUrl().'/v2/organization/'.$organizationId.'/custom-fields', $map );
+        return $response;
     }
 
 }
