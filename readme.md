@@ -1,5 +1,17 @@
 # ISCPP - Improved Sophos Central Partner Center
 
+- Halo PSA Billing Integration !
+- NinjaOne Sophos Endpoint Agent deployment !
+- Sophos Central Alert forwording to anywhere
+- Searching Endpoints over all tenants
+- Healthscore over all tenants
+
+- a lot planned
+- Massschedule Tools for Firewalls
+- Forward HealthScore Data to PSAs
+
+This project is a personal endeavor, and while I strive to ensure the application is secure and reliable to the best of my abilities and knowledge, I cannot accept liability for any misuse or issues that may arise.
+
 This project aims to leverage the Sophos Central API to develop a tool that addresses some missing features that could benefit MSPs. 
 Additionally, it seeks to integrate with PSA systems to enhance billing processes.
 
@@ -28,18 +40,11 @@ I understand there is still much work to be done, but I wanted to release ISCPP 
 ![image](https://github.com/user-attachments/assets/6a2b5031-aa49-400c-829d-feb56b28199b)
 
 
-## Alot more
 
-- Sophos Health Overview
-- Billing Overview
-- NinjaOne Integration
-- Massschedule Tools
-- a lot planned
-
-This project is a personal endeavor, and while I strive to ensure the application is secure and reliable to the best of my abilities and knowledge, I cannot accept liability for any misuse or issues that may arise.
 
 ## Roadmap
 https://github.com/users/xasz/projects/1
+
 # Installation
 
 Look here: https://github.com/xasz/ISCPP/wiki/1.-Installation
