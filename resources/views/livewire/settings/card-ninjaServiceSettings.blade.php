@@ -75,6 +75,9 @@ new class extends Component {
         $settings->linuxSophosCentralEndpointInstallerUrl = $this->linuxSophosCentralEndpointInstallerUrl;
         $settings->macSophosCentralEndpointInstallerUrl = $this->macSophosCentralEndpointInstallerUrl;
 
+        $settings->token = ''; // Reset token to force re-authentication
+        $settings->tokenExpiresAt = null; // Reset token expiration
+
         $settings->save();
         $this->clientSecret = '';
 
@@ -100,7 +103,7 @@ new class extends Component {
                         <li>Grant Type: Client Credentials</li>
                     </ul>
                 </flux:text>
-                <x-card-details-input label="Instance Name" wire:model="instance"/>
+                <x-card-details-input label="Instance Location ( EU, UK, US, etc.. )" wire:model="instance"/>
                 <x-card-details-input label="scope" wire:model="scope"/>
                 <x-card-details-input label="clientId" wire:model="clientId"/>
                 <x-card-details-input type="password" label="Client Secret" wire:model="clientSecret"/>

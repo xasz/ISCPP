@@ -45,11 +45,22 @@ class PushToNinjaSCTenantDownload implements ShouldQueue, ShouldBeUniqueUntilPro
             return;
         }
 
-        $fields = [
-                $ninjaSettings->windowsSophosCentralEndpointInstallerUrl => $this->sctenant->SCTenantDownload->getWindowsInstallerUrl(),
-                $ninjaSettings->linuxSophosCentralEndpointInstallerUrl => $this->sctenant->SCTenantDownload->getLinuxInstallerUrl(),
-                $ninjaSettings->macSophosCentralEndpointInstallerUrl => $this->sctenant->SCTenantDownload->getMacOSInstallerUrl(),
-        ];
+        $fields = [];
+
+        if($ninjaSettings->windowsSophosCentralEndpointInstallerUrl && $ninjaSettings->windowsSophosCentralEndpointInstallerUrl != '') {
+            $fields[$ninjaSettings->windowsSophosCentralEndpointInstallerUrl] = $this->sctenant->SCTenantDownload->getWindowsInstallerUrl();
+        }
+
+        if($ninjaSettings->linuxSophosCentralEndpointInstallerUrl && $ninjaSettings->linuxSophosCentralEndpointInstallerUrl != '') {
+            $fields[$ninjaSettings->linuxSophosCentralEndpointInstallerUrl] = $this->sctenant->SCTenantDownload->getLinuxInstallerUrl();
+        }
+
+        if($ninjaSettings->macSophosCentralEndpointInstallerUrl && $ninjaSettings->macSophosCentralEndpointInstallerUrl != '') {
+            $fields[$ninjaSettings->macSophosCentralEndpointInstallerUrl] = $this->sctenant->SCTenantDownload->getMacOSInstallerUrl();
+        }
+
+        $ninjaService->patchOrganizationCustomFields($this->sctenant->ninjaorg_id, $fields);
+
 
         Event::log("SCTenantDownload", "info" , [
             'message' => __('Pushed successfull'),
@@ -58,21 +69,17 @@ class PushToNinjaSCTenantDownload implements ShouldQueue, ShouldBeUniqueUntilPro
             'fields' => $fields,
         ]);
 
-        $ninjaService->patchOrganizationCustomFields($this->sctenant->ninjaorg_id, $fields);
-
-        Event::log("SCTenantDownload", "info" , [
-            'message' => __('SCTenantDownload pushed successfull'),
-            'SCTenantID' => $this->sctenant->id,
-        ]);
     }
 
     public function failed(Throwable $exception): void
     {                 
-        $settings = app(NinjaServiceSettings::class);
+        $ninjaSettings = app(NinjaServiceSettings::class);
         Event::log("SCTenantDownload", "error" , [
             'message' => __('SCTenantDownload Push to Ninja failed- no more retry'),
             'SCTenantID' => $this->sctenant->id,
             'ninjaorg_id' => $this->sctenant->ninjaorg_id,
+            'exception' => $exception->getMessage(),
+            'field' => $ninjaSettings->windowsSophosCentralEndpointInstallerUrl            
         ]);    
     }
 
