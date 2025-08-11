@@ -67,7 +67,7 @@ class HaloService
         return $this->settings->token;
     }
 
-    public function haloGet(string $endpoint, array $body = null)
+    public function haloGet(string $endpoint, ?array $body = null)
     {
         $response = Http::withToken($this->bearer())->retry(10, 2000)->get($this->apiUrl().'/'.$endpoint, $body);
         return $response;

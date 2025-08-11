@@ -4,6 +4,7 @@ use App\Jobs\RefreshSCAlerts;
 use App\Jobs\RefreshSCTenants;
 use App\Models\Event;
 use App\Models\SCTenant;
+use App\Settings\NinjaServiceSettings;
 use App\Settings\SCServiceSettings;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Log;
@@ -32,7 +33,7 @@ Schedule::call(function () {
         $settings->lastEndpointsSchedule = now();
         $settings->save();
     }
-
+  
 })
 ->name('schedule-hourly')
 ->hourly();
@@ -57,7 +58,11 @@ Schedule::call(function () {
         $settings->lastDownloadsSchedule = now();
         $settings->save();
     }
-        
+     
+    // Push all downloads to NinjaOne
+    if(resolve(NinjaServiceSettings::class)->autoPushCentralEndpointInstallerUrl){
+        Artisan::call('app:queue-scdownloads-ninja-push');
+    }
 })
 ->name('schedule-everySixHours')
 ->everySixHours();
