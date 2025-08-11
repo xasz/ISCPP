@@ -77,7 +77,7 @@ new class extends Component {
             <x-card-details-switch  label="Enable Halo billing Integration" wire:model.live="enabled" />
             @if ($enabled)
                 <x-card-details-input label="Instance Name" wire:model="instance"/>
-                <x-card-details-input label="Instance Url" wire:model="url"/>
+                <x-card-details-input label="Instance Url (https:// will always prepended)" wire:model="url"/>
 
                 <x-card-details-input label="scope" wire:model="scope"/>
                 <x-card-details-input label="clientId" wire:model="clientId"/>
@@ -85,7 +85,7 @@ new class extends Component {
                 <x-subcard>         
                     <div>
                         <h2>
-                        {{ __('Test the current credentials. (The one saved, not the one entered above)') }}
+                        {{ __('Test the current credentials. (Please save first)') }}
                         </h2>
                         <x-a-button wire:click="test">{{ __('Test')}}</x-a-button>
                         <div>

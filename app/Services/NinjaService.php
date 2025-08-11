@@ -2,11 +2,11 @@
 
 namespace App\Services;
 
+use App\Models\Event;
 use App\Settings\NinjaServiceSettings;
 use Exception;
 use GuzzleHttp\Client;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Log;
 
 class NinjaService
 {
@@ -34,6 +34,7 @@ class NinjaService
     public function authenticate(){
       
         $client = new Client();
+
         $response = $client->post($this->authTokenUrl(), [
             'form_params' => [
                 'client_id' => $this->settings->clientId,
@@ -42,7 +43,6 @@ class NinjaService
                 'scope' => $this->settings->scope,
             ],
         ]);
-
         $content = $response->getBody()->getContents();
         $result = json_decode($content);
         if(property_exists($result, 'access_token') == false){
@@ -63,7 +63,7 @@ class NinjaService
         return $this->settings->token;
     }
 
-    public function ninjaGet(string $endpoint, array $body = null)
+    public function ninjaGet(string $endpoint, ?array $body = null)
     {
         $response = Http::withToken($this->bearer())->retry(10, 2000)->get($this->apiUrl().'/'.$endpoint, $body);
         return $response;
@@ -72,6 +72,36 @@ class NinjaService
     public function ninjaPost(string $endpoint, $json = null)
     {
         $response = Http::withToken($this->bearer())->retry(10, 2000)->post($this->apiUrl().'/'.$endpoint, $json);
+        return $response;
+    }
+
+    public function patchOrganizationCustomField(string $organizationId, string $fieldName, string $value)
+    {
+        $body = [
+                $fieldName => $value,
+        ];
+        $response = Http::withToken($this->bearer())
+            ->retry(10, 2000)
+            ->patch($this->apiUrl().'/v2/organization/'.$organizationId.'/custom-fields', $body );
+        return $response;
+    }
+
+    /**
+     * Patch organization custom fields with a map of field names and values.
+     *
+     * @param string $organizationId
+     * @param array $map => [
+     *     'field_name' => 'value',
+     *     'field_name2' => 'value2',
+     *     ...
+     * ]
+     * @return \Illuminate\Http\Client\Response
+     */
+    public function patchOrganizationCustomFields(string $organizationId, array $map)
+    {
+        $response = Http::withToken($this->bearer())
+            ->retry(10, 2000)
+            ->patch($this->apiUrl().'/v2/organization/'.$organizationId.'/custom-fields', $map );
         return $response;
     }
 

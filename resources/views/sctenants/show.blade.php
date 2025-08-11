@@ -71,7 +71,10 @@
                 <x-tab-panel name="downloads">
                     <x-card class="overflow-hidden" title="Downloads"> 
                         @if($sctenant->SCTenantDownload()->count() > 0)
-                            <x-card-details-json :json="$sctenant->SCTenantDownload->rawData" />
+                        <x-card-details-row label="Windows Installer Url" :value="$sctenant->SCTenantDownload->getWindowsInstallerUrl()" />
+                        <x-card-details-row label="Linux Installer Url" :value="$sctenant->SCTenantDownload->getLinuxInstallerUrl()" />
+                        <x-card-details-row label="macOS Installer Url" :value="$sctenant->SCTenantDownload->getMacOSInstallerUrl()" />
+                        <x-card-details-json :arr="$sctenant->SCTenantDownload->rawData" />
                         @else
                             <flux:text>
                                 {{ __('No downloads available for this tenant.') }}

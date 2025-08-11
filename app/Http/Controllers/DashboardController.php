@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Event;
 use App\Models\SCAlert;
 use App\Models\SCTenant;
 use App\Services\HaloService;
@@ -24,6 +25,15 @@ class DashboardController extends Controller
         if(config('app.env') != 'production') {
             $awareness->push([
                 'message' => 'This instance of ISCPP is not running as production environment.',
+            ]);
+        }
+
+        if(Event::where('type', 'error')
+            ->where('created_at', '>=', Carbon::now()->subDays(2))
+            ->orderBy('created_at', 'desc')
+            ->count() > 0){
+                $awareness->push([
+                'message' => 'There are errors in the event log from the last 48 hours. Please check the system event log for details.',
             ]);
         }
         

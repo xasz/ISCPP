@@ -1,9 +1,12 @@
 <?php
 
+use App\Jobs\PushToNinjaSCTenantDownload;
 use Illuminate\Support\Facades\Http;
 use Livewire\Volt\Component;
 
 use App\Models\SCTenant;
+use App\Services\NinjaService;
+use App\Settings\NinjaServiceSettings;
 
 new class extends Component {
     
@@ -30,7 +33,19 @@ new class extends Component {
         ]);        
         $this->message = __('Saved');        
     }
-    
+
+    public function pushDownloadsToNinjaOne(NinjaService $ninjaService, NinjaServiceSettings $ninjaServiceSettings)
+    {
+
+        $sctenant = $this->sctenant;
+        try {
+            $job = new PushToNinjaSCTenantDownload($sctenant);
+            dispatch($job);
+            $this->message = __('Job scheduled successfully - See Eventlog for details');
+        } catch (Exception $e) {
+            $this->message = __('Failed to push to NinjaOne: ') . $e->getMessage();
+        }
+    }
 }; ?>
 
 <x-card>
@@ -49,6 +64,10 @@ new class extends Component {
             <div class="py-2">
                 {{ $message }}
             <div>
+
+            <x-button wire:click="pushDownloadsToNinjaOne" class="mt-4">
+                {{ __('Schedule Push to NinjaOne') }}
+            </x-button>
         </div>
     </section>
 </x-card>

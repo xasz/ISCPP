@@ -127,7 +127,7 @@ new class extends Component {
     <x-card title="Test Webhook" subtitle="This will send a test webhook to the specified url.">        
         <div>
             <h2>
-            {{ __('Test the current credentials. (The one saved, not the one entered above)') }}
+            {{ __('Test the current credentials. (Please save first)') }}
             </h2>
             <x-card-details-json :json="$this->webhookPayload"/>
             <x-a-button wire:click="test">Test</x-a-button>

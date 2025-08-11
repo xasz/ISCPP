@@ -16,6 +16,13 @@ class NinjaServiceSettings extends Settings
 
     public ?string $token = '';
     public ?int $token_expires_at = null;
+
+
+    public ?bool $autoPushCentralEndpointInstallerUrl = false;
+    public ?string $windowsSophosCentralEndpointInstallerUrl = '';
+    public ?string $linuxSophosCentralEndpointInstallerUrl = '';
+    public ?string $macSophosCentralEndpointInstallerUrl = '';
+
         
     public static function group(): string
     {
