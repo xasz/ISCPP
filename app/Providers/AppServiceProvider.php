@@ -42,7 +42,7 @@ class AppServiceProvider extends ServiceProvider
                     '--path' => 'database/migrations/' . "0001_01_01_000001_create_cache_table_to_sqlite" . '.php',
                 ]);
             } catch (\Exception $e) {
-                Log::warning('We are probably running the deployment for the first time, so we will not run the migrations for the cache and jobs tables.');
+                //Log::warning('We are probably running the deployment for the first time, so we will not run the migrations for the cache and jobs tables.');
             }
         }
     }
