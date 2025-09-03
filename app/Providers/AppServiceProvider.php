@@ -27,6 +27,14 @@ class AppServiceProvider extends ServiceProvider
 
         $dbPath = database_path('database.sqlite');
 
+        if(env('DB_CONNECTION') != 'sqlite'){
+            throw new \Exception('The application is not configured to use SQLite. Please set DB_CONNECTION=sqlite in your .env file.');
+        }
+        
+        if(env('QUEUE_CONNECTION') != 'file'){
+            throw new \Exception('The application is not configured to use file for queues. Please set QUEUE_CONNECTION=file in your .env file.');
+        }
+        
         if (!file_exists($dbPath)) {
             file_put_contents($dbPath, '');
             try{
