@@ -23,8 +23,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        require_once app_path('Helpers/queue.php');
+        
         SCAlert::observe(SCAlertObserver::class);
-
 
         if(config('queue.default') == 'sqlite'){
             $dbPath = database_path('database.sqlite');

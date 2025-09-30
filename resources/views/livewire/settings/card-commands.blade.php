@@ -25,7 +25,6 @@ new class extends Component {
     {
         Artisan::call('app:queue-refresh-downloads-jobs-for-all-tenants');
     }
-
     
     public function healthscore(SCService $scService)
     {
@@ -38,7 +37,7 @@ new class extends Component {
 
     public function runTenantRefresh(SCService $scService)
     {
-        Artisan::call('app:refresh-sctenants');
+        Artisan::call('app:queue-sctenants-refresh');
     }
     
     public function dumpPostgresQueue()
