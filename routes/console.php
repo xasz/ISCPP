@@ -16,7 +16,7 @@ Schedule::call(function () {
     Log::info('hourly schedule started');
 
     // Refresh all tenants
-    RefreshSCTenants::dispatch();
+    Artisan::call('app:queue-sctenants-refresh');
     
     // Refresh all alerts
     if(resolve(SCServiceSettings::class)->alertsScheduleEnabled){
