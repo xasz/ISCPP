@@ -13,7 +13,7 @@ return new class extends Migration
     {
         $this->down();
                 
-        $connection = config('queue.default');
+        $connection = queue_connection();
         Schema::connection($connection)->create('jobs', function (Blueprint $table) {
             $table->id();
             $table->string('queue')->index();
@@ -53,7 +53,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        $connection = config('queue.default');
+        $connection = queue_connection();   
         Schema::connection($connection)->dropIfExists('jobs');
         Schema::connection($connection)->dropIfExists('job_batches');
         Schema::connection($connection)->dropIfExists('failed_jobs');

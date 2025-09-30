@@ -1,0 +1,8 @@
+
+<?php
+
+if (! function_exists('queue_connection')) {
+    function queue_connection() {
+        return config('queue.' . config('queue.default') . 'connection');
+    }
+}
