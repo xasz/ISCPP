@@ -3,6 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Symfony\Component\Console\Output\ConsoleOutput;
 
 return new class extends Migration
 {
@@ -11,9 +12,9 @@ return new class extends Migration
      */
     public function up(): void
     {
+        $connection = config('queue.connections.' . config('queue.default') . '.connection');
+
         $this->down();
-                
-        $connection = queue_connection();
         Schema::connection($connection)->create('jobs', function (Blueprint $table) {
             $table->id();
             $table->string('queue')->index();
@@ -53,7 +54,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        $connection = queue_connection();   
+        $connection = config('queue.connections.' . config('queue.default') . '.connection');
         Schema::connection($connection)->dropIfExists('jobs');
         Schema::connection($connection)->dropIfExists('job_batches');
         Schema::connection($connection)->dropIfExists('failed_jobs');

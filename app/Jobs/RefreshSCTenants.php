@@ -52,9 +52,9 @@ class RefreshSCTenants implements ShouldQueue, ShouldBeUniqueUntilProcessing
 
         Event::log('sctentants', 'info', ['message' => 'Tenants refreshed']);   
     }
-    
+    /*
     public function uniqueId(): string
     {
         return 'refresh-sctenants';
-    }
+    }*/
 }

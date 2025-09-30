@@ -69,12 +69,11 @@ class DashboardController extends Controller
             }
         }
 
-        dd(queue_connection());
         return view('dashboard', [
             'awareness' => $awareness,
             'tenantsCount' => SCTenant::count(),
             'alerts24HCount' => SCAlert::whereDate('raisedAt', '>=', now()->subHours(24))->count(),
-            'jobsInQueue' => DB::connection(queue_connection())->table('jobs')->count() ?? -1,
+            'jobsInQueue' => DB::connection(config('queue.connections.' . config('queue.default') . '.connection'))->table('jobs')->count(),
         ]);
     }
 
