@@ -38,7 +38,7 @@ new class extends Component {
 
     public function runTenantRefresh(SCService $scService)
     {
-        RefreshSCTenants::dispatch();
+        Artisan::call('app:refresh-sctenants');
     }
     
     public function dumpPostgresQueue()
@@ -51,12 +51,6 @@ new class extends Component {
         dump(DB::connection('sqlite')->table('jobs')->get());
     }
 
-
-    public function test(SCService $scService)
-    {
-        $tenant = SCTenant::where('id', 'c92acf33-2aee-4ef0-9e2e-8cdff994ebc3')->first();
-        dd($scService->tenantHealthscore($tenant));
-    }
 }; ?>
 <x-card title="Running Commands" subtitle="This is for development">
     <flux:text>When you are here - You really should know what you are doing</flux:text>       
@@ -65,7 +59,6 @@ new class extends Component {
         <x-a-button wire:click="downloads">Trigger Refresh Downloads</x-a-button>
         <x-a-button wire:click="healthscore">Trigger Refresh Healthscore</x-a-button>
         <x-a-button wire:click="removeBilling">Remove Billing Data</x-a-button>
-        <x-a-button wire:click="test">Test</x-a-button>
         <div>
             <x-a-button wire:click="runTenantRefresh">Trigger Tenant Refresh (Automatically Done every 15 Minutes)</x-a-button>
         </div>
