@@ -73,7 +73,7 @@ class DashboardController extends Controller
             'awareness' => $awareness,
             'tenantsCount' => SCTenant::count(),
             'alerts24HCount' => SCAlert::whereDate('raisedAt', '>=', now()->subHours(24))->count(),
-            'jobsInQueue' => DB::connection(env('DB_QUEUE_CONNECTION', 'sqlite'))->table('jobs')->count(),
+            'jobsInQueue' => DB::connection(config('queue.default'))->table('jobs')->count(),
         ]);
     }
 

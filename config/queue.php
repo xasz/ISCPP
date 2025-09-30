@@ -12,7 +12,7 @@ return [
     |
     */
 
-    'default' => env('QUEUE_CONNECTION', 'sqlite'),
+    'default' => env('QUEUE_CONNECTION', 'database'),
 
     /*
     |--------------------------------------------------------------------------
@@ -35,7 +35,7 @@ return [
 
         'database' => [
             'driver' => 'database',
-            'connection' => env('DB_CONNECTION'),
+            'connection' => env('DB_QUEUE_CONNECTION', 'pgsql'),
             'table' => env('DB_QUEUE_TABLE', 'jobs'),
             'queue' => env('DB_QUEUE', 'default'),
             'retry_after' => (int) env('DB_QUEUE_RETRY_AFTER', 90),
@@ -65,7 +65,7 @@ return [
     */
 
     'batching' => [
-        'database' => env('DB_CONNECTION'),
+        'database' => env('DB_QUEUE_CONNECTION', 'pgsql'),
         'table' => 'job_batches',
     ],
 
@@ -84,7 +84,7 @@ return [
 
     'failed' => [
         'driver' => env('QUEUE_FAILED_DRIVER', 'database-uuids'),
-        'database' => env('DB_CONNECTION'),
+        'database' => env('DB_QUEUE_CONNECTION', 'pgsql'),
         'table' => 'failed_jobs',
     ],
 
