@@ -13,7 +13,8 @@ return new class extends Migration
     {
         $this->down();
                 
-        Schema::connection('sqlite')->create('jobs', function (Blueprint $table) {
+        $connection = config('queue.default');
+        Schema::connection($connection)->create('jobs', function (Blueprint $table) {
             $table->id();
             $table->string('queue')->index();
             $table->longText('payload');
@@ -23,7 +24,7 @@ return new class extends Migration
             $table->unsignedInteger('created_at');
         });
 
-        Schema::connection('sqlite')->create('job_batches', function (Blueprint $table) {
+        Schema::connection($connection)->create('job_batches', function (Blueprint $table) {
             $table->string('id')->primary();
             $table->string('name');
             $table->integer('total_jobs');
@@ -36,7 +37,7 @@ return new class extends Migration
             $table->integer('finished_at')->nullable();
         });
 
-        Schema::connection('sqlite')->create('failed_jobs', function (Blueprint $table) {
+        Schema::connection($connection)->create('failed_jobs', function (Blueprint $table) {
             $table->id();
             $table->string('uuid')->unique();
             $table->text('connection');
@@ -52,8 +53,9 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::connection('sqlite')->dropIfExists('jobs');
-        Schema::connection('sqlite')->dropIfExists('job_batches');
-        Schema::connection('sqlite')->dropIfExists('failed_jobs');
+        $connection = config('queue.default');
+        Schema::connection($connection)->dropIfExists('jobs');
+        Schema::connection($connection)->dropIfExists('job_batches');
+        Schema::connection($connection)->dropIfExists('failed_jobs');
     }
 };

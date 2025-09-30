@@ -27,24 +27,26 @@ class AppServiceProvider extends ServiceProvider
 
         $dbPath = database_path('database.sqlite');
 
-        if(env('QUEUE_CONNECTION') != 'sqlite'){
-            throw new \Exception('The application is not configured to use SQLite. Please set QUEUE_CONNECTION=sqlite in your .env file.');
+        
+        if(config('queue.default') != 'sqlite'){
+            throw new \Exception('Currently only SQLite queues are supported. Please set QUEUE_CONNECTION=sqlite in your .env file.');
         }
 
-        if(env('CACHE_STORE') != 'file'){
-            throw new \Exception('The application is not configured to use file for queues. Please set CACHE_STORE=file in your .env file.');
+        if(config('cache.default') != 'file'){
+            throw new \Exception('Currently only file cache is supported. Please set CACHE_STORE=file in your .env file.');
         }
         
         if (!file_exists($dbPath)) {
             file_put_contents($dbPath, '');
             try{
-                DB::table('migrations')->where('migration', "0001_01_01_000002_jobs_to_sqlite")->delete();
+                $connection = config('database.default');
+                DB::connection($connection)->table('migrations')->where('migration', "0001_01_01_000002_jobs_to_sqlite")->delete();
                 Artisan::call('migrate', [
                     '--force' => true,
                     '--path' => 'database/migrations/' . "0001_01_01_000002_jobs_to_sqlite" . '.php',
                 ]);
                 
-                DB::table('migrations')->where('migration', '0001_01_01_000001_create_cache_table_to_sqlite')->delete();
+                DB::connection($connection)->table('migrations')->where('migration', '0001_01_01_000001_create_cache_table_to_sqlite')->delete();
                 Artisan::call('migrate', [
                     '--force' => true,
                     '--path' => 'database/migrations/' . "0001_01_01_000001_create_cache_table_to_sqlite" . '.php',
