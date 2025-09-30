@@ -19,7 +19,6 @@ new #[Layout('components.layouts.auth')] class extends Component {
      */
     public function register(): void
     {
-        dd(queue_connection());
         $validated = $this->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:' . User::class],
