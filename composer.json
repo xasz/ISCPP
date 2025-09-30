@@ -32,9 +32,6 @@
         "pestphp/pest-plugin-laravel": "^3.1"
     },
     "autoload": {
-        "files": [
-            "app/Helpers/queue.php"
-        ],
         "psr-4": {
             "App\\": "app/",
             "Database\\Factories\\": "database/factories/",
@@ -42,9 +39,6 @@
         }
     },
     "autoload-dev": {
-        "files": [
-            "app/Helpers/queue.php"
-        ],
         "psr-4": {
             "Tests\\": "tests/"
         }

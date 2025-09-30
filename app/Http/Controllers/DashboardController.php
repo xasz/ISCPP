@@ -69,6 +69,7 @@ class DashboardController extends Controller
             }
         }
 
+        dd(queue_connection());
         return view('dashboard', [
             'awareness' => $awareness,
             'tenantsCount' => SCTenant::count(),
