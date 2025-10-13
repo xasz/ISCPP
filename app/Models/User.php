@@ -62,7 +62,7 @@ class User extends Authenticatable // implements MustVerifyEmail
     }
 
     public function timezone (){
-        return env('USER_DEFAULT_TIMEZONE') ?? 'UTC';
+        return config('iscpp.user_timezone');
     }
 
 }
