@@ -51,9 +51,9 @@ class AppServiceProvider extends ServiceProvider
             }
         }
 
-        
-        if(config('cache.default') != 'file'){
-            throw new \Exception('Currently only file cache is supported. Please set CACHE_STORE=file in your .env file.');
+
+        if(config('cache.default') != 'file' && config('cache.default') != 'array'){
+            throw new \Exception('Currently only file and array cache are supported. Please set CACHE_STORE=file in your .env file. Current value: ' . config('cache.default'));
         }
         
     }
