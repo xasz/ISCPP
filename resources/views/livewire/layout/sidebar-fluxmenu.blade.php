@@ -32,11 +32,17 @@ new class extends Component {
 
         <flux:navlist.group heading="Tools" class="grid">
             @if(resolve(App\Settings\SCServiceSettings::class)->healthscoresScheduleEnabled)
-            <flux:navlist.item icon="heart" :href="route('sctenants.healthscores')" :current="request()->routeIs('sctenants.healthscores')" wire:navigate>Tenant Healthscores</flux:navlist.item>
+            <flux:navlist.item icon="speaker-x-mark" :href="route('sctenants.healthscores')" :current="request()->routeIs('sctenants.healthscores')" wire:navigate>SCTenant Healthscores</flux:navlist.item>
             @endif
+
+            @if(resolve(App\Settings\SCServiceSettings::class)->alertsScheduleEnabled)
+            <flux:navlist.item icon="heart" :href="route('scalerts.autoActions')" :current="request()->routeIs('scalerts.autoActions')" wire:navigate>SCALert AutoActions</flux:navlist.item>
+            @endif
+            
             @if(resolve(App\Settings\HaloServiceSettings::class)->enabled)
                 <flux:navlist.item icon="ellipsis-horizontal" :href="route('sctenants.haloMatchingHelper')" :current="request()->routeIs('sctenants.haloMatchingHelper')" wire:navigate>Halo Matchhelper</flux:navlist.item>
             @endif
+            
             @if(resolve(App\Settings\NinjaServiceSettings::class)->enabled)
                 <flux:navlist.item icon="ellipsis-horizontal" :href="route('sctenants.ninjaMatchingHelper')" :current="request()->routeIs('sctenants.ninjaMatchingHelper')" wire:navigate>Ninja Matchhelper</flux:navlist.item>
             @endif

@@ -61,10 +61,17 @@ class SCAlertController extends Controller
         return view('scalerts.show', compact('scalert', 'webhooksEnabled'));
     }
 
+    public function autoActions()
+    {
+        return view('scalerts.autoActions');
+    }
+
     public function dispatchAndShow(string $id)
     {
         $scalert = SCAlert::with('SCTenant')->findOrFail($id);
         $scalert->dispatchWebhook();
         return $this->show($id);
     }
+
+
 }

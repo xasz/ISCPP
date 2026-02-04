@@ -18,6 +18,7 @@ use App\Http\Middleware\IsSCEndpointsScheduleEnabled;
 use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
 use App\Http\Middleware\Google2FAMiddleware;
+use App\Http\Middleware\IsSCFirewallsIntegrationEnabled;
 use App\Http\Middleware\IsSCTenantHealthscoresScheduleEnabled;
 
 // Define a protected route group middleware that includes 2FA verification
@@ -54,7 +55,7 @@ Route::middleware($protectedMiddleware)->group(function () {
     });
 
     
-    Route::middleware(IsSCAlertsIntegrationEnabled::class)->group(function () {
+    Route::middleware(IsSCFirewallsIntegrationEnabled::class)->group(function () {
         Route::controller(SCFirewallController::class)->group(function () {
             Route::get('/scfirewalls', 'index')
             ->name('scfirewalls.index');
@@ -70,8 +71,9 @@ Route::middleware($protectedMiddleware)->group(function () {
 
     Route::middleware(IsSCAlertsIntegrationEnabled::class)->group(function () {
         Route::controller(SCAlertController::class)->group(function () {
-            Route::get('/scalerts/{id}', 'show')->name('scalerts.show');
-            Route::get('/scalerts/{id}/dispatch', 'dispatchAndShow')->name('scalerts.dispatchAndShow');
+            Route::get('/scalerts/id/{id}', 'show')->name('scalerts.show');
+            Route::get('/scalerts/id/{id}/dispatch', 'dispatchAndShow')->name('scalerts.dispatchAndShow');
+            Route::get('/scalerts/autoActions', 'autoActions')->name('scalerts.autoActions');
             Route::get('/scalerts', 'index')->name('scalerts.index');
         });
         

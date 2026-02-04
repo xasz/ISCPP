@@ -58,7 +58,7 @@ new class extends Component {
         <x-a-button wire:click="downloads">Trigger Refresh Downloads</x-a-button>
         <x-a-button wire:click="healthscore">Trigger Refresh Healthscore</x-a-button>
         <x-a-button wire:click="removeBilling">Remove Billing Data</x-a-button>
-        <x-a-button wire:click="runTenantRefresh">Trigger Tenant Refresh (Automatically Done every 15 Minutes)</x-a-button>
+        <x-a-button wire:click="runTenantRefresh">Trigger Tenant Refresh</x-a-button>
         <x-a-button wire:click="dumpPostgresQueue">dumpPostgresQueue</x-a-button>
         <x-a-button wire:click="dumpSqliteQueue">dumpSqliteQueue</x-a-button>
         <div wire:loading> 
