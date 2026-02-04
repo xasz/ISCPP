@@ -34,6 +34,6 @@ class QueueRefreshSCAlertsJobsForAllTenants extends Command
         $tenants->each(function ($tenant) {
             RefreshSCAlerts::dispatch($tenant);
         });
-        $this->info('SCAlertRefresh jobs dispatched for all tenants');
+        $this->info('SCAlertRefresh jobs dispatched for '. $tenants->count() . ' tenants');
     }
 }
