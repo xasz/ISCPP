@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Models\SCAlert;
 use App\Observers\SCAlertObserver;
+use App\Observers\SCAlertAutoAcknowledgeObserver;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\ServiceProvider;
@@ -25,7 +26,10 @@ class AppServiceProvider extends ServiceProvider
     {
         require_once app_path('Helpers/queue.php');
         
-        SCAlert::observe(SCAlertObserver::class);
+        SCAlert::observe([
+            SCAlertAutoAcknowledgeObserver::class,
+            SCAlertObserver::class,
+        ]);
 
         if(config('queue.default') == 'sqlite'){
             $dbPath = database_path('database.sqlite');

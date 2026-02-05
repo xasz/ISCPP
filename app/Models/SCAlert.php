@@ -32,11 +32,14 @@ class SCAlert extends Model
         'type',
         'rawData',
         'webhook_sent',
+        'is_acknowledged',
+        'updated_at',
     ];
 
     protected $casts = [
         'allowedActions' => 'array',
-        'raisedAt' => 'datetime'
+        'raisedAt' => 'datetime',
+        'is_acknowledged' => 'boolean',
     ];
 
     public function SCTenant()

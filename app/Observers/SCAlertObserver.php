@@ -4,6 +4,8 @@ namespace App\Observers;
 
 use App\Jobs\SendSCAlertWebhook;
 use App\Models\SCAlert;
+use App\Models\SCAlertAutoAction;
+use App\Services\SCService;
 use App\Settings\WebhookSettings;
 
 class SCAlertObserver

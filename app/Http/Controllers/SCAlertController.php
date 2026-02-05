@@ -11,11 +11,30 @@ use LaravelDaily\LaravelCharts\Classes\LaravelChart;
 
 class SCAlertController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $scalerts = SCAlert::orderBy('raisedAt', 'desc')
-            ->with('SCTenant')
-            ->paginate(50);
+        $query = SCAlert::orderBy('raisedAt', 'desc');
+        if ($request->filled('hide_acknowledged')) {
+            $query->where('is_acknowledged', false);
+        }
+        
+        if($request->filled('severity_high') || $request->filled('severity_medium') || $request->filled('severity_low')){
+            $query->where(function($q) use ($request){
+                if ($request->filled('severity_high')) {
+                    $q->orWhere('severity', 'high');
+                }
+    
+                if ($request->filled('severity_medium')) {
+                    $q->orWhere('severity', 'medium');
+                }
+    
+                if ($request->filled('severity_low')) {
+                    $q->orWhere('severity', 'low');
+                }
+            });
+        }
+
+        $scalerts = $query->clone()->with('SCTenant')->paginate(50)->appends($request->all());
 
 
         $chartData = collect([]);
@@ -24,7 +43,7 @@ class SCAlertController extends Controller
             ->whereDate('raisedAt', '>=', now()->subDays(30))
             ->groupBy('date')
             ->get();*/
-            $chartData = SCAlert::whereDate('raisedAt', '>=', now()->subDays(30))->get();
+            $chartData = $query->clone()->whereDate('raisedAt', '>=', now()->subDays(30))->get();
             $chartData = $chartData->groupBy(function ($item, int $key) {
                 return $item->raisedAt->format('Y-m-d');
             })->map(function ($item, $key) {
@@ -40,13 +59,13 @@ class SCAlertController extends Controller
         }
 
         $alertsCount = [
-            'all' => SCAlert::whereDate('raisedAt', '>=', now()->subHours(24))
+            'all' => $query->clone()->whereDate('raisedAt', '>=', now()->subHours(24))
                 ->count(),
-            'low' => SCAlert::whereDate('raisedAt', '>=', now()->subHours(24))
+            'low' => $query->clone()->whereDate('raisedAt', '>=', now()->subHours(24))
                 ->where('severity', 'low')->count(),
-            'medium' => SCAlert::whereDate('raisedAt', '>=', now()->subHours(24))
+            'medium' => $query->clone()->whereDate('raisedAt', '>=', now()->subHours(24))
                 ->where('severity', 'medium')->count(),
-            'high' => SCAlert::whereDate('raisedAt', '>=', now()->subHours(24))
+            'high' => $query->whereDate('raisedAt', '>=', now()->subHours(24))
                 ->where('severity', 'high')->count(),
         ];
 

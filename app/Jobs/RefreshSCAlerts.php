@@ -15,11 +15,13 @@ class RefreshSCAlerts implements ShouldQueue, ShouldBeUniqueUntilProcessing
     use Queueable;
 
     protected $tenantID;
+    protected $allEvents = false;
     public $tries = 2;
 
-    public function __construct(SCTenant $tenant)
+    public function __construct(SCTenant $tenant, $allEvents = false)
     {
         $this->tenantID = $tenant->id;
+        $this->allEvents = $allEvents;
     }
 
     public function handle(SCService $scService): void
@@ -36,8 +38,11 @@ class RefreshSCAlerts implements ShouldQueue, ShouldBeUniqueUntilProcessing
             return;
         }
         
-        $from = $tenant->SCAlerts()->orderBy('raisedAt', 'desc')->first()->raisedAt ?? now()->subDays(10);
-        Event::logInfo('scalerts', 'Fetching alerts for tenant ' . $tenant->id);
+        $from = $tenant->SCAlerts()->orderBy('raisedAt', 'desc')->first()->raisedAt ?? now()->subDays(9999);
+        if($this->allEvents){
+            $from = now()->subDays(9999);
+        }
+        Event::logInfo('scalerts', 'Fetching alerts for tenant ' . $tenant->id . ' from ' . $from->toDateTimeString());
         
         try{
             $alerts = $scService->alerts($tenant, $from);
@@ -52,11 +57,9 @@ class RefreshSCAlerts implements ShouldQueue, ShouldBeUniqueUntilProcessing
         }
         foreach($alerts as $alert){
             try{
-                SCAlert::updateOrCreate(
-                    [
-                        'id' => $alert['id']
-                    ], 
-                    [                           
+
+                $data = SCAlert::find($alert['id']);
+                $target = [                           
                         'allowedActions' => $alert['allowedActions'],
                         'category' => $alert['category'],
                         'description' => $alert['description'],
@@ -71,8 +74,22 @@ class RefreshSCAlerts implements ShouldQueue, ShouldBeUniqueUntilProcessing
                         'severity' => $alert['severity'],
                         'type' => $alert['type'],     
                         'rawData' => json_encode($alert),
-                        'tenantId' => $tenant->id
-                    ]);
+                        'tenantId' => $tenant->id,
+                        'updated_at' => now(),
+                ];
+
+                if($data){
+                    $data->update($target);
+                    continue;
+                }
+
+                SCAlert::updateOrCreate(
+                    [
+                        'id' => $alert['id']
+                    ], 
+                    $target
+                );
+
             } catch (\Exception $e){
                 Event::log('scalerts', 'error', [
                     'message' => 'Could not save alert',

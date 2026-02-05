@@ -24,6 +24,9 @@
                     <x-card-details-row label="description" :value="$scalert->description" />
                     <x-card-details-row label="product" :value="$scalert->product" />
                     <x-card-details-row label="tenant" :value="$scalert->sctenant != null ? $scalert->sctenant->name : __('Unkown')" />
+                    @if(collect($scalert->allowedActions)->contains('acknowledge'))
+                        <livewire:scalerts.acknowledged :scalert="$scalert" />
+                    @endif
                     @if($webhooksEnabled ?? false)
                     <x-card-details-row label="webhook_sent" :value="$scalert->webhook_sent" />
                         @if(!Str::is($scalert->webhook_sent, 'pending'))
