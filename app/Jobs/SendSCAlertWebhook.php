@@ -33,7 +33,7 @@ class SendSCAlertWebhook implements ShouldQueue, ShouldBeUniqueUntilProcessing
 
         $response = $wService->runWebhook($this->scalert);
 
-        if($response != null && $response->getStatusCode() == 200){
+        if($response != null && $response->successful()){
             $this->scalert->update(['webhook_sent' => 'success']);
             $this->scalert->save();
         }else{

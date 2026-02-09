@@ -54,11 +54,11 @@ class Event extends Model
     }
 
 
-    public static function logDebug(string $event, string $message): void
+    public static function logDebug(string $event, string $message, array $context = []): void
     {
         if(config('app.debug', false)){
-            Log::log('debug', "Event: $event - Message: $message");
-            self::log($event, 'debug', ['message' => $message]);
+            Log::log('debug', "Event: $event - Message: $message", $context);
+            self::log($event, 'debug', array_merge(['message' => $message], $context));
         }
     }
 
