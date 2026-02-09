@@ -34,7 +34,7 @@ class WebhookService {
             if($settings->basicAuthEnabled){
                 $response = $response->withBasicAuth(
                     $settings->basicAuthUsername,
-                    $settings->basicAuthPassword
+                    decrypt($settings->basicAuthPassword)
                 );
             }
 
