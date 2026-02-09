@@ -32,11 +32,11 @@ new class extends Component {
 
         <flux:navlist.group heading="Tools" class="grid">
             @if(resolve(App\Settings\SCServiceSettings::class)->healthscoresScheduleEnabled)
-            <flux:navlist.item icon="speaker-x-mark" :href="route('sctenants.healthscores')" :current="request()->routeIs('sctenants.healthscores')" wire:navigate>SCTenant Healthscores</flux:navlist.item>
+            <flux:navlist.item icon="heart" :href="route('sctenants.healthscores')" :current="request()->routeIs('sctenants.healthscores')" wire:navigate>SCTenant Healthscores</flux:navlist.item>
             @endif
 
             @if(resolve(App\Settings\SCServiceSettings::class)->alertsScheduleEnabled)
-            <flux:navlist.item icon="heart" :href="route('scalerts.autoActions')" :current="request()->routeIs('scalerts.autoActions')" wire:navigate>SCALert AutoActions</flux:navlist.item>
+            <flux:navlist.item icon="adjustments-horizontal" :href="route('scalerts.autoActions')" :current="request()->routeIs('scalerts.autoActions')" wire:navigate>SCAlert AutoActions</flux:navlist.item>
             @endif
             
             @if(resolve(App\Settings\HaloServiceSettings::class)->enabled)
