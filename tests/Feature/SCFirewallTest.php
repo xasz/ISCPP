@@ -9,6 +9,11 @@ test('guests are redirected to the login page for scfirewalls', function () {
 });
 
 test('authenticated users can visit the scfirewalls index page', function () {
+
+    $settings = resolve(App\Settings\SCServiceSettings::class);
+    $settings->firewallsScheduleEnabled = true;
+    $settings->save();
+
     $user = User::factory()->create();
     $this->actingAs($user);
 

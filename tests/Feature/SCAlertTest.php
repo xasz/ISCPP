@@ -30,6 +30,6 @@ test('authenticated users can view a specific scalert', function () {
         'tenantId' => $tenant->id
     ]);
 
-    $response = $this->get("/scalerts/{$alert->id}");
+    $response = $this->get("/scalerts/id/{$alert->id}");
     $response->assertStatus(200);
 });
