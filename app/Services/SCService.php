@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Event;
+use App\Models\SCAlert;
 use App\Models\SCTenant;
 use App\Settings\SCServiceSettings;
 use Carbon\Carbon;
@@ -96,7 +97,7 @@ class SCService
     * @param array $options - the query parameters
     * @param bool $raw - return raw data
     */
-    private function send($method, $url, $query, $options = ['raw' => false]){        
+    private function send($method, $url, $query, $options = ['skipStatusCodeCheck' => false]){        
         $http = Http::withToken($this->bearer());
         
         if(isset($options['partnerID'])){
@@ -114,7 +115,9 @@ class SCService
         $cap = 30000;
         $backoff = rand(50,200);
 
+
         do{
+            Event::logDebug("sc", "Sophos Partner API Request: {$method} {$url} - Attempt: {$attempt} - Query: " . json_encode($query));
             switch($method){
                 case 'GET':
                     $response = $http->get($url, $query);
@@ -130,7 +133,7 @@ class SCService
             if($response->tooManyRequests()){
                 $attempt++;
                 $backoff = rand(0, min($cap, $base * $attempt));
-                Event::logInfo("sc", "Sophos Partner API Rate Limit reached, backoff for {$backoff} ms");
+                Event::logWarning("sc", "Sophos Partner API Rate Limit reached, backoff for {$backoff} ms");
                 if($backoff > $cap){
                     $backoff = $cap;
                 }
@@ -140,14 +143,13 @@ class SCService
             }
         }while($attempt < $maxAttempts);
 
-        if(!$response->ok()){
+        Event::logDebug("sc", "Sophos Partner API Request completed - Status: {$response->status()}");
+
+        if(!$response->successful() && (isset($options['skipStatusCodeCheck']) && $options['skipStatusCodeCheck'] == true)){
             throw new Exception("Sophos Partner API Error: {$response->getStatusCode()}");
         }
-
-        if(isset($options['raw']) && $options['raw'] == true){
-            return $response->json();
-        }
         
+        Event::logDebug("sc", "Return response: " . json_encode($response->json()));
         return $response->json();
     }
     /*
@@ -309,7 +311,9 @@ class SCService
     }
 
     public function billingUsage(int $month, int $year){
-        return $this->partnerGet('/partner/v1/billing/usage/'.$year.'/'.$month, 
+        $urlYear = urlencode($year);
+        $urlMonth = urlencode($month);
+        return $this->partnerGet("/partner/v1/billing/usage/{$urlYear}/{$urlMonth}", 
             [ 'pageByKey' => true ]
         );
     }
@@ -327,6 +331,33 @@ class SCService
     
     public function tenantHealthscore(SCTenant $tenant){        
         return collect($this->tenantGet($tenant, '/account-health-check/v1/health-check', ['raw' => true]));
+    }
+
+    public function alertsAction(SCTenant $tenant, SCAlert $alert, $action, $message = '')
+    {
+        $alertId = urlencode($alert->id);
+
+        $response = $this->tenantPost($tenant, "/common/v1/alerts/{$alertId}/actions", [
+            'raw' => true,
+            'skipStatusCodeCheck' => true,
+            'query' => [
+                'action' => $action,
+                'message' => $message,
+            ],
+        ]);
+        
+
+        $response = collect($response);
+
+        if($response->get('status', '') == 'completed' ){
+            return;
+        }
+
+        if($response->get('error', '') == 'resourceNotFound'){
+            return;
+        }
+
+        Event::throwError('scalerts', "Sophos Partner API Alert Action Error: " . $response->toJson());
     }
 
     public function fakebillingUsage(int $month, int $year){

@@ -150,6 +150,8 @@
                 </x-tab-panel>
             </x-slot>
         </x-tab-container>
+
+        <livewire:sctenant.card-commands-sctenants :sctenant="$sctenant" />
         </div>
     </div>
 </x-layouts.app>

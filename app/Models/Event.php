@@ -34,6 +34,12 @@ class Event extends Model
         self::log($event, 'info', ['message' => $message]);
     }
 
+    public static function logWarning(string $event, string $message): void
+    {
+        Log::log('warning', "Event: $event - Message: $message");
+        self::log($event, 'warning', ['message' => $message]);
+    }
+
     public static function logError(string $event, string $message): void
     {
         Log::log('error', "Event: $event - Message: $message");
@@ -46,5 +52,17 @@ class Event extends Model
         self::log($event, 'error', ['message' => $message]);
         throw new Exception($message);
     }
+
+
+    public static function logDebug(string $event, string $message): void
+    {
+        if(config('app.debug', false)){
+            Log::log('debug', "Event: $event - Message: $message");
+            self::log($event, 'debug', ['message' => $message]);
+        }
+    }
+
+
+
 
 }

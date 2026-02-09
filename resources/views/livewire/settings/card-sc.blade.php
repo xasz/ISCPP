@@ -66,7 +66,7 @@ new class extends Component {
 }; ?>
 
 <div class="grid grid-cols-2 w-full gap-3">
-    <x-card class="w-1/2" title="Sophos Central Credentials" subtitle="SPlease enter valid Sophos Central (Super Admin) Partner Credentials">
+    <x-card class="w-1/2" title="Sophos Central Credentials" subtitle="Please enter valid Sophos Central (Super Admin) Partner Credentials">
             <x-card-details-input label="Client ID" wire:model="clientId" />
             <x-card-details-input type="password" label="Client Secret" wire:model="clientSecret"/>
             <div class="grid justify-items-end mt-4">

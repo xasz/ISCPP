@@ -3,7 +3,10 @@
 namespace App\Observers;
 
 use App\Jobs\SendSCAlertWebhook;
+use App\Models\Event;
 use App\Models\SCAlert;
+use App\Models\SCAlertAutoAction;
+use App\Services\SCService;
 use App\Settings\WebhookSettings;
 
 class SCAlertObserver
@@ -18,7 +21,16 @@ class SCAlertObserver
     public function created(SCAlert $scalert)
     {
         if(app(WebhookSettings::class)->enabled){
-            $scalert->dispatchWebhook();
+            $action = SCAlertAutoAction::where('type', $scalert->type)
+            ->where('action', 'SuppressWebhook')
+            ->first();
+
+            if ($action) {
+                $scalert->dispatchWebhook();
+            }else{
+                Event::logDebug('scalerts', 'Webhook suppressed for alert ID: ' . $scalert->id);
+            }
+            
         }
     }
 }

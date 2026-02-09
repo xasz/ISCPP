@@ -39,6 +39,45 @@
             @endpush
     </x-card>
 
+
+    <x-card title="Filter">
+        <form action="{{ route('scalerts.index') }}" method="GET" >
+            <div class="flex items-center gap-4">
+                <x-card-details-switch label="{{ __('Hide Acknowledged') }}" name="hide_acknowledged" :checked="request('hide_acknowledged') === '1'" value="1" />
+
+                <div class="flex items-center gap-2" id="severity-switches">
+                    <span class="text-sm font-medium">Severity:</span>
+                    @php
+                        $noneSet = request()->missing('severity_low') && request()->missing('severity_medium') && request()->missing('severity_high');
+                    @endphp
+                    <x-card-details-switch label="Low" name="severity_low" value="1" :checked="$noneSet || request('severity_low') === '1'" />
+                    <x-card-details-switch label="Medium" name="severity_medium" value="1" :checked="$noneSet || request('severity_medium') === '1'" />
+                    <x-card-details-switch label="High" name="severity_high" value="1" :checked="$noneSet || request('severity_high') === '1'" />
+                </div>
+
+                <x-a-button type="submit">Filter</x-a-button>
+            </div>
+            @push('scripts')
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    const switches = document.querySelectorAll('#severity-switches flux\\:switch');
+                    const hidden = document.getElementById('severity-hidden');
+                    function updateHidden() {
+                        let selected = [];
+                        switches.forEach(sw => {
+                            if (sw.checked) selected.push(sw.value);
+                        });
+                        hidden.value = selected.join(',');
+                    }
+                    switches.forEach(sw => {
+                        sw.addEventListener('change', updateHidden);
+                    });
+                });
+            </script>
+            @endpush
+        </form>
+    </x-card>
+
     <x-card>
         <x-scalerts-table :scalerts="$scalerts" />
     </x-card>
