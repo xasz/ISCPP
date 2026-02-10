@@ -2,8 +2,8 @@ name: Build & Publish Images
 
 on:
   push:
-    tags:
-      - "v*"
+    branches:
+      - main
 
 jobs:
   build:
