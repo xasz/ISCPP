@@ -40,23 +40,25 @@ class SendSCAlertWebhook implements ShouldQueue, ShouldBeUniqueUntilProcessing
                 'message' => __('Webhook sent successfully'),
                 'SCalertID' => $this->scalert->id]
             );
-        }else{
-            if($this->scalert->webhookLog()->count() >= 3){
-                $this->scalert->update(['webhook_sent' => 'failed']);
-                $this->scalert->save();
-                
-                Event::log("webhook", "error" , [
-                    'message' => __('Webhook failed - no more retry'),
-                    'SCalertID' => $this->scalert->id]
-                );
-                return;
-            }
-            Event::log("webhook", "warning" , [
-                'message' => __('Webhook failed - retrying in 120 seconds'),
+            return;
+        }
+
+        if($this->scalert->webhookLog()->count() >= 3){
+            $this->scalert->update(['webhook_sent' => 'failed']);
+            $this->scalert->save();
+            
+            Event::log("webhook", "error" , [
+                'message' => __('Webhook failed - no more retry'),
                 'SCalertID' => $this->scalert->id]
             );
-            $this->release(120);
+            return;
         }
+
+        Event::log("webhook", "warning" , [
+            'message' => __('Webhook failed - retrying in 120 seconds'),
+            'SCalertID' => $this->scalert->id]
+        );
+        $this->release(120);
         
     }
 

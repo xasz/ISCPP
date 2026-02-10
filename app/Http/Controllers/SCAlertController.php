@@ -7,6 +7,7 @@ use App\Settings\WebhookSettings;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Redirect;
 use LaravelDaily\LaravelCharts\Classes\LaravelChart;
 
 class SCAlertController extends Controller
@@ -89,8 +90,6 @@ class SCAlertController extends Controller
     {
         $scalert = SCAlert::with('SCTenant')->findOrFail($id);
         $scalert->dispatchWebhook();
-        return $this->show($id);
+        return Redirect::back()->with('success', 'Webhook dispatched, refreshing alert details...');
     }
-
-
 }
