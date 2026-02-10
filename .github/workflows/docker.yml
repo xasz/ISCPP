@@ -22,5 +22,5 @@ jobs:
         with:
           push: true
           tags: |
-            ghcr.io/xasz/ISCPP:latest
-            ghcr.io/xasz/ISCPP:${{ github.ref_name }}
+            ghcr.io/xasz/iscpp:latest
+            ghcr.io/xasz/iscpp:${{ github.ref_name }}
