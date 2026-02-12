@@ -1,9 +1,8 @@
 name: Build & Publish Images
 
 on:
-  push:
-    branches:
-      - main
+  release:
+    types: [published]
 
 permissions:
   contents: read
