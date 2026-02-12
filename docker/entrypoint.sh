@@ -41,13 +41,20 @@ fi
 # -----------------------------
 # .env prüfen / erstellen
 # -----------------------------
-if [ ! -f ".env" ]; then
-    echo "Creating .env file from example..."
-    if [ -f ".env.example" ]; then
-        cp .env.example .env
-    else
-        touch .env
-    fi
+
+ENV_FILE="/var/www/env-volume/.env"
+LINK_FILE="/var/www/.env"
+
+if [ ! -f "$ENV_FILE" ]; then
+    echo "Creating .env file in volume..."
+    touch "$ENV_FILE"
+    echo "APP_KEY=" >> "$ENV_FILE"
+fi
+
+
+if [ ! -L "$LINK_FILE" ]; then
+    echo "Creating symlink for .env file in project directory..."
+    ln -s "$ENV_FILE" "$LINK_FILE"
 fi
 
 # -----------------------------
