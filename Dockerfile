@@ -14,6 +14,7 @@ RUN apt-get update && apt-get install -y \
         libsqlite3-dev \
         npm \
         jq \
+        netcat-openbsd \
     && docker-php-ext-install pdo pdo_pgsql pdo_sqlite \
     && rm -rf /var/lib/apt/lists/*
 
