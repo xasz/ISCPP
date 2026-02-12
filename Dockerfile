@@ -1,4 +1,6 @@
+# -----------------------------
 # Base image
+# -----------------------------
 FROM php:8.4-fpm
 
 # -----------------------------
@@ -26,18 +28,33 @@ COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 WORKDIR /var/www
 
 # -----------------------------
-# 5️⃣ Entrypoint
+# 4️⃣ Copy Laravel project
+# -----------------------------
+COPY . /var/www
+
+# -----------------------------
+# 5️⃣ Install Composer dependencies
+# -----------------------------
+RUN composer install --no-dev --optimize-autoloader
+
+# -----------------------------
+# 6️⃣ NPM dependencies + build
+# -----------------------------
+RUN npm install && npm run build
+
+# -----------------------------
+# 7️⃣ Entrypoint
 # -----------------------------
 COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
 # -----------------------------
-# 6️⃣ Expose
+# 8️⃣ Expose PHP-FPM
 # -----------------------------
 EXPOSE 9000
 
 # -----------------------------
-# 7️⃣ Entrypoint & Default CMD
+# 9️⃣ Entrypoint & Default CMD
 # -----------------------------
 ENTRYPOINT ["sh", "/usr/local/bin/entrypoint.sh"]
 CMD ["php-fpm"]
