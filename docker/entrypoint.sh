@@ -51,12 +51,14 @@ if [ ! -f "$ENV_FILE" ]; then
     echo "APP_KEY=" >> "$ENV_FILE"
 fi
 
-
 if [ ! -L "$LINK_FILE" ]; then
-    echo "Creating symlink for .env file in project directory..."
-    ln -s "$ENV_FILE" "$LINK_FILE"
+    if [ -e "$LINK_FILE" ]; then
+        echo "$LINK_FILE already exists and is not a symlink, skipping symlink creation."
+    else
+        echo "Creating symlink for .env file in project directory..."
+        ln -s "$ENV_FILE" "$LINK_FILE"
+    fi
 fi
-
 # -----------------------------
 # APP_KEY generieren falls leer
 # -----------------------------
