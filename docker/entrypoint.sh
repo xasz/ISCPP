@@ -59,6 +59,19 @@ if [ ! -L "$LINK_FILE" ]; then
         ln -s "$ENV_FILE" "$LINK_FILE"
     fi
 fi
+
+# -----------------------------
+# Fixing permissions...
+# -----------------------------
+
+echo "Fixing permissions..."
+
+# Storage & Cache
+chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache
+
+chown www-data:www-data /var/www/.env
+chmod 644 /var/www/.env
+
 # -----------------------------
 # APP_KEY generieren falls leer
 # -----------------------------
