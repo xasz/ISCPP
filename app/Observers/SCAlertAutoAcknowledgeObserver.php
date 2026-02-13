@@ -23,15 +23,8 @@ class SCAlertAutoAcknowledgeObserver
      */
     public function created(SCAlert $scalert)
     {
-       Event::logDebug('scalerts', 'Auto-Acknowledge started completed for alert ID: ' . $scalert->id);
-       $autoAction = SCAlertAutoAction::where('type', $scalert->type)
-            ->where('action', 'AutoAcknowledge')
-            ->first();
-
-        if ($autoAction) {
-            $this->acknowledge($scalert);
-        }
-
+        Event::logDebug('scalerts', 'Auto-Acknowledge started completed for alert ID: ' . $scalert->id);
+        $this->acknowledge($scalert);
         Event::logDebug('scalerts', 'Auto-Acknowledge check completed for alert ID: ' . $scalert->id);
     }
 
@@ -41,18 +34,26 @@ class SCAlertAutoAcknowledgeObserver
         if ($scalert->is_acknowledged) {
             return;
         }
-
         $this->acknowledge($scalert);
     }
 
+    
     protected function acknowledge(SCAlert $scalert)
     {
-        if (collect($scalert->allowedActions)->contains('acknowledge')) {
-            Event::logInfo('scalerts', 'SC Alert Auto-Acknowledge triggered for alert ID: ' . $scalert->id);
-            $this->action->execute($scalert);
-        }else{
-            Event::logWarning('scalerts', 'SC Alert Auto-Acknowledge not allowed for alert ID: ' . $scalert->id);
+        Event::logInfo('scalerts', 'SC Alert Auto-Acknowledge triggered for alert ID: ' . $scalert->id);
+        
+        $autoAction = SCAlertAutoAction::where('type', $scalert->type)
+        ->where('action', 'AutoAcknowledge')
+        ->first();
+        
+        if($autoAction) {
+            if (collect($scalert->allowedActions)->contains('acknowledge')) {
+                $this->action->execute($scalert);
+            }else{
+                Event::logWarning('scalerts', 'SC Alert Auto-Acknowledge not allowed for alert ID: ' . $scalert->id);
+            }
         }
+        
     }
 
 }
