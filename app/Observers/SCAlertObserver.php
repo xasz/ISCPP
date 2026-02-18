@@ -26,11 +26,10 @@ class SCAlertObserver
             ->first();
 
             if ($action) {
-                $scalert->dispatchWebhook();
-            }else{
                 Event::logDebug('scalerts', 'Webhook suppressed for alert ID: ' . $scalert->id);
+                return;
             }
-            
+            $scalert->dispatchWebhook();
         }
     }
 }
