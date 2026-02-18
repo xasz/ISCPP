@@ -1,7 +1,5 @@
 # ISCPP - Improved Sophos Central Partner Center
 
-> For Usage in Docker please use the docker-support branch for today!
-
 - Halo PSA Billing Integration !
 - NinjaOne Sophos Endpoint Agent deployment !
 - Sophos Central Alert forwording to anywhere
