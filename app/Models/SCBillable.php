@@ -2,13 +2,15 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Jobs\SendSCBillableToHalo;
-use App\Services\HaloService;
 
 class SCBillable extends Model
 {
+    use HasFactory;
+
     protected $table = 'sc_billable';
+
     protected $fillable = [
         'month',
         'year',
@@ -24,6 +26,7 @@ class SCBillable extends Model
         'rawData',
         'sent_to_halo',
     ];
+
     protected $casts = [
         'month' => 'int',
         'year' => 'int',
@@ -32,6 +35,7 @@ class SCBillable extends Model
         'actualQuantity' => 'int',
         'rawData' => 'array',
     ];
+
     protected $dates = [
         'created_at',
         'updated_at',
@@ -42,8 +46,8 @@ class SCBillable extends Model
         return $this->belongsTo(SCTenant::class, 'tenantId');
     }
 
-
-    public function ISCPPProductCode(){
-        return "ISCPP-" . $this->productCode;
+    public function ISCPPProductCode()
+    {
+        return 'ISCPP-'.$this->productCode;
     }
 }

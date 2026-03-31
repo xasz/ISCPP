@@ -2,12 +2,17 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class SCEndpoint extends Model
 {
+    use HasFactory;
+
     protected $table = 'sc_endpoints';
+
     protected $keyType = 'string';
+
     public $incrementing = false;
 
     protected $fillable = [
@@ -20,7 +25,7 @@ class SCEndpoint extends Model
         'rawData',
         'healthStatus',
     ];
-    
+
     public function SCTenant()
     {
         return $this->belongsTo(SCTenant::class, 'tenantId');

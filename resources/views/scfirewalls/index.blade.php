@@ -8,6 +8,7 @@
                 <tr>
                     <x-table.th>Id</x-table.th>
                     <x-table.th>Hostname</x-table.th>
+                    <x-table.th>Data</x-table.th>
                 </tr>
             </x-table.thead>
             <tbody>
@@ -15,6 +16,7 @@
                     <x-table.tr>
                         <x-table.td>{{ $firewall->id }}</x-table.td>
                         <x-table.td>{{ $firewall->hostname }}</x-table.td>
+                        <x-table.td>{{ collect($firewall->rawData)->toJson() }}</x-table.td>
                     </x-table.tr>
                 @endforeach
             </tbody>

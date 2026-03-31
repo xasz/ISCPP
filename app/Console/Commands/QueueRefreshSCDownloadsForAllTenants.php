@@ -3,11 +3,9 @@
 namespace App\Console\Commands;
 
 use App\Jobs\RefreshSCTenantDownload;
-use App\Jobs\RefreshSCTenantHealthscore;
-use Illuminate\Console\Command;
-use App\Jobs\RefreshSCAlerts;
-use App\Models\SCTenant;
 use App\Models\Event;
+use App\Models\SCTenant;
+use Illuminate\Console\Command;
 
 class QueueRefreshSCDownloadsForAllTenants extends Command
 {
@@ -23,7 +21,7 @@ class QueueRefreshSCDownloadsForAllTenants extends Command
      *
      * @var string
      */
-    protected $description = 'Command description';
+    protected $description = 'Refresh SC Downloads for all tenants';
 
     /**
      * Execute the console command.
@@ -32,7 +30,7 @@ class QueueRefreshSCDownloadsForAllTenants extends Command
     {
         $this->info('Dispatching SCTenantDownload for all tenants');
         $tenants = SCTenant::all();
-        Event::logInfo("console", "Dispatching SCTenantDownload for ". $tenants->count() . " tenants");
+        Event::logInfo('console', 'Dispatching SCTenantDownload for '.$tenants->count().' tenants');
         $tenants->each(function ($tenant) {
             RefreshSCTenantDownload::dispatch($tenant);
         });

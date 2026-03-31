@@ -52,6 +52,11 @@ new class extends Component {
         Artisan::call('app:queue-sctenants-refresh');
     }
     
+    public function firewalls(SCService $scService)
+    {
+        Artisan::call('app:queue-refresh-scfirewalls-jobs-for-all-tenants');
+    }
+
     public function dumpPostgresQueue()
     {
         dump(DB::connection(env('DB_CONNECTION'))->table('jobs')->get());
@@ -65,13 +70,14 @@ new class extends Component {
 }; ?>
 <x-card title="Running Commands" subtitle="This is for development">
     <flux:text>When you are here - You really should know what you are doing</flux:text>       
+    <x-a-button wire:click="runTenantRefresh">Trigger Tenant Refresh</x-a-button>
         <x-a-button wire:click="alerts">Trigger Refresh Delta Alerts</x-a-button>
         <x-a-button wire:click="alerts">Trigger Refresh ALL Alerts</x-a-button>
         <x-a-button wire:click="endpoints">Trigger Refresh Endpoints</x-a-button>
         <x-a-button wire:click="downloads">Trigger Refresh Downloads</x-a-button>
         <x-a-button wire:click="healthscore">Trigger Refresh Healthscore</x-a-button>
+        <x-a-button wire:click="firewalls">Trigger Refresh Firewalls</x-a-button>
         <x-a-button wire:click="removeBilling">Remove Billing Data</x-a-button>
-        <x-a-button wire:click="runTenantRefresh">Trigger Tenant Refresh</x-a-button>
         <x-a-button wire:click="dumpPostgresQueue">dumpPostgresQueue</x-a-button>
         <x-a-button wire:click="dumpSqliteQueue">dumpSqliteQueue</x-a-button>
         <x-a-button wire:click="purgeAlertData">Purge Alert Data</x-a-button>

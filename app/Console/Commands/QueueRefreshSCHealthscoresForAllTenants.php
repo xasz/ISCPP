@@ -3,10 +3,9 @@
 namespace App\Console\Commands;
 
 use App\Jobs\RefreshSCTenantHealthscore;
-use Illuminate\Console\Command;
-use App\Jobs\RefreshSCAlerts;
-use App\Models\SCTenant;
 use App\Models\Event;
+use App\Models\SCTenant;
+use Illuminate\Console\Command;
 
 class QueueRefreshSCHealthscoresForAllTenants extends Command
 {
@@ -22,7 +21,7 @@ class QueueRefreshSCHealthscoresForAllTenants extends Command
      *
      * @var string
      */
-    protected $description = 'Command description';
+    protected $description = 'Refresh SC Healthscores for all tenants';
 
     /**
      * Execute the console command.
@@ -31,7 +30,7 @@ class QueueRefreshSCHealthscoresForAllTenants extends Command
     {
         $this->info('Dispatching SCHealthscores for all tenants');
         $tenants = SCTenant::all();
-        Event::logInfo("console", "Dispatching SCHealthscore for ". $tenants->count() . " tenants");
+        Event::logInfo('console', 'Dispatching SCHealthscore for '.$tenants->count().' tenants');
         $tenants->each(function ($tenant) {
             RefreshSCTenantHealthscore::dispatch($tenant);
         });
