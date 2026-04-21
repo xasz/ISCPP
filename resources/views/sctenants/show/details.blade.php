@@ -1,20 +1,37 @@
 <x-sctenants.show.layout :sctenant="$sctenant">
-    <div class="flex gap-4">
 
+    <x-card title="Tenant">
+        <div class="flex items-end gap-4">
+            <div>
+                <flux:icon name="building-office-2" class="h-16 w-16 text-blue-600 dark:text-blue-400" />
+            </div>
+            <div class="flex flex-col gap-2">
+                <flux:heading size="xl" level="1" class="truncate">{{ $sctenant->name }}</flux:heading>
+                <div>
+                    <flux:badge size="sm">{{ ucfirst($sctenant->billingType) }}</flux:badge>
+                    <flux:badge color="zinc" size="sm">{{ $sctenant->dataGeography }}</flux:badge>
+                    <flux:badge color="violet" size="sm">{{ $sctenant->dataRegion }}</flux:badge>
+                </div>
+            </div>
+        </div>
+    </x-card>
+
+
+    <div class="flex flex-col gap-4">
         <x-card title="Basic Information">
-            <x-card-details-row label="Name" :value="$sctenant->name" />
-            <x-card-details-row label="Display Name" :value="$sctenant->showAs" />
-            <x-card-details-row label="Data Geography" :value="$sctenant->dataGeography" />
-            <x-card-details-row label="Data Region" :value="$sctenant->dataRegion" />
-            <x-card-details-row label="Billing Type" :value="$sctenant->billingType" />
+            <x-card-details-row icon="building-office-2" label="Name" :value="$sctenant->name" />
+            <x-card-details-row icon="tag" label="Display Name" :value="$sctenant->showAs" />
+            <x-card-details-row icon="map-pin" label="Data Geography" :value="$sctenant->dataGeography" />
+            <x-card-details-row icon="globe-alt" label="Data Region" :value="$sctenant->dataRegion" />
+            <x-card-details-row icon="credit-card" label="Billing Type" :value="$sctenant->billingType" />
         </x-card>
         
         <!-- Technical Details Card -->
         <x-card title="Technical Details">
-            <x-card-details-row label="ID" :value="$sctenant->id" />
-            <x-card-details-row label="Partner Id" :value="$sctenant->partnerId" />
-            <x-card-details-row label="Organization Id" :value="$sctenant->organizationId" />
-            <x-card-details-row label="API Host" :value="$sctenant->apiHost" />
+            <x-card-details-row icon="identification" label="ID" :value="$sctenant->id" />
+            <x-card-details-row icon="link" label="Partner Id" :value="$sctenant->partnerId" />
+            <x-card-details-row icon="organization" label="Organization Id" :value="$sctenant->organizationId" />
+            <x-card-details-row icon="server" label="API Host" :value="$sctenant->apiHost" />
         </x-card>
 
         <x-card title="Downloads"> 
