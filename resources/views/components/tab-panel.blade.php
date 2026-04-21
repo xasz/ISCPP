@@ -1,5 +1,5 @@
 @props(['name'])
 
-<div x-show="activeTab === '{{ $name }}'" {{ $attributes }}>
+<div x-show="activeTab === '{{ $name }}'" x-cloak {{ $attributes }}>
     {{ $slot }}
 </div>

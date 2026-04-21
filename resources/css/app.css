@@ -51,6 +51,10 @@
     @apply grid gap-2;
 }
 
+[x-cloak] {
+    display: none !important;
+}
+
 [data-flux-label] {
     @apply  !mb-0 !leading-tight;
 }

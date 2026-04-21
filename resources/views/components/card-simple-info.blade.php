@@ -10,5 +10,5 @@
             </flux:dropdown>
         @endif
     </div>
-</x-card>
-
+    @endif
+</div>
