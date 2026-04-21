@@ -26,6 +26,12 @@ class SCEndpoint extends Model
         'healthStatus',
     ];
 
+    protected $casts = [
+        'tamperProtectionEnabled' => 'boolean',
+        'lastSeen' => 'datetime',
+        'rawData' => 'array',
+    ];
+
     public function SCTenant()
     {
         return $this->belongsTo(SCTenant::class, 'tenantId');

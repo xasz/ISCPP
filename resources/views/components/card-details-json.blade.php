@@ -1,5 +1,9 @@
 @props(['json' =>'', 'arr' => null])
 @php
+    if(is_array($json)) {
+        $arr = $json;
+    }
+    
     if($arr) {
         $json = json_encode($arr);
     }

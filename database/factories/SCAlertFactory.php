@@ -14,9 +14,7 @@ use Illuminate\Support\Str;
  */
 class SCAlertFactory extends Factory
 {
-
     private const REAL_ACTIONS = ['acknowledge', 'clearThreat'];
-
 
     private const REAL_ENDPOINT_SETS = [
 
@@ -55,59 +53,59 @@ class SCAlertFactory extends Factory
             'description' => 'Sophos Firewall ASDLKASD reported computer not sending heartbeat signals',
             'product' => 'endpoint',
             'type' => 'Event::Endpoint::HeartbeatMissing',
-        ]
+        ],
     ];
 
     private const REAL_FIREWALL_SETS = [
-                [
-                    'category' => 'security',
-                    'description' => 'We detected an attempt to communicate with threat or botnet MalwareServerblocklist, from source 192.168.16.1 to destination somewhere.over.the-rainbow.dev(192.168.16.10).',
-                    'product' => 'firewall',
-                    'type' => 'Event::Firewall::FirewallAdvancedThreatProtectionDetailed',
-                    'allowedActions' => ['acknowledge'],
-                ],
-                [
-                    'category' => 'security',
-                    'description' => 'We detected an attempt to communicate with a botnet or command and control server.',
-                    'product' => 'firewall',
-                    'type' => 'Event::Firewall::FirewallAdvancedThreatProtection',
-                    'allowedActions' => ['acknowledge'],
-                ],
-                [
-                    'category' => 'connectivity',
-                    'description' => "Gateway 'WAN' is Up",
-                    'product' => 'firewall',
-                    'type' => 'Event::Firewall::FirewallGatewayUp',
-                    'allowedActions' => ['acknowledge'],
-                ],
-                [
-                    'category' => 'connectivity',
-                    'description' => "Gateway 'WAN' is Down",
-                    'product' => 'firewall',
-                    'type' => 'Event::Firewall::FirewallGatewayDown',
-                    'allowedActions' => ['acknowledge'],
-                ],
-                [
-                    'category' => 'connectivity',
-                    'description' => "Some Tunnel - IPSec Connection SomeName between xx.xx.xx.xx and yy.yy.yy.yy for Child SomeName established. (Remote: yy.yy.yy.yy)",
-                    'product' => 'firewall',
-                    'type' => 'Event::Firewall::FirewallVPNTunnelUp',
-                    'allowedActions' => ['acknowledge'],
-                ],
-                [
-                    'category' => 'connectivity',
-                    'description' => "Some Tunnel - IPSec Connection SomeName between xx.xx.xx.xx and yy.yy.yy.yy for Child SomeName established. (Remote: yy.yy.yy.yy)",
-                    'product' => 'firewall',
-                    'type' => 'Event::Firewall::FirewallVPNTunnelUp',
-                    'allowedActions' => ['acknowledge'],
-                ],
-                [
-                    'category' => 'security',
-                    'description' => 'We detected an attempt to communicate with a botnet or command and control server.',
-                    'product' => 'firewall',
-                    'type' => 'Event::Firewall::FirewallAdvancedThreatProtection',
-                    'allowedActions' => ['acknowledge'],
-                ]
+        [
+            'category' => 'security',
+            'description' => 'We detected an attempt to communicate with threat or botnet MalwareServerblocklist, from source 192.168.16.1 to destination somewhere.over.the-rainbow.dev(192.168.16.10).',
+            'product' => 'firewall',
+            'type' => 'Event::Firewall::FirewallAdvancedThreatProtectionDetailed',
+            'allowedActions' => ['acknowledge'],
+        ],
+        [
+            'category' => 'security',
+            'description' => 'We detected an attempt to communicate with a botnet or command and control server.',
+            'product' => 'firewall',
+            'type' => 'Event::Firewall::FirewallAdvancedThreatProtection',
+            'allowedActions' => ['acknowledge'],
+        ],
+        [
+            'category' => 'connectivity',
+            'description' => "Gateway 'WAN' is Up",
+            'product' => 'firewall',
+            'type' => 'Event::Firewall::FirewallGatewayUp',
+            'allowedActions' => ['acknowledge'],
+        ],
+        [
+            'category' => 'connectivity',
+            'description' => "Gateway 'WAN' is Down",
+            'product' => 'firewall',
+            'type' => 'Event::Firewall::FirewallGatewayDown',
+            'allowedActions' => ['acknowledge'],
+        ],
+        [
+            'category' => 'connectivity',
+            'description' => 'Some Tunnel - IPSec Connection SomeName between xx.xx.xx.xx and yy.yy.yy.yy for Child SomeName established. (Remote: yy.yy.yy.yy)',
+            'product' => 'firewall',
+            'type' => 'Event::Firewall::FirewallVPNTunnelUp',
+            'allowedActions' => ['acknowledge'],
+        ],
+        [
+            'category' => 'connectivity',
+            'description' => 'Some Tunnel - IPSec Connection SomeName between xx.xx.xx.xx and yy.yy.yy.yy for Child SomeName established. (Remote: yy.yy.yy.yy)',
+            'product' => 'firewall',
+            'type' => 'Event::Firewall::FirewallVPNTunnelUp',
+            'allowedActions' => ['acknowledge'],
+        ],
+        [
+            'category' => 'security',
+            'description' => 'We detected an attempt to communicate with a botnet or command and control server.',
+            'product' => 'firewall',
+            'type' => 'Event::Firewall::FirewallAdvancedThreatProtection',
+            'allowedActions' => ['acknowledge'],
+        ],
     ];
 
     public function definition(): array
@@ -117,17 +115,17 @@ class SCAlertFactory extends Factory
             'id' => (string) Str::uuid(),
 
             'allowedActions' => $this->faker->randomElements(self::REAL_ACTIONS, rand(1, count(self::REAL_ACTIONS))),
-            
-            'category' => "",
-            'description' => "",
-            'product' => "",     
-            'type' => "",
-            
+
+            'category' => '',
+            'description' => '',
+            'product' => '',
+            'type' => '',
+
             'tenant' => [
                 'id' => (string) Str::uuid(),
                 'name' => $this->faker->company(),
                 'dataRegion' => $this->faker->word(),
-            ],     
+            ],
             'groupKey' => (string) Str::uuid(),
             'person' => [
                 'id' => (string) Str::uuid(),
@@ -136,7 +134,6 @@ class SCAlertFactory extends Factory
             'raisedAt' => $this->faker->dateTimeThisYear(),
             'severity' => $this->faker->randomElement(['low', 'medium', 'high']),
         ];
-
 
         return [
             'id' => $rawData['id'],
@@ -155,27 +152,38 @@ class SCAlertFactory extends Factory
             'tenantId' => $rawData['tenant']['id'],
             'type' => $rawData['type'],
             'rawData' => $rawData,
-            'webhook_sent' => random_int(0,1),
-            'is_acknowledged' => random_int(0,1),
+            'webhook_sent' => random_int(0, 1),
+            'is_acknowledged' => random_int(0, 1),
             'updated_at' => $rawData['raisedAt'],
         ];
     }
 
-    public function forFirewall(SCFirewall $firewall){
+    private function resolveTenantData(string $tenantId, array $fallback = []): array
+    {
+        $tenant = SCTenant::query()->find($tenantId);
+
+        return [
+            'id' => $tenant?->id ?? ($fallback['id'] ?? $tenantId),
+            'name' => $tenant?->name ?? ($fallback['name'] ?? ''),
+            'dataRegion' => $tenant?->dataRegion ?? ($fallback['dataRegion'] ?? ''),
+        ];
+    }
+
+    public function forFirewall(SCFirewall $firewall)
+    {
         $set = $this->faker->randomElement(self::REAL_FIREWALL_SETS);
+
         return $this->state(function (array $attributes) use ($set, $firewall) {
+            $tenant = $this->resolveTenantData($firewall->tenantId, $attributes['rawData']['tenant'] ?? []);
+
             return [
-                 'rawData' => array_merge($attributes['rawData'], [
-                     'managedAgent' => [
+                'rawData' => array_merge($attributes['rawData'], [
+                    'managedAgent' => [
                         'id' => $firewall->id,
                         'name' => $firewall->hostname,
-                        'type' => $firewall->type,
+                        'type' => 'firewall',
                     ],
-                    'tenant' => [
-                        'id' => $firewall->tenant->id,
-                        'name' => $firewall->tenant->name,
-                        'dataRegion' => $firewall->tenant->dataRegion,
-                    ],
+                    'tenant' => $tenant,
                     'category' => $set['category'],
                     'description' => $set['description'],
                     'product' => $set['product'],
@@ -183,11 +191,11 @@ class SCAlertFactory extends Factory
                     'allowedActions' => $set['allowedActions'] ?? [],
                 ]),
                 'managedAgentID' => $firewall->id,
-                'managedAgentName' => $firewall->name,
+                'managedAgentName' => $firewall->hostname,
                 'managedAgentType' => 'firewall',
 
-                'tenantId' => $firewall->tenant->id,
-                
+                'tenantId' => $tenant['id'],
+
                 'category' => $set['category'],
                 'description' => $set['description'],
                 'product' => $set['product'],
@@ -198,21 +206,21 @@ class SCAlertFactory extends Factory
         });
     }
 
-    public function forEndpoint(SCEndpoint $endpoint){
+    public function forEndpoint(SCEndpoint $endpoint)
+    {
         $set = $this->faker->randomElement(self::REAL_ENDPOINT_SETS);
-         return $this->state(function (array $attributes) use ($set, $endpoint) {
+
+        return $this->state(function (array $attributes) use ($set, $endpoint) {
+            $tenant = $this->resolveTenantData($endpoint->tenantId, $attributes['rawData']['tenant'] ?? []);
+
             return [
-                 'rawData' => array_merge($attributes['rawData'], [
-                     'managedAgent' => [
+                'rawData' => array_merge($attributes['rawData'], [
+                    'managedAgent' => [
                         'id' => $endpoint->id,
                         'name' => $endpoint->hostname,
                         'type' => $endpoint->type,
                     ],
-                    'tenant' => [
-                        'id' => $endpoint->tenant->id,
-                        'name' => $endpoint->tenant->name,
-                        'dataRegion' => $endpoint->tenant->dataRegion,
-                    ],
+                    'tenant' => $tenant,
                     'category' => $set['category'],
                     'description' => $set['description'],
                     'product' => $set['product'],
@@ -220,10 +228,10 @@ class SCAlertFactory extends Factory
                     'allowedActions' => $set['allowedActions'] ?? [],
                 ]),
                 'managedAgentID' => $endpoint->id,
-                'managedAgentName' => $endpoint->name,
+                'managedAgentName' => $endpoint->hostname,
                 'managedAgentType' => 'endpoint',
 
-                'tenantId' => $endpoint->tenant->id,
+                'tenantId' => $tenant['id'],
 
                 'category' => $set['category'],
                 'description' => $set['description'],

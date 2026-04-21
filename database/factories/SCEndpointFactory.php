@@ -3,7 +3,9 @@
 namespace Database\Factories;
 
 use App\Models\SCEndpoint;
+use App\Models\SCTenant;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Str;
 
 /**
  * @extends Factory<SCEndpoint>
@@ -17,13 +19,12 @@ class SCEndpointFactory extends Factory
      */
     public function definition(): array
     {
+        $lastSeen = fake()->dateTimeThisYear();
+
         $rawData = [
             'id' => (string) Str::uuid(),
             'type' => fake()->randomElement(['computer', 'server']),
             'tenant' => [
-                'id' => (string) Str::uuid(),
-            ],
-                        'tenant' => [
                 'id' => (string) Str::uuid(),
             ],
             'hostname' => fake()->domainWord(),
@@ -34,23 +35,23 @@ class SCEndpointFactory extends Factory
                 ],
             ],
 
-            "os" => fakse()->randomElement([
+            'os' => fake()->randomElement([
                 [
-                    "isServer" => false,
-                    "platform" => "windows",
-                    "name" => "Windows 11 Home ",
-                    "majorVersion" => 11,
-                    "minorVersion" => 0,
-                    "build" => 22621
+                    'isServer' => false,
+                    'platform' => 'windows',
+                    'name' => 'Windows 11 Home ',
+                    'majorVersion' => 11,
+                    'minorVersion' => 0,
+                    'build' => 22621,
                 ],
                 [
-                    "isServer" => true,
-                    "platform" => "windows",
-                    "name" => "Windows Server 2022",
-                    "majorVersion" => 10,
-                    "minorVersion" => 0,
-                    "build" => 20348
-                ]
+                    'isServer' => true,
+                    'platform' => 'windows',
+                    'name' => 'Windows Server 2022',
+                    'majorVersion' => 10,
+                    'minorVersion' => 0,
+                    'build' => 20348,
+                ],
             ]),
             'ipv4Addresses' => [fake()->ipv4()],
             'ipv6Addresses' => [fake()->ipv6()],
@@ -120,7 +121,7 @@ class SCEndpointFactory extends Factory
                     ],
                 ],
             ],
-            'lastSeenAt' => fake()->dateTimeThisYear()->format('Y-m-d\TH:i:s.v\Z'),
+            'lastSeenAt' => $lastSeen->format('Y-m-d\TH:i:s.v\Z'),
             'lockdown' => [
                 'status' => fake()->randomElement(['available', 'unavailable']),
             ],
@@ -152,7 +153,7 @@ class SCEndpointFactory extends Factory
             'id' => $rawData['id'],
             'hostname' => $rawData['hostname'],
             'tamperProtectionEnabled' => $rawData['tamperProtectionEnabled'],
-            'lastSeen' => $rawData['lastSeen'],
+            'lastSeen' => $lastSeen,
             'tenantId' => $rawData['tenant']['id'],
             'type' => $rawData['type'],
             'healthStatus' => $rawData['health']['overall'],
@@ -172,4 +173,5 @@ class SCEndpointFactory extends Factory
                 'tenantId' => $tenant->id,
             ];
         });
+    }
 }
