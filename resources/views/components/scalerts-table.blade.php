@@ -1,20 +1,25 @@
 @props(['scalerts', 'hideSCTenant' => false])
 <div class="relative overflow-x-auto">
-    <span class="text-red-600 bg-red-600 hidden">Tailwind Cache</span>
-    <span class="text-yellow-600 bg-yellow-600 hidden">Tailwind Cache</span>
-    <span class="text-grey-600 bg-grey-600 hidden">Tailwind Cache</span>
     <x-table.table>
         <x-table.thead>
             <tr>
-            <x-table.th>Severity</x-table.th>
-                <x-table.th>Description</x-table.th>
-                <x-table.th>Raised at</x-table.th>
-                <x-table.th>Type</x-table.th>
-                <x-table.th>Category</x-table.th>
-                <x-table.th>Product</x-table.th>
-                @unless ($hideSCTenant)
-                <x-table.th>Tenant</x-table.th>
-                @endunless
+                @if($hideSCTenant)
+                    <x-table.th class="w-1/16">Severity</x-table.th>
+                    <x-table.th class="w-6/16">Description</x-table.th>
+                    <x-table.th class="w-2/16">Raised at</x-table.th>
+                    <x-table.th class="w-4/16">Type</x-table.th>
+                    <x-table.th class="w-1/16">Category</x-table.th>
+                    <x-table.th class="w-1/16">Product</x-table.th>
+                @else
+                    <x-table.th class="w-1/16">Severity</x-table.th>
+                    <x-table.th class="w-5/16">Description</x-table.th>
+                    <x-table.th class="w-2/16">Raised at</x-table.th>
+                    <x-table.th class="w-3/16">Type</x-table.th>
+                    <x-table.th class="w-1/16">Category</x-table.th>
+                    <x-table.th class="w-1/16">Product</x-table.th>
+                    <x-table.th class="w-2/16">Tenant</x-table.th>
+                @endif
+
             </tr>
         </x-table.thead>
         <tbody>

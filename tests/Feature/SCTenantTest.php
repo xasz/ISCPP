@@ -25,3 +25,13 @@ test('authenticated users can view a specific sctenant', function () {
     $response = $this->get("/sctenants/{$tenant->id}");
     $response->assertStatus(200);
 });
+
+test('sctenants show details view renders without missing components', function () {
+    $tenant = SCTenant::factory()->make();
+
+    $html = view('sctenants.show.details', [
+        'sctenant' => $tenant,
+    ])->render();
+
+    expect($html)->toContain('Basic Information');
+});

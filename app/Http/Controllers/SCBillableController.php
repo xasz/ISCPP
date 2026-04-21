@@ -47,7 +47,7 @@ class SCBillableController extends Controller
     public function dispatchToHaloAndShowTenant(int $year, int $month, string $id){
         $sctenant = SCTenant::findOrFail($id);
         PushToHaloSCTenantSCBillables::dispatch($sctenant, $year, $month);
-        return redirect()->route('sctenants.show', $sctenant );
+        return redirect()->route('sctenants.tenantDetails', $sctenant );
     }
 
     public function haloPusher(){

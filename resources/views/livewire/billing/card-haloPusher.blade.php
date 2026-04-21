@@ -130,7 +130,7 @@ new class extends Component {
                 @foreach ($data as $scTenant)
                 <x-table.tr>
                     <x-table.td>
-                        <x-table.a href="{{ route('sctenants.show', $scTenant['id']) }}">
+                        <x-table.a href="{{ route('sctenants.tenantDetails', $scTenant['id']) }}">
                             {{ $scTenant['name'] }}
                         </x-table.a>
                     </x-table.td>

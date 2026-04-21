@@ -61,6 +61,14 @@ select:focus[data-flux-control] {
     @apply outline-hidden ring-2 ring-accent ring-offset-2 ring-offset-accent-foreground;
 }
 
+@source inline("text-red-600");
+@source inline("bg-red-600");
+@source inline("text-yellow-600");
+@source inline("bg-yellow-600");
+@source inline("text-grey-600");
+@source inline("bg-grey-600");
+
+
 /* \[:where(&)\]:size-4 {
     @apply size-4;
 } */

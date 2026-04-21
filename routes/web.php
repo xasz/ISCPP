@@ -124,7 +124,16 @@ Route::middleware($protectedMiddleware)->group(function () {
     });
 
     Route::controller(SCTenantController::class)->group(function () {
-        Route::get('/sctenants/{id}', 'show')->name('sctenants.show');
+        
+        Route::get('/sctenants/{sctenant}/details', 'tenantDetails')->name('sctenants.tenantDetails');
+        Route::get('/sctenants/{sctenant}/alerts', 'tenantAlerts')->name('sctenants.tenantAlerts');
+        Route::get('/sctenants/{sctenant}/billables', 'tenantBillables')->name('sctenants.tenantBillables');
+        Route::get('/sctenants/{sctenant}/downloads', 'tenantDownloads')->name('sctenants.tenantDownloads');
+        Route::get('/sctenants/{sctenant}/healthscore', 'tenantHealthscore')->name('sctenants.tenantHealthscore');
+        Route::get('/sctenants/{sctenant}/endpoints', 'tenantEndpoints')->name('sctenants.tenantEndpoints');
+        Route::get('/sctenants/{sctenant}/firewalls', 'tenantFirewalls')->name('sctenants.tenantFirewalls');
+        Route::get('/sctenants/{sctenant}/iscpp-settings', 'tenantISCPPSettings')->name('sctenants.tenantISCPPSettings');
+
         Route::get('/sctenants', 'index')->name('sctenants.index');
     });
     

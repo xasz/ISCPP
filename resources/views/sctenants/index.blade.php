@@ -43,7 +43,7 @@
                 @foreach ($sctenants as $tenant)
                     <x-table.tr>
                         <x-table.td>
-                                <x-table.a href="{{ route('sctenants.show', $tenant) }}">
+                                <x-table.a href="{{ route('sctenants.tenantDetails', $tenant) }}">
                                     {{ $tenant->name }}
                                 </x-table.a>
                                 <br>

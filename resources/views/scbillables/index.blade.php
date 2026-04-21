@@ -47,7 +47,7 @@
                         <x-table.td>{{ $data['sku'] }}</x-table.td>
                         <x-table.td>{{ $data['productDescription'] }}</x-table.td>
                         <x-table.td>
-                            <x-table.a href="{{ route('sctenants.show', $data['tenantId']) }}">
+                            <x-table.a href="{{ route('sctenants.tenantDetails', $data['tenantId']) }}">
                             {{ $data->SCTenant->name }}
                             </x-table.a>
                         </x-table.td>
