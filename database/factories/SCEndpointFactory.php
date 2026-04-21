@@ -17,86 +17,159 @@ class SCEndpointFactory extends Factory
      */
     public function definition(): array
     {
-        $endpointId = fake()->unique()->uuid();
-        $tenantId = fake()->uuid();
-        $types = ['computer', 'server', 'mobile'];
-        $healthStatuses = ['good', 'warning', 'critical'];
-        $selectedType = $types[array_rand($types, 1)];
-        $hostname = fake()->domainWord().'-'.strtoupper(fake()->bothify('??##')).'.corp.local';
-        $lastSeen = fake()->dateTimeBetween('-30 days', 'now');
-        $tamperProtected = fake()->boolean(75);
-
-        // Generate realistic raw data based on actual Sophos API structure
         $rawData = [
-            'id' => $endpointId,
+            'id' => (string) Str::uuid(),
+            'type' => fake()->randomElement(['computer', 'server']),
             'tenant' => [
-                'id' => $tenantId,
+                'id' => (string) Str::uuid(),
             ],
-            'hostname' => $hostname,
-            'type' => $selectedType,
-            'osVersion' => match ($selectedType) {
-                'computer' => 'Windows '.fake()->randomElement(['10', '11']).' Enterprise',
-                'server' => 'Windows Server '.fake()->randomElement(['2019', '2022']),
-                'mobile' => fake()->randomElement(['iOS 17', 'Android 14']),
-            },
-            'ipAddresses' => [
-                fake()->ipv4(),
+                        'tenant' => [
+                'id' => (string) Str::uuid(),
             ],
-            'macAddresses' => [
-                strtoupper(fake()->macAddress()),
-            ],
-            'lastSeenAt' => $lastSeen->format('Y-m-d\TH:i:s.000\Z'),
-            'lastUser' => match (fake()->boolean(70)) {
-                true => fake()->userName().'@'.fake()->domainName(),
-                false => null,
-            },
-            'assemblyId' => fake()->uuid(),
+            'hostname' => fake()->domainWord(),
             'health' => [
-                'overall' => $healthStatuses[array_rand($healthStatuses, 1)],
-                'threats' => fake()->randomElement(['good', 'warning', 'critical']),
-                'tamperProtection' => fake()->randomElement(['good', 'warning', 'critical']),
-                'services' => fake()->randomElement(['good', 'warning', 'critical']),
-                'updates' => fake()->randomElement(['good', 'warning', 'critical']),
-            ],
-            'tamperProtectionEnabled' => $tamperProtected,
-            'encryption' => [
-                'enabled' => fake()->boolean(60),
-                'volumes' => fake()->numberBetween(0, 3),
-            ],
-            'tags' => fake()->randomElements(['production', 'development', 'testing', 'kiosk', 'vdi'], fake()->numberBetween(0, 3)),
-            'createdAt' => fake()->dateTimeBetween('-2 years', '-1 year')->format('Y-m-d\TH:i:s.000\Z'),
-            'updatedAt' => fake()->dateTimeBetween('-30 days', 'now')->format('Y-m-d\TH:i:s.000\Z'),
-            'createdBy' => [
-                'id' => null,
-                'type' => null,
-                'name' => null,
-                'accountType' => 'tenant',
-                'accountId' => $tenantId,
-            ],
-            'updatedBy' => [
-                'id' => null,
-                'type' => null,
-                'name' => null,
-                'accountType' => 'tenant',
-                'accountId' => $tenantId,
-            ],
-            'links' => [
-                'self' => [
-                    'href' => 'https://api.central.sophos.com/endpoints/'.$endpointId,
-                    'rel' => 'self',
+                'overall' => fake()->randomElement(['good']),
+                'threats' => [
+                    'status' => fake()->randomElement(['good']),
                 ],
             ],
+
+            "os" => fakse()->randomElement([
+                [
+                    "isServer" => false,
+                    "platform" => "windows",
+                    "name" => "Windows 11 Home ",
+                    "majorVersion" => 11,
+                    "minorVersion" => 0,
+                    "build" => 22621
+                ],
+                [
+                    "isServer" => true,
+                    "platform" => "windows",
+                    "name" => "Windows Server 2022",
+                    "majorVersion" => 10,
+                    "minorVersion" => 0,
+                    "build" => 20348
+                ]
+            ]),
+            'ipv4Addresses' => [fake()->ipv4()],
+            'ipv6Addresses' => [fake()->ipv6()],
+            'macAddresses' => [fake()->macAddress()],
+            'mdrManaged' => fake()->boolean(),
+            'associatedPerson' => [
+                'name' => fake()->name(),
+                'viaLogin' => fake()->userName(),
+                'id' => (string) Str::uuid(),
+            ],
+            'tamperProtectionSupported' => fake()->boolean(),
+            'tamperProtectionEnabled' => fake()->boolean(),
+            'assignedProducts' => [
+                [
+                    'code' => 'endpointProtection',
+                    'version' => '2025.2.3.8.0',
+                    'status' => fake()->randomElement(['installed', 'notInstalled']),
+                ],
+                [
+                    'code' => 'deviceEncryption',
+                    'version' => '2025.1.3.2.0',
+                    'status' => fake()->randomElement(['installed', 'notInstalled']),
+                ],
+                [
+                    'code' => 'interceptX',
+                    'version' => '2024.1.2.1.0',
+                    'status' => fake()->randomElement(['installed', 'notInstalled']),
+                ],
+                [
+                    'code' => 'coreAgent',
+                    'version' => '2025.2.3.8.0',
+                    'status' => fake()->randomElement(['installed', 'notInstalled']),
+                ],
+                [
+                    'code' => 'xdr',
+                    'version' => '2025.0.0.0.0',
+                    'status' => fake()->randomElement(['installed', 'notInstalled']),
+                ],
+                [
+                    'code' => 'ztna',
+                    'version' => '2025.0.0.0.0',
+                    'status' => fake()->randomElement(['installed', 'notInstalled']),
+                ],
+            ],
+            'packages' => [
+                'protection' => [
+                    'assignedId' => 'Endpoint',
+                    'name' => 'Endpoint',
+                    'status' => fake()->randomElement(['assigned', 'unassigned']),
+                    'available' => [
+                        [
+                            'id' => 'Endpoint',
+                            'name' => 'Endpoint',
+                        ],
+                    ],
+                ],
+                'ztna' => [
+                    'status' => fake()->randomElement(['assigned', 'unassigned']),
+                ],
+                'encryption' => [
+                    'status' => fake()->randomElement(['assigned', 'unassigned']),
+                    'available' => [
+                        [
+                            'id' => 'Encryption',
+                            'name' => 'Encryption',
+                        ],
+                    ],
+                ],
+            ],
+            'lastSeenAt' => fake()->dateTimeThisYear()->format('Y-m-d\TH:i:s.v\Z'),
+            'lockdown' => [
+                'status' => fake()->randomElement(['available', 'unavailable']),
+            ],
+            'tags' => [],
+            'online' => fake()->boolean(),
+            'isolation' => [
+                'status' => fake()->randomElement(['notIsolated', 'isolated']),
+                'adminIsolated' => fake()->boolean(),
+                'selfIsolated' => fake()->boolean(),
+            ],
+            'modules' => [
+                [
+                    'name' => 'coreAgent',
+                    'version' => '2025.2.3.8.0',
+                ],
+                [
+                    'name' => 'interceptX',
+                    'version' => '2024.1.2.1.0',
+                ],
+                [
+                    'name' => 'deviceEncryption',
+                    'version' => '2025.1.3.2.0',
+                ],
+            ],
+            'registeredAt' => fake()->dateTimeThisYear()->format('Y-m-d\TH:i:s.v\Z'),
         ];
 
         return [
-            'id' => $endpointId,
-            'hostname' => $hostname,
-            'tamperProtectionEnabled' => $tamperProtected,
-            'lastSeen' => $lastSeen,
-            'tenantId' => $tenantId,
-            'type' => $selectedType,
-            'rawData' => $rawData,
+            'id' => $rawData['id'],
+            'hostname' => $rawData['hostname'],
+            'tamperProtectionEnabled' => $rawData['tamperProtectionEnabled'],
+            'lastSeen' => $rawData['lastSeen'],
+            'tenantId' => $rawData['tenant']['id'],
+            'type' => $rawData['type'],
             'healthStatus' => $rawData['health']['overall'],
+            'rawData' => $rawData,
         ];
     }
+
+    public function forTenant(SCTenant $tenant)
+    {
+        return $this->state(function (array $attributes) use ($tenant) {
+            return [
+                'rawData' => array_merge($attributes['rawData'], [
+                    'tenant' => [
+                        'id' => $tenant->id,
+                    ],
+                ]),
+                'tenantId' => $tenant->id,
+            ];
+        });
 }

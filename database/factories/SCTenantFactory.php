@@ -4,6 +4,7 @@ namespace Database\Factories;
 
 use App\Models\SCTenant;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Str;
 
 /**
  * @extends Factory<SCTenant>
@@ -11,80 +12,107 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 class SCTenantFactory extends Factory
 {
     /**
-     * Define the model's default state.
+     * Representative tenant profiles captured from the live database.
      *
-     * @return array<string, mixed>
+     * @var list<array{
+     *     dataGeography: ?string,
+     *     dataRegion: ?string,
+     *     billingType: string,
+     *     apiHost: ?string,
+     *     status: ?string,
+     *     products: list<string>
+     * }>
      */
+
+    private const REAL_GEO = [
+        ['dataGeography' => 'DE', 'dataRegion' => 'eu02', 'apiHost' => 'https://api-eu02.central.sophos.com'],
+        ['dataGeography' => 'IE', 'dataRegion' => 'eu01', 'apiHost' => 'https://api-eu01.central.sophos.com'],
+        ['dataGeography' => 'US', 'dataRegion' => 'us03', 'apiHost' => 'https://api-us03.central.sophos.com'],
+    ];
+    private const REAL_BILLING_TYPES = ['trial', 'usage', 'term'];
+
+    private const REAL_STATUS = ['active', 'suspended'];
+
+    private const REAL_PRODUCTS = [
+        'CMS-MSP', 
+        'SVRCIXAMTR-ADV-MSP', 
+        'CIXAMTR-ADV-MSP', 
+        'CDE-MSP', 
+        'CW7-SUP-MSP', 
+        'CEMA-MSP', 
+        'CPHISH-MSP', 
+        'NDR-MSP',
+        'SVRCLOUDADV-MSP',
+        'CIXA-MSP',
+        'CMA-MSP',
+        'xg_email_std',
+        'CEMA-PE-ADDON-MSP',
+        'CPHISH-MSP',
+    ];
+
     public function definition(): array
     {
-        $company = fake()->company();
-        $geos = ['US', 'IE', 'DE', 'CA', 'AU', 'JP'];
-        $geo = $geos[array_rand($geos)];
-        $regions = match ($geo) {
-            'US' => ['us01', 'us02', 'us03'],
-            'IE' => ['eu01'],
-            'DE' => ['eu02'],
-            'CA' => ['ca01'],
-            'AU' => ['au01'],
-            'JP' => ['jp01'],
-        };
-        $region = $regions[array_rand($regions)];
-        $billingTypes = ['term', 'trial', 'usage'];
+        $id = (string) Str::uuid();
+        $name = fake()->company();
+        $showAs = $name;
+        if(fake()->boolean(20)) {
+            $showAs .= ' ' . fake()->companySuffix();
+        }
 
-        $tenantId = fake()->unique()->uuid();
-        $partnerId = fake()->uuid();
-        $organizationId = fake()->uuid();
-        $billingType = $billingTypes[array_rand($billingTypes)];
-
-        // Build realistic raw data matching actual Sophos API structure
-        $rawData = [
-            'id' => $tenantId,
-            'showAs' => $company.' - '.fake()->postcode(),
-            'name' => $company,
-            'dataGeography' => $geo,
-            'dataRegion' => $region,
-            'billingType' => $billingType,
-            'partner' => [
-                'id' => $partnerId,
-            ],
-            'organization' => [
-                'id' => $organizationId,
-            ],
-            'apiHost' => 'https://api-'.$region.'.central.sophos.com',
-            'products' => [
-                ['code' => 'AP6-840-SUP-MSP'],
-                ['code' => 'CMS-MSP'],
-                ['code' => 'CDE-MSP'],
-                ['code' => 'CEMA-MSP'],
-            ],
-            'status' => 'active',
-            'contact' => [
-                'firstName' => fake()->firstName(),
-                'lastName' => fake()->lastName(),
-                'email' => fake()->email(),
-                'phone' => fake()->phoneNumber(),
-                'address' => [
-                    'address1' => fake()->streetAddress(),
-                    'address2' => '',
-                    'city' => fake()->city(),
-                    'state' => strtoupper(fake()->bothify('??')),
-                    'countryCode' => $geo,
-                    'postalCode' => fake()->postcode(),
-                ],
+        $profile = fake()->randomElement(self::REAL_GEO) + [
+            'billingType' => fake()->randomElement(self::REAL_BILLING_TYPES),
+            'status' => fake()->randomElement(self::REAL_STATUS),
+            'products' => fake()->randomElements(self::REAL_PRODUCTS, fake()->numberBetween(1, 10)),
+        
+        ];
+        $contact = [
+            'firstName' => fake()->firstName(),
+            'lastName' => fake()->lastName(),
+            'email' => fake()->unique()->safeEmail(),
+            'address' => [
+                'address1' => fake()->streetAddress(),
+                'city' => fake()->city(),
+                'state' => fake()->bothify('??'),
+                'countryCode' => $profile['dataGeography'] ?? fake()->countryCode(),
+                'postalCode' => fake()->postcode(),
             ],
         ];
 
+        $rawData = [
+            'id' => $id,
+            'showAs' => $showAs,
+            'name' => $name,
+            'dataGeography' => $profile['dataGeography'],
+            'dataRegion' => $profile['dataRegion'],
+            'billingType' => $profile['billingType'],
+            'partner' => [
+                'id' => null,
+            ],
+            'organization' => [
+                'id' => null,
+            ],
+            'apiHost' => $profile['apiHost'],
+            'products' => array_map(
+                static fn (string $code): array => ['code' => $code],
+                $profile['products'],
+            ),
+            'status' => $profile['status'],
+            'contact' => $contact,
+        ];
+
         return [
-            'id' => $tenantId,
+            'id' => $rawData['id'],
             'showAs' => $rawData['showAs'],
-            'name' => $company,
-            'dataGeography' => $geo,
-            'dataRegion' => $region,
-            'billingType' => $billingType,
-            'partnerId' => $partnerId,
-            'organizationId' => $organizationId,
+            'name' => $rawData['name'],
+            'dataGeography' => $rawData['dataGeography'],
+            'dataRegion' => $rawData['dataRegion'],
+            'billingType' => $rawData['billingType'],
+            'partnerId' => $rawData['partner']['id'],
+            'organizationId' => $rawData['organization']['id'],
             'apiHost' => $rawData['apiHost'],
-            'rawData' => json_encode($rawData),
+            'rawData' => json_encode($rawData, JSON_UNESCAPED_SLASHES),
+            'haloclient_id' => -1,
+            'ninjaorg_id' => -1,
         ];
     }
 }

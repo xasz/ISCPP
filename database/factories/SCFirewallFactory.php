@@ -3,92 +3,120 @@
 namespace Database\Factories;
 
 use App\Models\SCFirewall;
+use App\Models\SCTenant;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Str;
 
-/**
- * @extends Factory<SCFirewall>
- */
 class SCFirewallFactory extends Factory
 {
-    /**
-     * Define the model's default state.
-     *
-     * @return array<string, mixed>
+    /*
+{
+    "id": "1c84f88e-2254-48f8-a1df-3dca90bfe646",
+    "cluster": null,
+    "tenant": {
+        "id": "a2b050e8-9c01-4fd1-aed6-5df3811919b1"
+    },
+    "serialNumber": "X11103QPX83YHA2",
+    "group": null,
+    "hostname": "ZVSSLFW1",
+    "name": "X11103QPX83YHA2",
+    "firmwareVersion": "XGS116_XN01_19.5.3.652",
+    "externalIpv4Addresses": [
+        "87.138.199.170"
+    ],
+    "model": "XGS116_XN01_SFOS 19.5.3 MR-3-Build652",
+    "status": {
+        "managingStatus": "approvedByCustomer",
+        "reportingStatus": "approvedByCustomer",
+        "connected": false,
+        "suspended": true
+    },
+    "stateChangedAt": "2024-08-29T08:54:00.19Z",
+    "capabilities": [
+        "highAvailability",
+        "configImport",
+        "sdwanGroup",
+        "sdwanMultiGroup"
+    ],
+    "createdBy": {
+        "id": null,
+        "type": null,
+        "name": null,
+        "accountType": "tenant",
+        "accountId": "a2b050e8-9c01-4fd1-aed6-5df3811919b1"
+    },
+    "createdAt": "2021-12-08T07:50:22.852Z",
+    "updatedBy": {
+        "id": null,
+        "type": null,
+        "name": null,
+        "accountType": "tenant",
+        "accountId": "a2b050e8-9c01-4fd1-aed6-5df3811919b1"
+    },
+    "updatedAt": "2024-09-28T08:58:55.996Z",
+    "geoLocation": null
+}
+    
      */
     public function definition(): array
     {
-        $firewallId = fake()->unique()->uuid();
-        $tenantId = fake()->uuid();
-        $serialNumber = strtoupper(fake()->bothify('???###????'));
-        $hostname = fake()->word();
-        $ipAddress1 = fake()->ipv4();
-        $ipAddress2 = fake()->boolean(40) ? fake()->ipv4() : null;
-        $createdAt = fake()->dateTimeBetween('-2 years', '-1 year');
-        $updatedAt = fake()->dateTimeBetween($createdAt, 'now');
 
-        // Build realistic raw data matching actual Sophos API structure
         $rawData = [
-            'id' => $firewallId,
-            'cluster' => fake()->boolean(20) ? [
-                'id' => fake()->uuid(),
-                'mode' => 'activeActive',
-                'status' => fake()->randomElement(['primary', 'secondary']),
-                'peers' => [
-                    'id' => fake()->uuid(),
-                    'serialNumber' => strtoupper(fake()->bothify('???###????')),
-                ],
-            ] : null,
+            'id' => (string) Str::uuid(),
             'tenant' => [
-                'id' => $tenantId,
+                'id' => (string) Str::uuid(),
             ],
-            'serialNumber' => $serialNumber,
-            'group' => fake()->boolean(30) ? [
-                'id' => fake()->uuid(),
-                'name' => fake()->word().' Group',
-            ] : null,
-            'hostname' => $hostname,
-            'name' => fake()->word().'-label',
-            'externalIpv4Addresses' => array_filter([$ipAddress1, $ipAddress2]),
-            'firmwareVersion' => 'SF0'.fake()->numberBetween(1, 9).'V_SO0'.fake()->numberBetween(1, 9).'_'.fake()->numberBetween(19, 21).'.'.fake()->numberBetween(0, 9).'.'.fake()->numberBetween(0, 9).'.'.fake()->numberBetween(100, 999),
-            'model' => 'SFVUNL_SO0'.fake()->numberBetween(1, 9).'_SFOS '.fake()->numberBetween(19, 21).'.'.fake()->numberBetween(0, 9).'.'.fake()->numberBetween(0, 9).' GA-Build'.fake()->numberBetween(100, 999),
+            'serialNumber' => fake()->bothify('X##########'),
+            "group" => null,
+            'hostname' => fake()->domainWord(),
+            'name' => fake()->bothify('X##########'),
+            'firmwareVersion' => fake()->semver(),
+            'externalIpv4Addresses' => [fake()->ipv4()],
+            'model' => fake()->randomElement(['XGS117_XN01_SFOS', 'XGS127_XN01_SFOS', 'XGS137_XN01_SFOS']) . ' ' . fake()->semver(),
             'status' => [
-                'managing' => fake()->randomElement(['approvalPending', 'approved', 'revoked']),
-                'reporting' => fake()->randomElement(['approvalPending', 'approved', 'revoked']),
-                'connected' => fake()->boolean(90),
-                'suspended' => fake()->boolean(5),
+                'managingStatus' => fake()->randomElement(['approvedByCustomer', 'pending', 'rejected']),
+                'reportingStatus' => fake()->randomElement(['approvedByCustomer', 'pending', 'rejected']),
+                'connected' => fake()->boolean(),
+                'suspended' => fake()->boolean(),
             ],
-            'stateChangedAt' => fake()->dateTimeBetween('-30 days', 'now')->format('Y-m-d\TH:i:s.000\Z'),
-            'capabilities' => fake()->randomElements(
-                ['sdwanGroup', 'configImport', 'highAvailability'],
-                fake()->numberBetween(1, 2)
-            ),
-            'geoLocation' => fake()->boolean(50) ? [
-                'latitude' => (string) fake()->latitude(),
-                'longitude' => (string) fake()->longitude(),
-            ] : null,
+            'stateChangedAt' => fake()->dateTimeThisYear()->format('Y-m-d\TH:i:s.v\Z'),
+            'capabilities' => fake()->randomElements(['highAvailability', 'configImport', 'sdwanGroup', 'sdwanMultiGroup'], 2),
             'createdBy' => [
-                'id' => fake()->uuid(),
-                'type' => 'user',
-                'name' => fake()->name(),
+                'id' => null,
+                'type' => null,
+                'name' => null,
                 'accountType' => 'tenant',
-                'accountId' => $tenantId,
+                'accountId' => (string) Str::uuid(),
             ],
-            'createdAt' => $createdAt->format('Y-m-d\TH:i:s.000\Z'),
+            'createdAt' => fake()->dateTimeThisYear()->format('Y-m-d\TH:i:s.v\Z'),
             'updatedBy' => [
-                'id' => fake()->uuid(),
-                'type' => 'user',
-                'name' => fake()->name(),
-                'accountType' => 'partner',
-                'accountId' => fake()->uuid(),
+                'id' => null,
+                'type' => null,
+                'name' => null,
+                'accountType' => 'tenant',
+                'accountId' => (string) Str::uuid(),
             ],
-            'updatedAt' => $updatedAt->format('Y-m-d\TH:i:s.000\Z'),
+            'updatedAt' => fake()->dateTimeThisYear()->format('Y-m-d\TH:i:s.v\Z'),
         ];
-
         return [
-            'id' => $firewallId,
-            'tenantId' => $tenantId,
-            'hostname' => $hostname,
+            'id' => $rawData['id'],
+            'tenantId' => $rawData['tenant']['id'],
+            'hostname' => $rawData['hostname'],
             'rawData' => $rawData,
         ];
+    }
+
+    function forTenant(SCTenant $tenant)
+    {
+        return $this->state(function (array $attributes) use ($tenant) {
+            return [
+                'rawData' => array_merge($attributes['rawData'], [
+                    'tenant' => [
+                        'id' => $tenant->id,
+                    ],
+                ]),
+                'tenantId' => $tenant->id,
+            ];
+        });
     }
 }

@@ -21,6 +21,7 @@
                     <x-table.th>Health</x-table.th>
                     <x-table.th>Tamper Protection</x-table.th>
                     <x-table.th>Last Seen</x-table.th>
+                    <x-table.th>Raw Data</x-table.th>
                 </tr>
             </x-table.thead>
             <tbody>
@@ -32,6 +33,8 @@
                         <x-table.td>{{ $endpoint->healthStatus }}</x-table.td>
                         <x-table.td>{{ $endpoint->tamperProtectionEnabled }}</x-table.td>
                         <x-table.td>{{ $endpoint->lastSeen }}</x-table.td>
+                        <x-table.td>{{ json_encode($endpoint->rawData) }}</x-table.td>
+                        
                     </x-table.tr>
                 @endforeach
             </tbody>

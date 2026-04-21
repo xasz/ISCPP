@@ -2,13 +2,13 @@
 
 namespace Database\Factories;
 
-use App\Models\WebhookLog;
+use App\Models\Event;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends Factory<WebhookLog>
+ * @extends Factory<Event>
  */
-class WebhookLogFactory extends Factory
+class EventFactory extends Factory
 {
     /**
      * Define the model's default state.

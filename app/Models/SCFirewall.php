@@ -25,4 +25,9 @@ class SCFirewall extends Model
     protected $casts = [
         'rawData' => 'array',
     ];
+
+    public function SCTenant()
+    {
+        return $this->belongsTo(SCTenant::class, 'tenantId');
+    }
 }

@@ -2,13 +2,13 @@
 
 namespace Database\Factories;
 
-use App\Models\WebhookLog;
+use App\Models\SCAlertAutoAction;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends Factory<WebhookLog>
+ * @extends Factory<SCAlertAutoAction>
  */
-class WebhookLogFactory extends Factory
+class SCAlertAutoActionFactory extends Factory
 {
     /**
      * Define the model's default state.

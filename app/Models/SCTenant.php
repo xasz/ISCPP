@@ -51,4 +51,14 @@ class SCTenant extends Model
     {
         return $this->hasOne(SCTenantHealthscore::class, 'tenantId');
     }
+
+    public function SCEndpoints()
+    {
+        return $this->hasMany(SCEndpoint::class, 'tenantId');
+    }
+
+    public function SCFirewalls()
+    {
+        return $this->hasMany(SCFirewall::class, 'tenantId');
+    }
 }
