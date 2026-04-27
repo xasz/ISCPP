@@ -29,20 +29,10 @@
                         {{ $scalert->raisedAt }}
                     </x-table.td>
                     <x-table.td>
-                        @php
-                            $color = match(strtolower($scalert->severity ?? '')) {
-                                'high'   => 'red',
-                                'medium' => 'yellow',
-                                'low'    => 'blue',
-                                default  => 'neutral',
-                            };
-                        @endphp
-                        <flux:badge color="{{ $color }}" size="sm">
-                            {{ $scalert->severity }}
-                        </flux:badge>
+                        <x-scalerts.badge :scalert="$scalert" />
                     </x-table.td>
                     <x-table.td>
-                        <x-table.a href="{{ route('scalerts.show', $scalert) }}">
+                        <x-table.a href="{{ route('scalerts.alertDetails', ['id' => $scalert->id]) }}">
                             {{ $scalert->description }}
                         </x-table.a>
                     </x-table.td>

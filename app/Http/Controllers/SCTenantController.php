@@ -86,6 +86,11 @@ class SCTenantController extends Controller
         return view('sctenants.show.iscpp-settings', compact('sctenant'));
     }
 
+    public function tenantRaw(SCService $service, SCTenant $sctenant)
+    {
+        return view('sctenants.show.raw', compact('sctenant'));
+    }
+
     public function healthscores()
     {
         $sctenants = SCTenant::orderBy('name', 'desc')

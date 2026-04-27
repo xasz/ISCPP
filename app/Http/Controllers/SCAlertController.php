@@ -73,12 +73,16 @@ class SCAlertController extends Controller
         return view('scalerts.index', compact('scalerts', 'chartData', 'alertsCount'));
     }
 
-    public function show(string $id)
+    public function alertDetails(string $id)
     {
         $scalert = SCAlert::with('SCTenant')->findOrFail($id);
-        $webhooksEnabled = app(WebhookSettings::class)->enabled;
-        
-        return view('scalerts.show', compact('scalert', 'webhooksEnabled'));
+        return view('scalerts.show.details', compact('scalert'));
+    }
+
+    public function alertRaw(string $id)
+    {
+        $scalert = SCAlert::with('SCTenant')->findOrFail($id);
+        return view('scalerts.show.raw', compact('scalert'));
     }
 
     public function autoActions()

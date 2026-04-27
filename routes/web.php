@@ -71,7 +71,8 @@ Route::middleware($protectedMiddleware)->group(function () {
 
     Route::middleware(IsSCAlertsIntegrationEnabled::class)->group(function () {
         Route::controller(SCAlertController::class)->group(function () {
-            Route::get('/scalerts/id/{id}', 'show')->name('scalerts.show');
+            Route::get('/scalerts/{id}/details', 'alertDetails')->name('scalerts.alertDetails');
+            Route::get('/scalerts/{id}/raw', 'alertRaw')->name('scalerts.alertRaw');
             Route::get('/scalerts/id/{id}/dispatch', 'dispatchAndShow')->name('scalerts.dispatchAndShow');
             Route::get('/scalerts/autoActions', 'autoActions')->name('scalerts.autoActions');
             Route::get('/scalerts', 'index')->name('scalerts.index');
@@ -133,6 +134,7 @@ Route::middleware($protectedMiddleware)->group(function () {
         Route::get('/sctenants/{sctenant}/endpoints', 'tenantEndpoints')->name('sctenants.tenantEndpoints');
         Route::get('/sctenants/{sctenant}/firewalls', 'tenantFirewalls')->name('sctenants.tenantFirewalls');
         Route::get('/sctenants/{sctenant}/iscpp-settings', 'tenantISCPPSettings')->name('sctenants.tenantISCPPSettings');
+        Route::get('/sctenants/{sctenant}/raw', 'tenantRaw')->name('sctenants.tenantRaw');
 
         Route::get('/sctenants', 'index')->name('sctenants.index');
     });

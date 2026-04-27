@@ -2,15 +2,19 @@
     <x-card title="ISCPP Settings"> 
         <!-- Halo Settings Tab -->
         @if(app(App\Settings\HaloServiceSettings::class)->enabled)
-        <x-tab-panel name="halo">
             <livewire:sctenant.card-halosettings :sctenant="$sctenant" />
-        </x-tab-panel>
+        @else
+            <flux:callout icon="information-circle">
+                Halo Service is disabled. Please enable it to configure settings.
+            </flux:callout>
         @endif
-        <!-- Halo Settings Tab -->
+        <!-- Ninja Settings Tab -->
         @if(app(App\Settings\NinjaServiceSettings::class)->enabled)
-        <x-tab-panel name="ninja">
             <livewire:sctenant.card-ninjasettings :sctenant="$sctenant" />
-        </x-tab-panel>
+        @else
+            <flux:callout icon="information-circle">
+                Ninja Service is disabled. Please enable it to configure settings.
+            </flux:callout>
         @endif
     </x-card>
 </x-sctenants.show.layout>
