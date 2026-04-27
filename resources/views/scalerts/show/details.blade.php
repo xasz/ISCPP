@@ -1,21 +1,9 @@
 <x-scalerts.show.layout :scalert="$scalert">
-
-      <x-card title="Alert">
-            <div class="flex items-end gap-4">
-                <div>
-                    <flux:icon name="bell-alert" class="h-16 w-16 text-blue-600 dark:text-blue-400" />
-                </div>
-                <div class="flex flex-col gap-2">
-                    <flux:heading size="xl" level="1" class="truncate">{{ $scalert->description }}</flux:heading>
-                    <div>
-                        <x-scalerts.badge :scalert="$scalert" />
-                        <flux:badge color="zinc" size="sm">{{ $scalert->category }}</flux:badge>
-                        <flux:badge color="violet" size="sm">{{ $scalert->type }}</flux:badge>
-                    </div>
-                </div>
-            </div>
-        </x-card>
-
+    <x-header-card :title="$scalert->description" icon="bell-alert" icon-color="blue">
+        <x-scalerts.badge :scalert="$scalert" />
+        <flux:badge color="zinc" size="sm">{{ $scalert->category }}</flux:badge>
+        <flux:badge color="violet" size="sm">{{ $scalert->type }}</flux:badge>
+    </x-header-card>
 
     <x-card title="Alert Details">
         <x-card-details-row label="ID" :value="$scalert->id" />
