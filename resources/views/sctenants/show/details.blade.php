@@ -1,23 +1,23 @@
 <x-sctenants.show.layout :sctenant="$sctenant">
 
-    <x-card title="Tenant">
-        <div class="flex items-end gap-4">
-            <div>
-                <flux:icon name="building-office-2" class="h-16 w-16 text-blue-600 dark:text-blue-400" />
-            </div>
-            <div class="flex flex-col gap-2">
-                <flux:heading size="xl" level="1" class="truncate">{{ $sctenant->name }}</flux:heading>
+    <div class="flex flex-col gap-4">
+        <x-card title="Tenant">
+            <div class="flex items-end gap-4">
                 <div>
-                    <flux:badge size="sm">{{ ucfirst($sctenant->billingType) }}</flux:badge>
-                    <flux:badge color="zinc" size="sm">{{ $sctenant->dataGeography }}</flux:badge>
-                    <flux:badge color="violet" size="sm">{{ $sctenant->dataRegion }}</flux:badge>
+                    <flux:icon name="building-office-2" class="h-16 w-16 text-blue-600 dark:text-blue-400" />
+                </div>
+                <div class="flex flex-col gap-2">
+                    <flux:heading size="xl" level="1" class="truncate">{{ $sctenant->name }}</flux:heading>
+                    <div>
+                        <flux:badge size="sm">{{ ucfirst($sctenant->billingType) }}</flux:badge>
+                        <flux:badge color="zinc" size="sm">{{ $sctenant->dataGeography }}</flux:badge>
+                        <flux:badge color="violet" size="sm">{{ $sctenant->dataRegion }}</flux:badge>
+                    </div>
                 </div>
             </div>
-        </div>
-    </x-card>
+        </x-card>
 
 
-    <div class="flex flex-col gap-4">
         <x-card title="Basic Information">
             <x-card-details-row icon="building-office-2" label="Name" :value="$sctenant->name" />
             <x-card-details-row icon="tag" label="Display Name" :value="$sctenant->showAs" />

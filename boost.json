@@ -2,12 +2,7 @@
     "agents": [
         "copilot"
     ],
-    "skills": [
-        "laravel-best-practices",
-        "fluxui-development",
-        "livewire-development",
-        "volt-development",
-        "pest-testing",
-        "tailwindcss-development"
-    ]
+    "mcp": true,
+    "nightwatch_mcp": false,
+    "sail": false
 }

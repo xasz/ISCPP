@@ -4,16 +4,16 @@
         <x-table.thead>
             <tr>
                 @if($hideSCTenant)
+                    <x-table.th class="w-2/16">Raised at</x-table.th>
                     <x-table.th class="w-1/16">Severity</x-table.th>
                     <x-table.th class="w-6/16">Description</x-table.th>
-                    <x-table.th class="w-2/16">Raised at</x-table.th>
                     <x-table.th class="w-4/16">Type</x-table.th>
                     <x-table.th class="w-1/16">Category</x-table.th>
                     <x-table.th class="w-1/16">Product</x-table.th>
                 @else
+                    <x-table.th class="w-2/16">Raised at</x-table.th>
                     <x-table.th class="w-1/16">Severity</x-table.th>
                     <x-table.th class="w-5/16">Description</x-table.th>
-                    <x-table.th class="w-2/16">Raised at</x-table.th>
                     <x-table.th class="w-3/16">Type</x-table.th>
                     <x-table.th class="w-1/16">Category</x-table.th>
                     <x-table.th class="w-1/16">Product</x-table.th>
@@ -25,6 +25,9 @@
         <tbody class="divide-y divide-neutral-100 dark:divide-neutral-800">
             @forelse ($scalerts as $scalert)
                 <x-table.tr>
+                    <x-table.td class="whitespace-nowrap px-4 py-3 text-neutral-500 dark:text-neutral-400 text-xs">
+                        {{ $scalert->raisedAt }}
+                    </x-table.td>
                     <x-table.td>
                         @php
                             $color = match(strtolower($scalert->severity ?? '')) {
@@ -34,17 +37,14 @@
                                 default  => 'neutral',
                             };
                         @endphp
-                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-{{ $color }}-100 text-{{ $color }}-700 dark:bg-{{ $color }}-900/40 dark:text-{{ $color }}-400">
+                        <flux:badge color="{{ $color }}" size="sm">
                             {{ $scalert->severity }}
-                        </span>
+                        </flux:badge>
                     </x-table.td>
                     <x-table.td>
                         <x-table.a href="{{ route('scalerts.show', $scalert) }}">
                             {{ $scalert->description }}
                         </x-table.a>
-                    </x-table.td>
-                    <x-table.td class="whitespace-nowrap px-4 py-3 text-neutral-500 dark:text-neutral-400 text-xs">
-                        {{ $scalert->raisedAt }}
                     </x-table.td>
                     <x-table.td>{{ $scalert->type }}</x-table.td>
                     <x-table.td>{{ $scalert->category }}</x-table.td>

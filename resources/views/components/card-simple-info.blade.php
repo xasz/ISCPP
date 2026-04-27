@@ -3,12 +3,11 @@
         <flux:heading size="xl" class="mb-2 flex-1">{{ $value }}</flux:heading>
          @if(isset($menu))
             <flux:dropdown>
-                <flux:button icon:trailing="ellipsis-horizontal"></flux:button>
+                <flux:button icon:trailing="ellipsis-horizontal" variant="ghost"></flux:button>
                 <flux:menu>
                     {{ $menu }}
                 </flux:menu>
             </flux:dropdown>
         @endif
     </div>
-    @endif
-</div>
+</x-card>

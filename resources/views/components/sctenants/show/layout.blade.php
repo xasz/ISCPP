@@ -1,6 +1,6 @@
 @props(['sctenant'])
 <x-layouts.app>
-    <flux:header>
+    <flux:header class="mb-4">
         <flux:navbar>
             <flux:navbar.item :href="route('sctenants.tenantDetails', $sctenant)">Details</flux:navbar.item>
             <flux:navbar.item :href="route('sctenants.tenantAlerts', $sctenant)">Alerts</flux:navbar.item>
