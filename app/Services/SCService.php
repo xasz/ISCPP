@@ -390,7 +390,7 @@ class SCService
 
         $date = now()->setYear($year)->setMonth($month);
 
-        $sctenants = SCTenant::all();
+        $sctenants = SCTenant::notIgnored()->get();
 
         $data = collect();
         foreach ($sctenants as $sct) {

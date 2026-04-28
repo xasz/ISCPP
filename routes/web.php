@@ -3,28 +3,28 @@
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\SCAlertController;
+use App\Http\Controllers\SCBillableController;
 use App\Http\Controllers\SCBillingController;
+use App\Http\Controllers\SCEndpointController;
+use App\Http\Controllers\SCFirewallController;
 use App\Http\Controllers\SCTenantController;
 use App\Http\Controllers\SettingsController;
-use App\Http\Controllers\SCFirewallController;
-use App\Http\Controllers\SCEndpointController;
-use App\Http\Controllers\SCBillableController;
 use App\Http\Controllers\UserManagementController;
 use App\Http\Controllers\WebhookLogController;
+use App\Http\Middleware\Google2FAMiddleware;
 use App\Http\Middleware\IsHaloIntegrationEnabled;
 use App\Http\Middleware\IsNinjaIntegrationEnabled;
 use App\Http\Middleware\IsSCAlertsIntegrationEnabled;
 use App\Http\Middleware\IsSCEndpointsScheduleEnabled;
-use Illuminate\Support\Facades\Route;
-use Livewire\Volt\Volt;
-use App\Http\Middleware\Google2FAMiddleware;
 use App\Http\Middleware\IsSCFirewallsIntegrationEnabled;
 use App\Http\Middleware\IsSCTenantHealthscoresScheduleEnabled;
+use Illuminate\Support\Facades\Route;
+use Livewire\Volt\Volt;
 
 // Define a protected route group middleware that includes 2FA verification
 $protectedMiddleware = ['auth', 'verified', Google2FAMiddleware::class];
 
-Route::permanentRedirect ('/', '/dashboard')->name('home');
+Route::permanentRedirect('/', '/dashboard')->name('home');
 
 // Add the 2FA verification route
 Route::middleware(['auth'])->group(function () {
@@ -47,27 +47,31 @@ Route::middleware($protectedMiddleware)->group(function () {
     Route::controller(DashboardController::class)->group(function () {
         Route::get('/dashboard', 'index')->name('dashboard');
     });
-    
+
     Route::middleware(IsSCTenantHealthscoresScheduleEnabled::class)->group(function () {
         Route::controller(SCTenantController::class)->group(function () {
             Route::get('/sctenants/healthscores', 'healthscores')->name('sctenants.healthscores');
         });
     });
 
-    
     Route::middleware(IsSCFirewallsIntegrationEnabled::class)->group(function () {
         Route::controller(SCFirewallController::class)->group(function () {
+            Route::get('/scfirewalls/{id}/details', 'firewallDetails')
+                ->name('scfirewalls.firewallDetails');
+            Route::get('/scfirewalls/{id}/raw', 'firewallRaw')
+                ->name('scfirewalls.firewallRaw');
             Route::get('/scfirewalls', 'index')
-            ->name('scfirewalls.index');
+                ->name('scfirewalls.index');
         });
     });
-    
+
     Route::middleware(IsSCEndpointsScheduleEnabled::class)->group(function () {
         Route::controller(SCEndpointController::class)->group(function () {
+            Route::get('/scendpoints/{id}/details', 'endpointDetails')->name('scendpoints.endpointDetails');
+            Route::get('/scendpoints/{id}/raw', 'endpointRaw')->name('scendpoints.endpointRaw');
             Route::get('/scendpoints', 'index')->name('scendpoints.index');
         });
     });
-    
 
     Route::middleware(IsSCAlertsIntegrationEnabled::class)->group(function () {
         Route::controller(SCAlertController::class)->group(function () {
@@ -77,55 +81,60 @@ Route::middleware($protectedMiddleware)->group(function () {
             Route::get('/scalerts/autoActions', 'autoActions')->name('scalerts.autoActions');
             Route::get('/scalerts', 'index')->name('scalerts.index');
         });
-        
+
     });
-    
+
     Route::controller(SCBillingController::class)->group(function () {
         Route::get('/scbilling/fetcher', 'fetcher')->name('scbilling.fetcher');
     });
-    
+
     Route::middleware(IsHaloIntegrationEnabled::class)->group(function () {
         Route::controller(SCBillingController::class)->group(function () {
             Route::get('/scbilling/haloPusher', 'haloPusher')->name('scbilling.haloPusher');
             Route::get('/scbillables/dispatchToHaloAndShowTenant/{year}/{month}/{id}', 'dispatchToHaloAndShowTenant')
-            ->name('scbillables.dispatchToHaloAndShowTenant');
+                ->name('scbillables.dispatchToHaloAndShowTenant');
         });
 
         Route::controller(SCTenantController::class)->group(function () {
             Route::get('/sctenants/haloMatchingHelper', 'haloMatchingHelper')->name('sctenants.haloMatchingHelper');
         });
     });
-    
+
     Route::middleware(IsNinjaIntegrationEnabled::class)->group(function () {
         Route::controller(SCTenantController::class)->group(function () {
             Route::get('/sctenants/ninjaMatchingHelper', 'ninjaMatchingHelper')->name('sctenants.ninjaMatchingHelper');
         });
     });
-    
+
     Route::controller(SCBillableController::class)->group(function () {
         Route::get('/scbillables/{id}', 'show')->name('scbillables.show');
         Route::get('/scbillables', 'index')->name('scbillables.index');
-        
+
     });
-    
+
     Route::controller(WebhookLogController::class)->group(function () {
         Route::get('/webhookLogs', 'index')->name('webhookLogs.index');
     });
-    
+
     Route::controller(EventController::class)->group(function () {
         Route::get('/events', 'index')->name('events.index');
     });
-    
+
     Route::controller(UserManagementController::class)->group(function () {
         Route::get('/usermanagement', 'index')->name('usermanagement.index');
     });
-    
+
     Route::controller(SettingsController::class)->group(function () {
         Route::get('/generalsettings', 'index')->name('generalsettings.index');
+        Route::get('/generalsettings/sc', 'sc')->name('generalsettings.sc');
+        Route::get('/generalsettings/webhook-alerts', 'webhookAlerts')->name('generalsettings.webhookAlerts');
+        Route::get('/generalsettings/halo', 'halo')->name('generalsettings.halo');
+        Route::get('/generalsettings/ninja', 'ninja')->name('generalsettings.ninja');
+        Route::get('/generalsettings/commands', 'commands')->name('generalsettings.commands');
     });
 
     Route::controller(SCTenantController::class)->group(function () {
-        
+
         Route::get('/sctenants/{sctenant}/details', 'tenantDetails')->name('sctenants.tenantDetails');
         Route::get('/sctenants/{sctenant}/alerts', 'tenantAlerts')->name('sctenants.tenantAlerts');
         Route::get('/sctenants/{sctenant}/billables', 'tenantBillables')->name('sctenants.tenantBillables');
@@ -138,6 +147,6 @@ Route::middleware($protectedMiddleware)->group(function () {
 
         Route::get('/sctenants', 'index')->name('sctenants.index');
     });
-    
+
 });
 require __DIR__.'/auth.php';

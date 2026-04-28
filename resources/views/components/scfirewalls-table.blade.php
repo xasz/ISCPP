@@ -17,7 +17,11 @@
         <tbody>
             @foreach ($scfirewalls as $firewall)
                 <x-table.tr>
-                    <x-table.td>{{ $firewall->hostname }}</x-table.td>
+                    <x-table.td>
+                        <x-table.a href="{{ route('scfirewalls.firewallDetails', ['id' => $firewall->id]) }}">
+                            {{ $firewall->hostname }}
+                        </x-table.a>
+                    </x-table.td>
                     <x-table.td>{{ data_get($firewall->rawData, 'serialNumber', __('N/A')) }}</x-table.td>
                     <x-table.td>{{ data_get($firewall->rawData, 'firmwareVersion', __('N/A')) }}</x-table.td>
                     <x-table.td>{{ data_get($firewall->rawData, 'status.connected') ? __('Yes') : __('No') }}</x-table.td>
@@ -30,4 +34,10 @@
             @endforeach
         </tbody>
     </x-table.table>
+
+    @if($scfirewalls->hasPages())
+        <div class="px-4 py-3 border-t border-neutral-100 dark:border-neutral-800">
+            {{ $scfirewalls->appends(request()->query())->links() }}
+        </div>
+    @endif
 </div>

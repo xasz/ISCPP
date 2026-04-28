@@ -1,16 +1,27 @@
-<div class="rounded border border-zinc-200/80 bg-white shadow-sm ring-1 ring-zinc-950/5 transition-shadow hover:shadow-md dark:border-zinc-800 dark:bg-zinc-900 dark:ring-white/10 overflow-hidden">
-    @if(isset($title) || isset($subtitle))
-    <div class="border-b border-blue-100 bg-gradient-to-r from-blue-50 to-blue-100/70 px-6 py-1 dark:border-blue-900/60 dark:from-blue-950/40 dark:to-blue-900/30">
-        @if(isset($title))
-        <flux:heading size="lg" level="2" class="leading-tight text-blue-900 dark:text-blue-100">{{ $title }}</flux:heading>
-        @endif
-        @if(isset($subtitle))
-        <flux:text size="sm" class="mt-1 block text-blue-700/90 dark:text-blue-300/85">{{ $subtitle }}</flux:text>
-        @endif
-    </div>
+@props([
+    'title' => null,
+    'subtitle' => null,
+    'description' => null,
+])
+
+@php
+    $cardSubtitle = $subtitle ?? $description;
+@endphp
+
+<section {{ $attributes->class('overflow-hidden rounded-xl border border-zinc-200 bg-zinc-50/60 shadow-md ring-1 ring-zinc-950/5 transition-shadow hover:shadow-lg dark:border-zinc-700 dark:bg-zinc-900/70 dark:shadow-black/30 dark:ring-white/10') }}>
+    @if($title || $cardSubtitle)
+        <header class="border-b border-zinc-200/80 bg-zinc-100/70 px-5 py-3 dark:border-zinc-700 dark:bg-zinc-900">
+            @if($title)
+                <flux:heading size="base" level="2" class="text-zinc-900 dark:text-zinc-100">{{ $title }}</flux:heading>
+            @endif
+
+            @if($cardSubtitle)
+                <flux:text size="sm" class="mt-1 block text-zinc-600 dark:text-zinc-400">{{ $cardSubtitle }}</flux:text>
+            @endif
+        </header>
     @endif
 
-    <div class="px-4 py-4 flex flex-col gap-4">
-        {{$slot}}
+    <div class="space-y-4 px-5 py-4 text-zinc-800 dark:text-zinc-200">
+        {{ $slot }}
     </div>
-</div>
+</section>

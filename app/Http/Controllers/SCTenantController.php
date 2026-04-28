@@ -103,7 +103,7 @@ class SCTenantController extends Controller
     {
         return view('sctenants.haloMatchingHelper',
             [
-                'SCTenants' => SCTenant::where('haloclient_id', '<=', 0)->get(),
+                'SCTenants' => SCTenant::notIgnored()->where('haloclient_id', '<=', 0)->get(),
             ]
         );
     }
@@ -112,7 +112,7 @@ class SCTenantController extends Controller
     {
         return view('sctenants.ninjaMatchingHelper',
             [
-                'SCTenants' => SCTenant::where('ninjaorg_id', '<=', 0)->get(),
+                'SCTenants' => SCTenant::notIgnored()->where('ninjaorg_id', '<=', 0)->get(),
             ]
         );
     }

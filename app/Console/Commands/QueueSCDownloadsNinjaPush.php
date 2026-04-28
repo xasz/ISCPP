@@ -29,7 +29,7 @@ class QueueSCDownloadsNinjaPush extends Command
     public function handle()
     {
         $this->info('Dispatching PushToNinjaSCTenantDownload for all tenants with ninjaorg_id != -1');
-        $tenants = SCTenant::where('ninjaorg_id', '!=', -1)->get();
+        $tenants = SCTenant::notIgnored()->where('ninjaorg_id', '!=', -1)->get();
         Event::logInfo('console', 'Dispatching PushToNinjaSCTenantDownload for '.$tenants->count().' tenants');
         $tenants->each(function ($tenant) {
             PushToNinjaSCTenantDownload::dispatch($tenant);

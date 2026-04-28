@@ -2,7 +2,7 @@
 
     <div class="flex flex-col gap-4">
 
-        <x-header-card :title="$sctenant->name" icon="building-office-2" icon-color="blue">
+        <x-header-card :title="$sctenant->name" icon="building-office-2" type="Tenant">
             <flux:badge size="sm">{{ ucfirst($sctenant->billingType) }}</flux:badge>
             <flux:badge color="zinc" size="sm">{{ $sctenant->dataGeography }}</flux:badge>
             <flux:badge color="violet" size="sm">{{ $sctenant->dataRegion }}</flux:badge>

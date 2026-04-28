@@ -29,7 +29,7 @@ class QueueRefreshSCAlertsJobsForAllTenants extends Command
     public function handle()
     {
         $this->info('Dispatching SCAlertRefresh for all tenants');
-        $tenants = SCTenant::all();
+        $tenants = SCTenant::notIgnored()->get();
         Event::logInfo('console', 'Dispatching SCAlertRefresh for '.$tenants->count().' tenants');
         $tenants->each(function ($tenant) {
             RefreshSCAlerts::dispatch($tenant);

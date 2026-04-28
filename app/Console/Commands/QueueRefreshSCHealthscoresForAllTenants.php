@@ -29,7 +29,7 @@ class QueueRefreshSCHealthscoresForAllTenants extends Command
     public function handle()
     {
         $this->info('Dispatching SCHealthscores for all tenants');
-        $tenants = SCTenant::all();
+        $tenants = SCTenant::notIgnored()->get();
         Event::logInfo('console', 'Dispatching SCHealthscore for '.$tenants->count().' tenants');
         $tenants->each(function ($tenant) {
             RefreshSCTenantHealthscore::dispatch($tenant);

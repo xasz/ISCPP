@@ -29,7 +29,7 @@ class QueueRefreshSCDownloadsForAllTenants extends Command
     public function handle()
     {
         $this->info('Dispatching SCTenantDownload for all tenants');
-        $tenants = SCTenant::all();
+        $tenants = SCTenant::notIgnored()->get();
         Event::logInfo('console', 'Dispatching SCTenantDownload for '.$tenants->count().' tenants');
         $tenants->each(function ($tenant) {
             RefreshSCTenantDownload::dispatch($tenant);

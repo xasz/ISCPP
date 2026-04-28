@@ -70,7 +70,13 @@ new class extends Component {
 }; ?>
 <x-card title="Running Commands" subtitle="This is for development">
     <flux:text>When you are here - You really should know what you are doing</flux:text>       
-    <x-a-button wire:click="runTenantRefresh">Trigger Tenant Refresh</x-a-button>
+    <div wire:loading> 
+        <flux:callout title="Running Command" class="mt-4">
+            <flux:text>Running... Please wait</flux:text>
+        </flux:callout>
+    </div>
+    <div class="grid grid-cols-2 w-full gap-3 mt-4">
+        <x-a-button wire:click="runTenantRefresh">Trigger Tenant Refresh</x-a-button>
         <x-a-button wire:click="alerts">Trigger Refresh Delta Alerts</x-a-button>
         <x-a-button wire:click="alerts">Trigger Refresh ALL Alerts</x-a-button>
         <x-a-button wire:click="endpoints">Trigger Refresh Endpoints</x-a-button>
@@ -81,7 +87,5 @@ new class extends Component {
         <x-a-button wire:click="dumpPostgresQueue">dumpPostgresQueue</x-a-button>
         <x-a-button wire:click="dumpSqliteQueue">dumpSqliteQueue</x-a-button>
         <x-a-button wire:click="purgeAlertData">Purge Alert Data</x-a-button>
-        <div wire:loading> 
-            Loading ...
-        </div>
+    </div>
 </x-card>

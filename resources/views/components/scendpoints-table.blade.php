@@ -16,7 +16,11 @@
         <tbody>
             @foreach ($scendpoints as $endpoint)
                 <x-table.tr>
-                    <x-table.td>{{ $endpoint->hostname }}</x-table.td>
+                    <x-table.td>
+                        <x-table.a href="{{ route('scendpoints.endpointDetails', ['id' => $endpoint->id]) }}">
+                            {{ $endpoint->hostname }}
+                        </x-table.a>
+                    </x-table.td>
                     <x-table.td>{{ $endpoint->type }}</x-table.td>
                     <x-table.td>{{ $endpoint->healthStatus }}</x-table.td>
                     <x-table.td>{{ $endpoint->tamperProtectionEnabled ? __('Enabled') : __('Disabled') }}</x-table.td>
@@ -28,4 +32,10 @@
             @endforeach
         </tbody>
     </x-table.table>
+
+    @if($scendpoints->hasPages())
+        <div class="px-4 py-3 border-t border-neutral-100 dark:border-neutral-800">
+            {{ $scendpoints->appends(request()->query())->links() }}
+        </div>
+    @endif
 </div>

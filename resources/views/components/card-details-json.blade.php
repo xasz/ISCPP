@@ -8,6 +8,7 @@
         $json = json_encode($arr);
     }
     $pretty = collect(json_decode($json, true))->toJson(JSON_PRETTY_PRINT);
+    
 @endphp
 <div class="mt-4">
     <div class="flex items-center justify-between mb-1.5">

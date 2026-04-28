@@ -56,8 +56,8 @@
     </x-table.table>
 
     @if($scalerts->hasPages())
-    <div class="px-4 py-3 border-t border-neutral-100 dark:border-neutral-800">
-        {{ $scalerts->links() }}
-    </div>
+        <div class="px-4 py-3 border-t border-neutral-100 dark:border-neutral-800">
+            {{ $scalerts->appends(request()->query())->links() }}
+        </div>
     @endif
 </div>

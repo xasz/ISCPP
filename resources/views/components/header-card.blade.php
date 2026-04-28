@@ -1,6 +1,6 @@
-@props(['icon', 'title'])
+@props(['icon', 'title', 'type' => ''])
 
-<x-card title="Alert">
+<x-card :title="$type">
     <div class="flex items-end gap-4">
         <div>
             <flux:icon name="{{ $icon }}" class="h-16 w-16 text-blue-600 dark:text-blue-400" />

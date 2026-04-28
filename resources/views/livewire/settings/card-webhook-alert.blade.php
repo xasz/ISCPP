@@ -59,7 +59,7 @@ new class extends Component {
             $webhook = new SendSCAlertWebhook($alert);
             $webhook->handle($wService);
 
-            $this->testResult = __("Webhook sent");
+            $this->testResult = __("Webhook sent - Check Webhook Events for details");
         } catch (Exception $e) {
             $this->testResult = $e->getMessage();
         }
@@ -96,7 +96,7 @@ new class extends Component {
     
 }; ?>
 
-<div>
+<div class="flex flex-col gap-4">
     <x-card title="Webhook Alert Settings" subtitle="This will post a webhook with the specified payload">
         <div class="relative overflow-x-auto mt-2">
             <x-card-details-switch  label="Enable Webhooks to forward alerts to external systems." wire:model.live="webhookEnabled" />
@@ -119,22 +119,22 @@ new class extends Component {
             </div>
             <div class="py-2">
                 {{ $message }}
-            <div>
+            </div>
         </div>
     </x-card>
 
     @if ($webhookEnabled)
-    <x-card title="Test Webhook" subtitle="This will send a test webhook to the specified url.">        
-        <div>
-            <h2>
-            {{ __('Test the current credentials. (Please save first)') }}
-            </h2>
-            <x-card-details-json :json="$this->webhookPayload"/>
-            <x-a-button wire:click="test">Test</x-a-button>
+        <x-card title="Test Webhook" subtitle="This will send a test webhook to the specified url.">        
             <div>
-                {{ $testResult }}
+                <h2>
+                {{ __('Test the current credentials. (Please save first)') }}
+                </h2>
+                <x-card-details-json :json="$this->webhookPayload"/>
+                <x-a-button wire:click="test">Test</x-a-button>
+                <div>
+                    {{ $testResult }}
+                </div>
             </div>
-        </div>
-    </x-card>
+        </x-card>
     @endif
 </div>

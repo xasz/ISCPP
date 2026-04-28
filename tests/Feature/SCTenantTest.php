@@ -1,10 +1,13 @@
 <?php
 
+use App\Jobs\RefreshSCAlerts;
 use App\Models\SCBillable;
 use App\Models\SCEndpoint;
 use App\Models\SCFirewall;
 use App\Models\SCTenant;
 use App\Models\User;
+use App\Settings\HaloServiceSettings;
+use Illuminate\Support\Facades\Queue;
 
 test('guests are redirected to the login page for sctenants', function () {
     $response = $this->get('/sctenants');
@@ -107,4 +110,54 @@ test('authenticated users can view tenant billables', function () {
         ->get(route('sctenants.tenantBillables', $tenant))
         ->assertSuccessful()
         ->assertSee('Endpoint Protection');
+});
+
+test('ignored tenants are excluded from alert refresh dispatch command', function () {
+    Queue::fake();
+
+    $activeTenant = SCTenant::factory()->create([
+        'iscpp_ignore' => false,
+    ]);
+
+    $ignoredTenant = SCTenant::factory()->create([
+        'iscpp_ignore' => true,
+    ]);
+
+    $this->artisan('app:queue-refresh-scalerts-jobs-for-all-tenants')
+        ->assertSuccessful();
+
+    Queue::assertPushed(RefreshSCAlerts::class, function (RefreshSCAlerts $job) use ($activeTenant) {
+        return (fn () => $this->tenantID)->call($job) === $activeTenant->id;
+    });
+
+    Queue::assertPushed(RefreshSCAlerts::class, 1);
+    Queue::assertNotPushed(RefreshSCAlerts::class, function (RefreshSCAlerts $job) use ($ignoredTenant) {
+        return (fn () => $this->tenantID)->call($job) === $ignoredTenant->id;
+    });
+});
+
+test('ignored tenants are excluded from halo matching helper', function () {
+    $user = User::factory()->create();
+
+    $settings = app(HaloServiceSettings::class);
+    $settings->enabled = true;
+    $settings->save();
+
+    $visibleTenant = SCTenant::factory()->create([
+        'haloclient_id' => -1,
+        'iscpp_ignore' => false,
+        'name' => 'Visible Tenant',
+    ]);
+
+    $ignoredTenant = SCTenant::factory()->create([
+        'haloclient_id' => -1,
+        'iscpp_ignore' => true,
+        'name' => 'Ignored Tenant',
+    ]);
+
+    $this->actingAs($user)
+        ->get(route('sctenants.haloMatchingHelper'))
+        ->assertSuccessful()
+        ->assertSee($visibleTenant->name)
+        ->assertDontSee($ignoredTenant->name);
 });

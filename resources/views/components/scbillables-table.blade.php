@@ -41,4 +41,10 @@
             @endforeach
         </tbody>
     </x-table.table>
+
+    @if($scbillables->hasPages())
+        <div class="px-4 py-3 border-t border-neutral-100 dark:border-neutral-800">
+            {{ $scbillables->appends(request()->query())->links() }}
+        </div>
+    @endif
 </div>

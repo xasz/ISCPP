@@ -29,7 +29,7 @@ class QueueRefreshSCFirewallsJobsForAllTenants extends Command
     public function handle()
     {
         $this->info('Dispatching SCFirewallRefresh for all tenants');
-        $tenants = SCTenant::all();
+        $tenants = SCTenant::notIgnored()->get();
         Event::logInfo('console', 'Dispatching SCFirewallRefresh for '.$tenants->count().' tenants');
         $tenants->each(function ($tenant) {
             RefreshSCFirewalls::dispatch($tenant);

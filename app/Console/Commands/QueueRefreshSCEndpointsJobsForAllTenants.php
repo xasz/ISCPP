@@ -29,7 +29,7 @@ class QueueRefreshSCEndpointsJobsForAllTenants extends Command
     public function handle()
     {
         $this->info('Dispatching SCEndpointRefresh for all tenants');
-        $tenants = SCTenant::all();
+        $tenants = SCTenant::notIgnored()->get();
         Event::logInfo('console', 'Dispatching SCEndpointRefresh for '.$tenants->count().' tenants');
         $tenants->each(function ($tenant) {
             RefreshSCEndpoints::dispatch($tenant);
