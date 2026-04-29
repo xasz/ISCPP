@@ -58,6 +58,8 @@ Route::middleware($protectedMiddleware)->group(function () {
         Route::controller(SCFirewallController::class)->group(function () {
             Route::get('/scfirewalls/{id}/details', 'firewallDetails')
                 ->name('scfirewalls.firewallDetails');
+            Route::get('/scfirewalls/{id}/firmware', 'firewallFirmware')
+                ->name('scfirewalls.firewallFirmware');
             Route::get('/scfirewalls/{id}/raw', 'firewallRaw')
                 ->name('scfirewalls.firewallRaw');
             Route::get('/scfirewalls', 'index')

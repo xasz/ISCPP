@@ -30,4 +30,11 @@ class SCFirewallController extends Controller
 
         return view('scfirewalls.show.raw', compact('firewall'));
     }
+
+    public function firewallFirmware(string $id)
+    {
+        $firewall = SCFirewall::with('SCTenant')->findOrFail($id);
+
+        return view('scfirewalls.show.firmware', compact('firewall'));
+    }
 }

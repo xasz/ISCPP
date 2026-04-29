@@ -6,6 +6,7 @@ use App\Models\Event;
 use App\Models\SCAlert;
 use App\Models\SCTenant;
 use App\Settings\SCServiceSettings;
+use Carbon\CarbonInterface;
 use Exception;
 use Illuminate\Support\Facades\Http;
 
@@ -127,6 +128,9 @@ class SCService
                     break;
                 case 'POST':
                     $response = $http->post($url, $query);
+                    break;
+                case 'DELETE':
+                    $response = $http->delete($url, $query);
                     break;
                 default:
                     throw new Exception("{$method} not supported");
@@ -293,6 +297,11 @@ class SCService
         return $this->tenantSend('POST', $tenant, $url, $options);
     }
 
+    public function tenantDelete(SCTenant $tenant, $url, $options = [])
+    {
+        return $this->tenantSend('DELETE', $tenant, $url, $options);
+    }
+
     public function tenants($filter = ['IncludeTrail' => false, 'IncludeInactive' => false])
     {
         $items = $this->partnerGet('/partner/v1/tenants', [
@@ -348,9 +357,63 @@ class SCService
         ]);
     }
 
+    public function firewallFirmwareUpgradeCheck(SCTenant $tenant, array $firewallIds): array
+    {
+        $response = $this->tenantPost($tenant, '/firewall/v1/firewalls/actions/firmware-upgrade-check', [
+            'raw' => true,
+            'query' => [
+                'firewalls' => array_values(array_unique($firewallIds)),
+            ],
+        ]);
+
+        return is_array($response) ? $response : [];
+    }
+
+    public function firewallFirmwareUpgradePlan(
+        SCTenant $tenant,
+        array $firewallIds,
+        ?string $upgradeToVersion,
+        CarbonInterface $upgradeAt,
+    ): array {
+        $upgradeAtZulu = $upgradeAt
+            ->copy()
+            ->utc()
+            ->format('Y-m-d\TH:i:s.000\Z');
+
+        $firewalls = collect(array_values(array_unique($firewallIds)))
+            ->map(function (string $firewallId) use ($upgradeAtZulu, $upgradeToVersion): array {
+                $payload = [
+                    'id' => $firewallId,
+                    'upgradeAt' => $upgradeAtZulu,
+                ];
+
+                if ($upgradeToVersion !== null && $upgradeToVersion !== '') {
+                    $payload['upgradeToVersion'] = $upgradeToVersion;
+                }
+
+                return $payload;
+            })
+            ->all();
+
+        $response = $this->tenantPost($tenant, '/firewall/v1/firewalls/actions/firmware-upgrade', [
+            'raw' => true,
+            'query' => [
+                'firewalls' => $firewalls,
+            ],
+        ]);
+
+        return is_array($response) ? $response : [];
+    }
+
+    public function firewallFirmwareUpgradeCancel(SCTenant $tenant, array $firewallIds): array
+    {
+        $ids = implode(',', $firewallIds);
+        $response = $this->tenantDelete($tenant, '/firewall/v1/firewalls/actions/firmware-upgrade?ids='.$ids, ['raw' => true]);
+        return is_array($response) ? $response : [];
+    }
+
     public function tenantDownloads(SCTenant $tenant)
     {
-
         return collect($this->tenantGet($tenant, '/endpoint/v1/downloads', ['raw' => true]));
     }
 

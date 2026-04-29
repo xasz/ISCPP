@@ -70,10 +70,11 @@ new class extends Component {
 }; ?>
 <x-card title="Running Commands" subtitle="This is for development">
     <flux:text>When you are here - You really should know what you are doing</flux:text>       
-    <div wire:loading> 
-        <flux:callout title="Running Command" class="mt-4">
-            <flux:text>Running... Please wait</flux:text>
-        </flux:callout>
+    <div  wire:loading>
+        <flux:card class="w-full">
+            <flux:heading >Running...</flux:heading>
+            <flux:text>Please wait</flux:text>
+        </flux:card>
     </div>
     <div class="grid grid-cols-2 w-full gap-3 mt-4">
         <x-a-button wire:click="runTenantRefresh">Trigger Tenant Refresh</x-a-button>

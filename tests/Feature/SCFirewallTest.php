@@ -60,3 +60,21 @@ test('authenticated users can view specific firewall raw page', function () {
         ->assertSee('Json Data')
         ->assertSee($firewall->hostname);
 });
+
+test('authenticated users can view specific firewall firmware page', function () {
+    $settings = resolve(SCServiceSettings::class);
+    $settings->firewallsScheduleEnabled = true;
+    $settings->save();
+
+    $user = User::factory()->create();
+    $tenant = SCTenant::factory()->create();
+    $firewall = SCFirewall::factory()->forTenant($tenant)->create();
+
+    $this->actingAs($user);
+
+    $this->get(route('scfirewalls.firewallFirmware', ['id' => $firewall->id]))
+        ->assertSuccessful()
+        ->assertSee('Firmware Upgrade')
+        ->assertSee('Check Firmware Updates')
+        ->assertSee($firewall->hostname);
+});
