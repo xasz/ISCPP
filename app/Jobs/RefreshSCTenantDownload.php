@@ -3,19 +3,18 @@
 namespace App\Jobs;
 
 use App\Models\Event;
-use App\Models\SCAlert;
 use App\Models\SCTenant;
 use App\Services\SCService;
-use App\Services\WebhookService;
 use Illuminate\Contracts\Queue\ShouldBeUniqueUntilProcessing;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 
-class RefreshSCTenantDownload implements ShouldQueue, ShouldBeUniqueUntilProcessing
+class RefreshSCTenantDownload implements ShouldBeUniqueUntilProcessing, ShouldQueue
 {
     use Queueable;
 
     protected $tenantID;
+
     public $tries = 2;
 
     public function __construct(SCTenant $tenant)
@@ -25,9 +24,10 @@ class RefreshSCTenantDownload implements ShouldQueue, ShouldBeUniqueUntilProcess
 
     public function handle(SCService $scService): void
     {
-        try{            
+        try {
             Event::log('sctentant-download', 'info', ['message' => 'SCTenantDownload for tenant refresh initiated', 'tenantId' => $this->tenantID]);
             $tenant = SCTenant::findOrFail($this->tenantID);
+
             $data = $scService->tenantDownloads($tenant);
             $tenant->SCTenantDownload()->updateOrCreate(
                 ['tenantId' => $this->tenantID],
@@ -36,16 +36,15 @@ class RefreshSCTenantDownload implements ShouldQueue, ShouldBeUniqueUntilProcess
                     'updated_at' => now(),
                 ]
             );
-        }
-        catch(\Exception $e){
+        } catch (\Exception $e) {
             Event::log('sctentant-download', 'error', ['message' => $e->getMessage(), 'tenantId' => $this->tenantID]);
         }
 
-        Event::log('sctentant-download', 'info', ['message' => 'SCTenantDownload refreshed', 'tenantId' => $this->tenantID]);   
+        Event::log('sctentant-download', 'info', ['message' => 'SCTenantDownload refreshed', 'tenantId' => $this->tenantID]);
     }
-    
+
     public function uniqueId(): string
     {
-        return 'refresh-sctentant-download-' . $this->tenantID;
+        return 'refresh-sctentant-download-'.$this->tenantID;
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -10,7 +11,9 @@ class SCTenant extends Model
     use HasFactory;
 
     protected $table = 'sc_tenants';
+
     protected $keyType = 'string';
+
     public $incrementing = false;
 
     protected $fillable = [
@@ -26,29 +29,49 @@ class SCTenant extends Model
         'rawData',
         'haloclient_id',
         'ninjaorg_id',
+        'iscpp_ignore',
     ];
 
-    protected $casts = [
-        'haloclient_id' => 'integer',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'haloclient_id' => 'integer',
+            'iscpp_ignore' => 'boolean',
+        ];
+    }
 
-    function SCAlerts()
+    public function scopeNotIgnored(Builder $query): Builder
+    {
+        return $query->where('iscpp_ignore', false);
+    }
+
+    public function SCAlerts()
     {
         return $this->hasMany(SCAlert::class, 'tenantId');
     }
 
-    function SCBillables()
+    public function SCBillables()
     {
         return $this->hasMany(SCBillable::class, 'tenantId');
     }
 
-    function SCTenantDownload()
+    public function SCTenantDownload()
     {
         return $this->hasOne(SCTenantDownload::class, 'tenantId');
     }
 
-    function SCTenantHealthscore()
+    public function SCTenantHealthscore()
     {
         return $this->hasOne(SCTenantHealthscore::class, 'tenantId');
+    }
+
+    public function SCEndpoints()
+    {
+        return $this->hasMany(SCEndpoint::class, 'tenantId');
+    }
+
+    public function SCFirewalls()
+    {
+        return $this->hasMany(SCFirewall::class, 'tenantId');
     }
 }

@@ -2,10 +2,10 @@
 
 namespace App\Console\Commands;
 
-use Illuminate\Console\Command;
 use App\Jobs\RefreshSCAlerts;
-use App\Models\SCTenant;
 use App\Models\Event;
+use App\Models\SCTenant;
+use Illuminate\Console\Command;
 
 class QueueRefreshAllSCAlertsJobsForAllTenants extends Command
 {
@@ -29,11 +29,11 @@ class QueueRefreshAllSCAlertsJobsForAllTenants extends Command
     public function handle()
     {
         $this->info('Dispatching SCAlertRefresh for all tenants');
-        $tenants = SCTenant::all();
-        Event::logInfo("console", "Dispatching SCAlertRefresh ALL for ". $tenants->count() . " tenants");
+        $tenants = SCTenant::notIgnored()->get();
+        Event::logInfo('console', 'Dispatching SCAlertRefresh ALL for '.$tenants->count().' tenants');
         $tenants->each(function ($tenant) {
             RefreshSCAlerts::dispatch($tenant, true);
         });
-        $this->info('SCAlertRefresh jobs dispatched for '. $tenants->count() . ' tenants');
+        $this->info('SCAlertRefresh jobs dispatched for '.$tenants->count().' tenants');
     }
 }

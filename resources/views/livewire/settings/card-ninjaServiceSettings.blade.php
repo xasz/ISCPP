@@ -86,39 +86,27 @@ new class extends Component {
     }
     
 }; ?>
-
-<x-card title="NinjaOne Service Settings (Preview Only)" subtitle="This will be used for injecting Data to NinjaOne">
+<div class="flex flex-col gap-4">
+    <x-card title="NinjaOne Service Settings (Preview Only)" subtitle="This will be used for injecting Data to NinjaOne">
         <div class="relative overflow-x-auto mt-2">
             <x-card-details-switch  label="Enable Ninja Deployment Integration" wire:model.live="enabled" />
             @if ($enabled)
-                <flux:text>
+                <flux:text class="mb-4">
                     The NinjaOne API key interface is somewhat experimental and may change in the future.
                     <br>
                     To this date you need to create a new API key in NinjaOne with the following settings:
-                    <ul>
-                        <li>Type: OAuth 2.0 (Not the Legacy One)</li>
-                        <li>Application Type - Machine-To-Machine</li>
-                        <li>Scope: <code>monitoring control management</code></li>
-                        <li>Url: http://localhost (Does not matter)</li>
-                        <li>Grant Type: Client Credentials</li>
-                    </ul>
                 </flux:text>
+                <flux:text><span class="font-bold">Type:</span> OAuth 2.0 (Not the Legacy One)</flux:text>
+                <flux:text><span class="font-bold">Application Type:</span> Machine-To-Machine</flux:text>
+                <flux:text><span class="font-bold">Scope:</span> <code>monitoring control management</code></flux:text>
+                <flux:text><span class="font-bold">Url:</span> http://localhost (Does not matter)</flux:text>
+                <flux:text><span class="font-bold">Grant Type:</span> Client Credentials</flux:text>
+
                 <x-card-details-input label="Instance Location ( EU, UK, US, etc.. )" wire:model="instance"/>
                 <x-card-details-input label="scope" wire:model="scope"/>
                 <x-card-details-input label="clientId" wire:model="clientId"/>
                 <x-card-details-input type="password" label="Client Secret" wire:model="clientSecret"/>
-                <x-subcard>         
-                    <div>
-                        <h2>
-                        {{ __('Test the current credentials. (Please save first)') }}
-                        </h2>
-                        <x-a-button wire:click="test">{{ __('Test')}}</x-a-button>
-                        <div>
-                            {{ $testResult }}
-                        </div>
-                    </div>
-                </x-subcard>
-
+                
                 <x-card-details-switch label="Auto Push Central Endpoint Installer" wire:model.live="autoPushCentralEndpointInstallerUrl" />
                 <x-card-details-input label="Windows Sophos Central Endpoint Installer URL" wire:model="windowsSophosCentralEndpointInstallerUrl"/>
                 <x-card-details-input label="Linux Sophos Central Endpoint Installer URL" wire:model="linuxSophosCentralEndpointInstallerUrl"/>
@@ -130,6 +118,18 @@ new class extends Component {
             </div>
             <div class="py-2">
                 {{ $message }}
-            <div>
+            </div>
         </div>
-</x-card>
+    </x-card>
+    @if ($enabled)
+        <x-card title="NinjaOne Connection Test" >
+            <flux:heading>
+                {{ __('Test the current credentials. (Please save first)') }}
+            </flux:heading>
+            <x-a-button wire:click="test">{{ __('Test')}}</x-a-button>
+            <div>
+                {{ $testResult }}
+            </div>
+        </x-card>
+    @endif
+</div>

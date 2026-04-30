@@ -3,19 +3,18 @@
 namespace App\Jobs;
 
 use App\Models\Event;
-use App\Models\SCAlert;
 use App\Models\SCTenant;
 use App\Services\SCService;
-use App\Services\WebhookService;
 use Illuminate\Contracts\Queue\ShouldBeUniqueUntilProcessing;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 
-class RefreshSCTenantHealthscore implements ShouldQueue, ShouldBeUniqueUntilProcessing
+class RefreshSCTenantHealthscore implements ShouldBeUniqueUntilProcessing, ShouldQueue
 {
     use Queueable;
 
     protected $tenantID;
+
     public $tries = 2;
 
     public function __construct(SCTenant $tenant)
@@ -25,9 +24,10 @@ class RefreshSCTenantHealthscore implements ShouldQueue, ShouldBeUniqueUntilProc
 
     public function handle(SCService $scService): void
     {
-        try{            
+        try {
             Event::log('sctentant-healthscore', 'info', ['message' => 'SCTenantHealthscore refresh initiated', 'tenantId' => $this->tenantID]);
             $tenant = SCTenant::findOrFail($this->tenantID);
+
             $data = $scService->tenantHealthscore($tenant);
             $tenant->SCTenantHealthscore()->updateOrCreate(
                 ['tenantId' => $this->tenantID],
@@ -37,15 +37,14 @@ class RefreshSCTenantHealthscore implements ShouldQueue, ShouldBeUniqueUntilProc
                     'tenantId' => $this->tenantID,
                 ]
             );
-        }
-        catch(\Exception $e){
+        } catch (\Exception $e) {
             Event::log('sctentant-healthscore', 'error', ['message' => $e->getMessage(), 'tenantId' => $this->tenantID]);
         }
-        Event::log('sctentant-healthscore', 'info', ['message' => 'SCTenantHealthscore refreshed', 'tenantId' => $this->tenantID]);   
+        Event::log('sctentant-healthscore', 'info', ['message' => 'SCTenantHealthscore refreshed', 'tenantId' => $this->tenantID]);
     }
-    
+
     public function uniqueId(): string
     {
-        return 'refresh-sctenants-healthscore-' . $this->tenantID;
+        return 'refresh-sctenants-healthscore-'.$this->tenantID;
     }
 }

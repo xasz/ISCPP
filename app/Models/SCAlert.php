@@ -11,7 +11,9 @@ class SCAlert extends Model
     use HasFactory;
 
     protected $table = 'sc_alerts';
+
     protected $keyType = 'string';
+
     public $incrementing = false;
 
     protected $fillable = [
@@ -40,6 +42,7 @@ class SCAlert extends Model
         'allowedActions' => 'array',
         'raisedAt' => 'datetime',
         'is_acknowledged' => 'boolean',
+        'rawData' => 'array',
     ];
 
     public function SCTenant()
@@ -58,7 +61,8 @@ class SCAlert extends Model
         SendSCAlertWebhook::dispatch($this);
     }
 
-    public function getColorTailwindColor(){
+    public function getColorTailwindColor()
+    {
         return match ($this->severity) {
             'high' => 'red-600',
             'medium' => 'yellow-600',

@@ -23,10 +23,10 @@ new class extends Component {
             <flux:navlist.item icon="bell-alert" :href="route('scalerts.index')" :current="request()->routeIs('scalerts.index')" wire:navigate>SC Alerts</flux:navlist.item>
             @endif
             @if(resolve(App\Settings\SCServiceSettings::class)->endpointsScheduleEnabled)
-            <flux:navlist.item icon="computer-desktop" :href="route('scendpoints.index')" :current="request()->routeIs('scendpoints.index')" wire:navigate>SC Endpoints</flux:navlist.item>
+            <flux:navlist.item icon="computer-desktop" :href="route('scendpoints.index')" :current="request()->routeIs('scendpoints.index')" wire:navigate>SC Endpoints (Preview)</flux:navlist.item>
             @endif
             @if(resolve(App\Settings\SCServiceSettings::class)->firewallsScheduleEnabled)
-            <flux:navlist.item icon="fire" :href="route('scfirewalls.index')" :current="request()->routeIs('scfirewalls.index')" wire:navigate>SC Firewalls (soon)</flux:navlist.item>
+            <flux:navlist.item icon="fire" :href="route('scfirewalls.index')" :current="request()->routeIs('scfirewalls.index')" wire:navigate>SC Firewalls (Preview)</flux:navlist.item>
             @endif
         </flux:navlist.group>
 

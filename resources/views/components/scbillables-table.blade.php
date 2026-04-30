@@ -27,7 +27,7 @@
                 <x-table.td>{{ $data['productDescription'] }}</x-table.td>
                 @if(!$hideSCTenant)
                 <x-table.td>
-                    <x-table.a href="{{ route('sctenants.show', $data['tenantId']) }}">
+                    <x-table.a href="{{ route('sctenants.tenantDetails', $data['tenantId']) }}">
                     {{ $data->SCTenant->name }}
                     </x-table.a>
                 </x-table.td>
@@ -41,4 +41,10 @@
             @endforeach
         </tbody>
     </x-table.table>
+
+    @if(is_object($scbillables) && method_exists($scbillables, 'hasPages') && $scbillables->hasPages())
+        <div class="px-4 py-3 border-t border-neutral-100 dark:border-neutral-800">
+            {{ $scbillables->appends(request()->query())->links() }}
+        </div>
+    @endif
 </div>

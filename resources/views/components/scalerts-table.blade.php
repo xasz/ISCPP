@@ -1,46 +1,63 @@
 @props(['scalerts', 'hideSCTenant' => false])
 <div class="relative overflow-x-auto">
-    <span class="text-red-600 bg-red-600 hidden">Tailwind Cache</span>
-    <span class="text-yellow-600 bg-yellow-600 hidden">Tailwind Cache</span>
-    <span class="text-grey-600 bg-grey-600 hidden">Tailwind Cache</span>
     <x-table.table>
         <x-table.thead>
             <tr>
-            <x-table.th>Severity</x-table.th>
-                <x-table.th>Description</x-table.th>
-                <x-table.th>Raised at</x-table.th>
-                <x-table.th>Type</x-table.th>
-                <x-table.th>Category</x-table.th>
-                <x-table.th>Product</x-table.th>
-                @unless ($hideSCTenant)
-                <x-table.th>Tenant</x-table.th>
-                @endunless
+                @if($hideSCTenant)
+                    <x-table.th class="w-2/16">Raised at</x-table.th>
+                    <x-table.th class="w-1/16">Severity</x-table.th>
+                    <x-table.th class="w-6/16">Description</x-table.th>
+                    <x-table.th class="w-4/16">Type</x-table.th>
+                    <x-table.th class="w-1/16">Category</x-table.th>
+                    <x-table.th class="w-1/16">Product</x-table.th>
+                @else
+                    <x-table.th class="w-2/16">Raised at</x-table.th>
+                    <x-table.th class="w-1/16">Severity</x-table.th>
+                    <x-table.th class="w-5/16">Description</x-table.th>
+                    <x-table.th class="w-3/16">Type</x-table.th>
+                    <x-table.th class="w-1/16">Category</x-table.th>
+                    <x-table.th class="w-1/16">Product</x-table.th>
+                    <x-table.th class="w-2/16">Tenant</x-table.th>
+                @endif
+
             </tr>
         </x-table.thead>
-        <tbody>
-            @foreach ($scalerts as $scalert)
+        <tbody class="divide-y divide-neutral-100 dark:divide-neutral-800">
+            @forelse ($scalerts as $scalert)
                 <x-table.tr>
-                    <x-table.td>    
-                        <div class="px-3 py-1 center text-center rounded-xl bg-{{ $scalert->getColorTailwindColor() }}">
-                            {{ $scalert->severity }}
-                        </div>
+                    <x-table.td class="whitespace-nowrap px-4 py-3 text-neutral-500 dark:text-neutral-400 text-xs">
+                        {{ $scalert->raisedAt }}
                     </x-table.td>
                     <x-table.td>
-                        <x-table.a href="{{ route('scalerts.show', $scalert) }}">
+                        <x-scalerts.badge :scalert="$scalert" />
+                    </x-table.td>
+                    <x-table.td>
+                        <x-table.a href="{{ route('scalerts.alertDetails', ['id' => $scalert->id]) }}">
                             {{ $scalert->description }}
                         </x-table.a>
-                    </x-table.td><x-table.td>{{ $scalert->raisedAt }}</x-table.td>
-                    <x-table.td>{{ $scalert->type }}</x-table.td>    
+                    </x-table.td>
+                    <x-table.td>{{ $scalert->type }}</x-table.td>
                     <x-table.td>{{ $scalert->category }}</x-table.td>
                     <x-table.td>{{ $scalert->product }}</x-table.td>
                     @unless ($hideSCTenant)
-                    <x-table.td>{{ $scalert->sctenant != null ? $scalert->sctenant->name : __('Unkown')}}</x-table.td>
+                    <x-table.td>
+                        {{ $scalert->sctenant != null ? $scalert->sctenant->name : __('Unknown') }}
+                    </x-table.td>
                     @endunless
                 </x-table.tr>
-            @endforeach
+            @empty
+                <tr>
+                    <td colspan="{{ $hideSCTenant ? 6 : 7 }}" class="px-4 py-8 text-center text-sm text-neutral-400 dark:text-neutral-500">
+                        {{ __('No alerts found.') }}
+                    </td>
+                </tr>
+            @endforelse
         </tbody>
     </x-table.table>
-    <div class="py-4">
-        {{ $scalerts->links() }}
-    </div>
+
+    @if($scalerts->hasPages())
+        <div class="px-4 py-3 border-t border-neutral-100 dark:border-neutral-800">
+            {{ $scalerts->appends(request()->query())->links() }}
+        </div>
+    @endif
 </div>

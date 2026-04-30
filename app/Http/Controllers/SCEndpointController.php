@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\SCEndpoint;
 
 class SCEndpointController extends Controller
@@ -16,13 +15,28 @@ class SCEndpointController extends Controller
 
         $scendpoints = SCEndpoint::orderBy('hostname', 'desc')
             ->when($validated->has('filterHostname'), function ($query) use ($validated) {
-                $query->where('hostname', 'ILIKE', '%' . $validated['filterHostname'] . '%');
+                $query->where('hostname', 'ILIKE', '%'.$validated['filterHostname'].'%');
             })
             ->paginate(50);
 
         $endpointsCount = [
             'all' => SCEndpoint::count(),
         ];
+
         return view('scendpoints.index', compact('scendpoints', 'endpointsCount'));
+    }
+
+    public function endpointDetails(string $id)
+    {
+        $endpoint = SCEndpoint::with('SCTenant')->findOrFail($id);
+
+        return view('scendpoints.show.details', compact('endpoint'));
+    }
+
+    public function endpointRaw(string $id)
+    {
+        $endpoint = SCEndpoint::with('SCTenant')->findOrFail($id);
+
+        return view('scendpoints.show.raw', compact('endpoint'));
     }
 }

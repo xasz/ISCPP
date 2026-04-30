@@ -72,33 +72,35 @@ new class extends Component {
     
 }; ?>
 
-<x-card title="Halo Service Settings" subtitle="This will be used for injecting Data to Halo">
-        <div class="relative overflow-x-auto mt-2">
-            <x-card-details-switch  label="Enable Halo billing Integration" wire:model.live="enabled" />
-            @if ($enabled)
-                <x-card-details-input label="Instance Name" wire:model="instance"/>
-                <x-card-details-input label="Instance Url (https:// will always prepended)" wire:model="url"/>
+<div class="flex flex-col gap-4">
+    <x-card title="Halo Service Settings" subtitle="This will be used for injecting Data to Halo">
+            <div class="relative overflow-x-auto mt-2">
+                <x-card-details-switch  label="Enable Halo billing Integration" wire:model.live="enabled" />
+                @if ($enabled)
+                    <x-card-details-input label="Instance Name" wire:model="instance"/>
+                    <x-card-details-input label="Instance Url (https:// will always prepended)" wire:model="url"/>
 
-                <x-card-details-input label="scope" wire:model="scope"/>
-                <x-card-details-input label="clientId" wire:model="clientId"/>
-                <x-card-details-input type="password" label="Client Secret" wire:model="clientSecret"/>
-                <x-subcard>         
-                    <div>
-                        <h2>
-                        {{ __('Test the current credentials. (Please save first)') }}
-                        </h2>
-                        <x-a-button wire:click="test">{{ __('Test')}}</x-a-button>
-                        <div>
-                            {{ $testResult }}
-                        </div>
-                    </div>
-                </x-subcard>
-            @endif
-            <div class="grid justify-items-end mt-4">
-                <x-a-button wire:click="save">{{ __('Save') }}</x-a-button>
+                    <x-card-details-input label="scope" wire:model="scope"/>
+                    <x-card-details-input label="clientId" wire:model="clientId"/>
+                    <x-card-details-input type="password" label="Client Secret" wire:model="clientSecret"/>
+                @endif
+                <div class="grid justify-items-end mt-4">
+                    <x-a-button wire:click="save">{{ __('Save') }}</x-a-button>
+                </div>
+                <div class="py-2">
+                    {{ $message }}
+                </div>
             </div>
-            <div class="py-2">
-                {{ $message }}
+    </x-card>
+    @if ($enabled)
+        <x-card title="Halo Connection Test" >
+            <flux:heading>
+                {{ __('Test the current credentials. (Please save first)') }}
+            </flux:heading>
+            <x-a-button wire:click="test">{{ __('Test')}}</x-a-button>
             <div>
-        </div>
-</x-card>
+                {{ $testResult }}
+            </div>
+        </x-card>
+    @endif
+</div> 

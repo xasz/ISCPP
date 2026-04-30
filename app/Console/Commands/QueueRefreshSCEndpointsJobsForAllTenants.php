@@ -2,10 +2,10 @@
 
 namespace App\Console\Commands;
 
-use Illuminate\Console\Command;
 use App\Jobs\RefreshSCEndpoints;
-use App\Models\SCTenant;
 use App\Models\Event;
+use App\Models\SCTenant;
+use Illuminate\Console\Command;
 
 class QueueRefreshSCEndpointsJobsForAllTenants extends Command
 {
@@ -21,7 +21,7 @@ class QueueRefreshSCEndpointsJobsForAllTenants extends Command
      *
      * @var string
      */
-    protected $description = 'Command description';
+    protected $description = 'Refresh SC Endpoints for all tenants';
 
     /**
      * Execute the console command.
@@ -29,8 +29,8 @@ class QueueRefreshSCEndpointsJobsForAllTenants extends Command
     public function handle()
     {
         $this->info('Dispatching SCEndpointRefresh for all tenants');
-        $tenants = SCTenant::all();
-        Event::logInfo("console", "Dispatching SCEndpointRefresh for ". $tenants->count() . " tenants");
+        $tenants = SCTenant::notIgnored()->get();
+        Event::logInfo('console', 'Dispatching SCEndpointRefresh for '.$tenants->count().' tenants');
         $tenants->each(function ($tenant) {
             RefreshSCEndpoints::dispatch($tenant);
         });

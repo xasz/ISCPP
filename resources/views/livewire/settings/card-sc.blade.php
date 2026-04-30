@@ -65,8 +65,8 @@ new class extends Component {
     
 }; ?>
 
-<div class="grid grid-cols-2 w-full gap-3">
-    <x-card class="w-1/2" title="Sophos Central Credentials" subtitle="Please enter valid Sophos Central (Super Admin) Partner Credentials">
+<div class="grid grid-cols-1 w-full gap-3">
+    <x-card class="w-full" title="Sophos Central Credentials" subtitle="Please enter valid Sophos Central (Super Admin) Partner Credentials">
             <x-card-details-input label="Client ID" wire:model="clientId" />
             <x-card-details-input type="password" label="Client Secret" wire:model="clientSecret"/>
             <div class="grid justify-items-end mt-4">
@@ -81,7 +81,7 @@ new class extends Component {
             </flux:text>
     </x-card>
 
-    <x-card class="w-1/2" title="Test Sophos Central Credentials" subtitle="Test the current credentials (Please hit save first, when you entered new credentials)">
+    <x-card class="w-full" title="Test Sophos Central Credentials" subtitle="Test the current credentials (Please hit save first, when you entered new credentials)">
         <div class="space-y-4">
             <div wire:loading>
                 <flux:text>

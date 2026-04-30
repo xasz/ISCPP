@@ -60,7 +60,7 @@ new class extends Component {
 
 }; ?>
 
-<x-card class="w-1/2" title="Sophos Central Features" subtitle="Enable ISCPP Sophos Central Features">
+<x-card class="w-full2" title="Sophos Central Features" subtitle="Enable ISCPP Sophos Central Features">
     
     <x-card-details-switch  label="Enable Tenants Schedule" checked disabled/>
     <flux:text>

@@ -13,11 +13,12 @@ class WebhookService {
 
     public static function generatedPayload(SCAlert $alert){
         $settings = app(WebhookSettings::class);
-        $payload = json_decode($alert->rawData, true); // Ensure associative array
+
+        $payload = $alert;
 
         if ($settings->enableHaloData && $alert->SCTenant) {
             $payload['halo'] = [
-            'client_id' => $alert->SCTenant->haloclient_id,
+                'client_id' => $alert->SCTenant->haloclient_id,
             ];
         }
         return $payload;

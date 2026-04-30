@@ -2,14 +2,8 @@
 
 namespace App\Console\Commands;
 
-use App\Jobs\PushToNinjaSCTenantDownload;
-use App\Jobs\RefreshSCTenantDownload;
-use App\Jobs\RefreshSCTenantHealthscore;
-use Illuminate\Console\Command;
-use App\Jobs\RefreshSCAlerts;
 use App\Jobs\RefreshSCTenants;
-use App\Models\SCTenant;
-use App\Models\Event;
+use Illuminate\Console\Command;
 
 class QueueSCTenantsRefresh extends Command
 {
@@ -25,7 +19,7 @@ class QueueSCTenantsRefresh extends Command
      *
      * @var string
      */
-    protected $description = 'Command description';
+    protected $description = 'Refresh SC Tenants for all tenants';
 
     /**
      * Execute the console command.

@@ -1,11 +1,11 @@
 <?php
 
-use App\Models\User;
 use App\Models\SCAlert;
 use App\Models\SCTenant;
-use App\Settings\SCServiceSettings;
+use App\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 
-uses(\Illuminate\Foundation\Testing\RefreshDatabase::class);
+uses(RefreshDatabase::class);
 
 test('guests are redirected to the login page for scalerts', function () {
     $response = $this->get('/scalerts');
@@ -23,13 +23,47 @@ test('authenticated users can visit the scalerts index page', function () {
 test('authenticated users can view a specific scalert', function () {
     $user = User::factory()->create();
     $this->actingAs($user);
-    
+
     // Create a tenant first, then create an alert with that tenant ID
     $tenant = SCTenant::factory()->create();
     $alert = SCAlert::factory()->create([
-        'tenantId' => $tenant->id
+        'tenantId' => $tenant->id,
     ]);
 
-    $response = $this->get("/scalerts/id/{$alert->id}");
-    $response->assertStatus(200);
+    $response = $this->get("/scalerts/{$alert->id}/details");
+    $response->assertSuccessful();
+});
+
+test('scalert details tab is shown by default', function () {
+    $user = User::factory()->create();
+    $this->actingAs($user);
+
+    $tenant = SCTenant::factory()->create();
+    $alert = SCAlert::factory()->create([
+        'tenantId' => $tenant->id,
+    ]);
+
+    $response = $this->get("/scalerts/{$alert->id}/details");
+
+    $response
+        ->assertSuccessful()
+        ->assertSee('Alert Details')
+        ->assertDontSee('Json Data');
+});
+
+test('scalert raw tab can be shown by route', function () {
+    $user = User::factory()->create();
+    $this->actingAs($user);
+
+    $tenant = SCTenant::factory()->create();
+    $alert = SCAlert::factory()->create([
+        'tenantId' => $tenant->id,
+    ]);
+
+    $response = $this->get("/scalerts/{$alert->id}/raw");
+
+    $response
+        ->assertSuccessful()
+        ->assertSee('Json Data')
+        ->assertDontSee('Raised at');
 });

@@ -3,12 +3,9 @@
 namespace App\Console\Commands;
 
 use App\Jobs\PushToNinjaSCTenantDownload;
-use App\Jobs\RefreshSCTenantDownload;
-use App\Jobs\RefreshSCTenantHealthscore;
-use Illuminate\Console\Command;
-use App\Jobs\RefreshSCAlerts;
-use App\Models\SCTenant;
 use App\Models\Event;
+use App\Models\SCTenant;
+use Illuminate\Console\Command;
 
 class QueueSCDownloadsNinjaPush extends Command
 {
@@ -24,7 +21,7 @@ class QueueSCDownloadsNinjaPush extends Command
      *
      * @var string
      */
-    protected $description = 'Command description';
+    protected $description = 'Refresh SC Downloads for all tenants with ninjaorg_id != -1 and push to Ninja';
 
     /**
      * Execute the console command.
@@ -32,11 +29,11 @@ class QueueSCDownloadsNinjaPush extends Command
     public function handle()
     {
         $this->info('Dispatching PushToNinjaSCTenantDownload for all tenants with ninjaorg_id != -1');
-        $tenants = SCTenant::where('ninjaorg_id', '!=', -1)->get();
-        Event::logInfo("console", "Dispatching PushToNinjaSCTenantDownload for ". $tenants->count() . " tenants");
+        $tenants = SCTenant::notIgnored()->where('ninjaorg_id', '!=', -1)->get();
+        Event::logInfo('console', 'Dispatching PushToNinjaSCTenantDownload for '.$tenants->count().' tenants');
         $tenants->each(function ($tenant) {
             PushToNinjaSCTenantDownload::dispatch($tenant);
         });
-        $this->info('PushToNinjaSCTenantDownload jobs dispatched for all tenants');
+        $this->info('PushToNinjaSCTenantDownload jobs dispatched for all tenants with ninjaorg_id != -1');
     }
 }

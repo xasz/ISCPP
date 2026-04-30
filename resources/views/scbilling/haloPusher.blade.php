@@ -1,3 +1,3 @@
 <x-layouts.app>
-    <livewire:billing.card-haloPusher>
+    <livewire:scbilling.card-haloPusher />
 </x-layouts.app>

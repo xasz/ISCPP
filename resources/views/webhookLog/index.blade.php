@@ -19,7 +19,7 @@
                     <x-table.td>{{ $webhookLog->response }}</x-table.td>
                     <x-table.td>{{ json_encode($webhookLog->payload) }}</x-table.td>
                     <x-table.td>
-                        <x-table.a href="{{ route('scalerts.show', $webhookLog->sc_alert_id) }}">
+                        <x-table.a href="{{ route('scalerts.alertDetails', ['id' => $webhookLog->sc_alert_id]) }}">
                             {{ $webhookLog->sc_alert_id }}
                         </x-table.a>
                     </x-table.td>   

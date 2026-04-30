@@ -22,7 +22,7 @@
                 @foreach ($sctenants as $sctenant)
                     <x-table.tr>
                         <x-table.td>
-                                <x-table.a href="{{ route('sctenants.show', $sctenant) }}">
+                                <x-table.a href="{{ route('sctenants.tenantDetails', $sctenant) }}">
                                     {{ $sctenant->name }}
                                 </x-table.a>
                                 <br>
@@ -42,18 +42,18 @@
                         <x-table.td></x-table.td>
                         <x-table.td></x-table.td>
                         @else
-                        <x-table.td>{{ $sctenant->SCTenantHealthscore->getEndpointProtectionComputerHealthscore() }}</x-table.td>
-                        <x-table.td>{{ $sctenant->SCTenantHealthscore->getEndpointProtectionServerHealthscore() }}</x-table.td>
-                        <x-table.td>{{ $sctenant->SCTenantHealthscore->getEndpointPolicyComputerHealthscore() }}</x-table.td>
-                        <x-table.td>{{ $sctenant->SCTenantHealthscore->getEndpointPolicyServerHealthscore() }}</x-table.td>
-                        <x-table.td>{{ $sctenant->SCTenantHealthscore->getEndpointExclusionsComputerHealthscore() }}</x-table.td>
-                        <x-table.td>{{ $sctenant->SCTenantHealthscore->getEndpointExclusionsServerHealthscore() }}</x-table.td>
-                        <x-table.td>{{ $sctenant->SCTenantHealthscore->getEndpointExclusionsGlobalHealthscore() }}</x-table.td>
-                        <x-table.td>{{ $sctenant->SCTenantHealthscore->getEndpointTamperProtectionComputerHealthscore() }}</x-table.td>
-                        <x-table.td>{{ $sctenant->SCTenantHealthscore->getEndpointTamperProtectionServerHealthscore() }}</x-table.td>
-                        <x-table.td>{{ $sctenant->SCTenantHealthscore->getEndpointTamperProtectionGlobalHealthscore() }}</x-table.td>
-                        <x-table.td>{{ $sctenant->SCTenantHealthscore->getEndpointMDRDataTelemetryProtectionImprovementHealthscore() }}</x-table.td>
-                        <x-table.td>{{ $sctenant->SCTenantHealthscore->getEndpointMDRContactHealthscore() }}</x-table.td>
+                        <x-table.td><x-healthscore-badge :score="$sctenant->SCTenantHealthscore->getEndpointProtectionComputerHealthscore()" /></x-table.td>
+                        <x-table.td><x-healthscore-badge :score="$sctenant->SCTenantHealthscore->getEndpointProtectionServerHealthscore()" /></x-table.td>
+                        <x-table.td><x-healthscore-badge :score="$sctenant->SCTenantHealthscore->getEndpointPolicyComputerHealthscore()" /></x-table.td>
+                        <x-table.td><x-healthscore-badge :score="$sctenant->SCTenantHealthscore->getEndpointPolicyServerHealthscore()" /></x-table.td>
+                        <x-table.td><x-healthscore-badge :score="$sctenant->SCTenantHealthscore->getEndpointExclusionsComputerHealthscore()" /></x-table.td>
+                        <x-table.td><x-healthscore-badge :score="$sctenant->SCTenantHealthscore->getEndpointExclusionsServerHealthscore()" /></x-table.td>
+                        <x-table.td><x-healthscore-badge :score="$sctenant->SCTenantHealthscore->getEndpointExclusionsGlobalHealthscore()" /></x-table.td>
+                        <x-table.td><x-healthscore-badge :score="$sctenant->SCTenantHealthscore->getEndpointTamperProtectionComputerHealthscore()" /></x-table.td>
+                        <x-table.td><x-healthscore-badge :score="$sctenant->SCTenantHealthscore->getEndpointTamperProtectionServerHealthscore()" /></x-table.td>
+                        <x-table.td><x-healthscore-badge :score="$sctenant->SCTenantHealthscore->getEndpointTamperProtectionGlobalHealthscore()" /></x-table.td>
+                        <x-table.td><x-healthscore-badge :score="$sctenant->SCTenantHealthscore->getEndpointMDRDataTelemetryProtectionImprovementHealthscore()" /></x-table.td>
+                        <x-table.td><x-healthscore-badge :score="$sctenant->SCTenantHealthscore->getEndpointMDRContactHealthscore()" /></x-table.td>
                         @endif  
                                 
                     </x-table.tr>
