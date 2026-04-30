@@ -171,7 +171,7 @@ new class extends Component {
             </x-card>
         @endif
     @else
-        <x-card title="Firmware Upgrade Planned" subtitle="A firmware upgrade is already planned for this firewall. Please check the details below.">
+        <x-card title="Firmware Upgrade Planned" subtitle="ISCPP already planned for this firewall. Please check the details below.">
             <div>
                 <x-card-details-row label="Planned Upgrade At" :value="$firewall->plannedFirmwareUpgradeAt?->format('Y-m-d H:i') ?? __('N/A')" />
             </div>

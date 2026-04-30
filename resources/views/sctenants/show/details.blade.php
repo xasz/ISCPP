@@ -1,13 +1,6 @@
 <x-sctenants.show.layout :sctenant="$sctenant">
 
     <div class="flex flex-col gap-4">
-
-        <x-header-card :title="$sctenant->name" icon="building-office-2" type="Tenant">
-            <flux:badge size="sm">{{ ucfirst($sctenant->billingType) }}</flux:badge>
-            <flux:badge color="zinc" size="sm">{{ $sctenant->dataGeography }}</flux:badge>
-            <flux:badge color="violet" size="sm">{{ $sctenant->dataRegion }}</flux:badge>
-        </x-header-card>
-
         <x-card title="Basic Information">
             <x-card-details-row icon="building-office-2" label="Name" :value="$sctenant->name" />
             <x-card-details-row icon="tag" label="Display Name" :value="$sctenant->showAs" />

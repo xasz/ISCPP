@@ -1,10 +1,4 @@
 <x-scalerts.show.layout :scalert="$scalert">
-    <x-header-card :title="$scalert->description" icon="bell-alert" type="Alert">
-        <x-scalerts.badge :scalert="$scalert" />
-        <flux:badge color="zinc" size="sm">{{ $scalert->category }}</flux:badge>
-        <flux:badge color="violet" size="sm">{{ $scalert->type }}</flux:badge>
-    </x-header-card>
-
     <x-card title="Alert Details">
         <div>
             <x-card-details-row label="ID" :value="$scalert->id" />

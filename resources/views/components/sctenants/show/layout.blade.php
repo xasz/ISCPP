@@ -10,5 +10,10 @@
         <x-layouts.tabs.select :href="route('sctenants.tenantISCPPSettings', $sctenant)" label="ISCPP Settings" />
         <x-layouts.tabs.select :href="route('sctenants.tenantRaw', $sctenant)" label="Raw" />
     </x-slot>
+    <x-header-card :title="$sctenant->name" icon="building-office-2" type="Tenant">
+        <flux:badge size="sm">{{ ucfirst($sctenant->billingType) }}</flux:badge>
+        <flux:badge color="zinc" size="sm">{{ $sctenant->dataGeography }}</flux:badge>
+        <flux:badge color="violet" size="sm">{{ $sctenant->dataRegion }}</flux:badge>
+    </x-header-card>
     {{ $slot }}
 </x-layouts.tabs>

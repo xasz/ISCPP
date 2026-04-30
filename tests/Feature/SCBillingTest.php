@@ -12,7 +12,9 @@ test('authenticated users can visit the scbilling fetcher page', function () {
     $this->actingAs($user);
 
     $response = $this->get('/scbilling/fetcher');
-    $response->assertStatus(200);
+    $response
+        ->assertSuccessful()
+        ->assertSeeLivewire('scbilling.card-fetcher');
 });
 
 test('guests are redirected to the login page for scbilling halo pusher', function () {

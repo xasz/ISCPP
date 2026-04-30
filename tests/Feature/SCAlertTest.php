@@ -30,7 +30,7 @@ test('authenticated users can view a specific scalert', function () {
         'tenantId' => $tenant->id,
     ]);
 
-    $response = $this->get("/scalerts/id/{$alert->id}");
+    $response = $this->get("/scalerts/{$alert->id}/details");
     $response->assertSuccessful();
 });
 
@@ -43,15 +43,15 @@ test('scalert details tab is shown by default', function () {
         'tenantId' => $tenant->id,
     ]);
 
-    $response = $this->get("/scalerts/id/{$alert->id}");
+    $response = $this->get("/scalerts/{$alert->id}/details");
 
     $response
         ->assertSuccessful()
         ->assertSee('Alert Details')
-        ->assertDontSee('Raw JSON Data');
+        ->assertDontSee('Json Data');
 });
 
-test('scalert raw tab can be shown by query parameter', function () {
+test('scalert raw tab can be shown by route', function () {
     $user = User::factory()->create();
     $this->actingAs($user);
 
@@ -60,10 +60,10 @@ test('scalert raw tab can be shown by query parameter', function () {
         'tenantId' => $tenant->id,
     ]);
 
-    $response = $this->get("/scalerts/id/{$alert->id}?tab=raw");
+    $response = $this->get("/scalerts/{$alert->id}/raw");
 
     $response
         ->assertSuccessful()
-        ->assertSee('Raw JSON Data')
+        ->assertSee('Json Data')
         ->assertDontSee('Raised at');
 });

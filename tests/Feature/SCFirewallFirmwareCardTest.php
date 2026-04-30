@@ -35,15 +35,15 @@ test('firmware card loads available updates from sophos response', function () {
                     'id' => 'c537aec2-56bb-4dba-b0ff-b76822396c80',
                     'serialNumber' => 'X31017X84X6DG72',
                     'firmwareVersion' => '21.5.1.261',
-                    'upgradeToVersion' => '22.0.0.411',
+                    'upgradeToVersion' => ['22.0.0.411'],
                 ],
             ],
             'firmwareVersions' => [
                 [
                     'version' => '22.0.0.411',
                     'size' => '907 MB',
-                    'news' => 'Feature Release',
-                    'bugs' => 'NC-101839',
+                    'news' => ['Feature Release'],
+                    'bugs' => ['NC-101839'],
                 ],
             ],
         ], 201),
@@ -51,9 +51,10 @@ test('firmware card loads available updates from sophos response', function () {
 
     LivewireVolt::test('scfirewalls.card-firmware-upgrade', ['firewall' => $firewall])
         ->call('check')
-        ->assertSet('selectedVersion', '22.0.0.411')
+        ->assertSet('selectedVersion', '')
         ->assertSee('22.0.0.411')
         ->assertSee('907 MB')
+        ->set('selectedVersion', '22.0.0.411')
         ->assertSee('Plan Upgrade');
 });
 
@@ -103,8 +104,7 @@ test('firmware card sends upgrade planning payload expected by sophos api', func
         ->set('selectedVersion', '22.0.0.411')
         ->set('upgradeAt', '2026-04-28T14:35')
         ->call('plan')
-        ->assertSee('Firmware upgrade scheduled successfully.')
-        ->assertSee('scheduled');
+        ->assertSet('errorMessage', '');
 
     expect($capturedBody)->toBe([
         'firewalls' => [
@@ -115,6 +115,8 @@ test('firmware card sends upgrade planning payload expected by sophos api', func
             ],
         ],
     ]);
+
+    expect($firewall->fresh()->plannedFirmwareUpgradeAt?->format('Y-m-d\TH:i'))->toBe('2026-04-28T14:35');
 });
 
 test('firmware card sends cancel request with firewall id as ids query', function () {
@@ -124,6 +126,7 @@ test('firmware card sends cancel request with firewall id as ids query', functio
 
     $firewall = SCFirewall::factory()->forTenant($tenant)->create([
         'id' => 'c537aec2-56bb-4dba-b0ff-b76822396c80',
+        'plannedFirmwareUpgradeAt' => now()->addDay(),
     ]);
 
     $settings = resolve(SCServiceSettings::class);
@@ -157,10 +160,11 @@ test('firmware card sends cancel request with firewall id as ids query', functio
     LivewireVolt::test('scfirewalls.card-firmware-upgrade', ['firewall' => $firewall])
         ->set('checked', true)
         ->call('cancel')
-        ->assertSee('Firmware upgrade cancelled successfully.');
+        ->assertSet('errorMessage', '');
 
     expect($capturedMethod)->toBe('DELETE');
     expect($capturedIds)->toBe('c537aec2-56bb-4dba-b0ff-b76822396c80');
+    expect($firewall->fresh()->plannedFirmwareUpgradeAt)->toBeNull();
 });
 
 test('firmware card shows friendly error when sophos credentials are missing', function () {

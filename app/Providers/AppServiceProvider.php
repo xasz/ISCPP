@@ -3,10 +3,11 @@
 namespace App\Providers;
 
 use App\Models\SCAlert;
-use App\Observers\SCAlertObserver;
 use App\Observers\SCAlertAutoAcknowledgeObserver;
+use App\Observers\SCAlertObserver;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -25,40 +26,41 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         require_once app_path('Helpers/queue.php');
-        
+
+        View::addNamespace('layouts', resource_path('views/components/layouts'));
+
         SCAlert::observe([
             SCAlertAutoAcknowledgeObserver::class,
             SCAlertObserver::class,
         ]);
 
-        if(config('queue.default') == 'sqlite'){
+        if (config('queue.default') == 'sqlite') {
             $dbPath = database_path('database.sqlite');
 
-            if (!file_exists($dbPath)) {
+            if (! file_exists($dbPath)) {
                 file_put_contents($dbPath, '');
-                try{
+                try {
                     $connection = config('database.default');
-                    DB::connection($connection)->table('migrations')->where('migration', "0001_01_01_000002_jobs_to_sqlite")->delete();
+                    DB::connection($connection)->table('migrations')->where('migration', '0001_01_01_000002_jobs_to_sqlite')->delete();
                     Artisan::call('migrate', [
                         '--force' => true,
-                        '--path' => 'database/migrations/' . "0001_01_01_000002_jobs_to_sqlite" . '.php',
+                        '--path' => 'database/migrations/'.'0001_01_01_000002_jobs_to_sqlite'.'.php',
                     ]);
-                    
+
                     DB::connection($connection)->table('migrations')->where('migration', '0001_01_01_000001_create_cache_table_to_sqlite')->delete();
                     Artisan::call('migrate', [
                         '--force' => true,
-                        '--path' => 'database/migrations/' . "0001_01_01_000001_create_cache_table_to_sqlite" . '.php',
+                        '--path' => 'database/migrations/'.'0001_01_01_000001_create_cache_table_to_sqlite'.'.php',
                     ]);
                 } catch (\Exception $e) {
-                    //Log::warning('We are probably running the deployment for the first time, so we will not run the migrations for the cache and jobs tables.');
+                    // Log::warning('We are probably running the deployment for the first time, so we will not run the migrations for the cache and jobs tables.');
                 }
             }
         }
 
-
-        if(config('cache.default') != 'file' && config('cache.default') != 'array'){
-            throw new \Exception('Currently only file and array cache are supported. Please set CACHE_STORE=file in your .env file. Current value: ' . config('cache.default'));
+        if (config('cache.default') != 'file' && config('cache.default') != 'array') {
+            throw new \Exception('Currently only file and array cache are supported. Please set CACHE_STORE=file in your .env file. Current value: '.config('cache.default'));
         }
-        
+
     }
 }

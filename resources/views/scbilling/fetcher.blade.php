@@ -1,3 +1,3 @@
 <x-layouts.app>
-    <livewire:billing.card-fetcher>
+    <livewire:scbilling.card-fetcher />
 </x-layouts.app>

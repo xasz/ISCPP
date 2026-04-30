@@ -42,7 +42,7 @@
         </tbody>
     </x-table.table>
 
-    @if($scbillables->hasPages())
+    @if(is_object($scbillables) && method_exists($scbillables, 'hasPages') && $scbillables->hasPages())
         <div class="px-4 py-3 border-t border-neutral-100 dark:border-neutral-800">
             {{ $scbillables->appends(request()->query())->links() }}
         </div>

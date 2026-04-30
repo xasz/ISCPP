@@ -28,7 +28,7 @@ test('authenticated users can view a specific sctenant', function () {
 
     $tenant = SCTenant::factory()->create();
 
-    $response = $this->get("/sctenants/{$tenant->id}");
+    $response = $this->get(route('sctenants.tenantDetails', $tenant));
     $response->assertStatus(200);
 });
 
