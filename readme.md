@@ -1,4 +1,4 @@
-# ISCPP - Improvements Sophos Central Partner Center
+# ISCPP - Improve Sophos Central Partner Package
 
 - Halo PSA Billing Integration !
 - NinjaOne Sophos Endpoint Agent deployment !
