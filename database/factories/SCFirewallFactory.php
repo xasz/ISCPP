@@ -9,55 +9,7 @@ use Illuminate\Support\Str;
 
 class SCFirewallFactory extends Factory
 {
-    /*
-{
-    "id": "1c84f88e-2254-48f8-a1df-3dca90bfe646",
-    "cluster": null,
-    "tenant": {
-        "id": "a2b050e8-9c01-4fd1-aed6-5df3811919b1"
-    },
-    "serialNumber": "X11103QPX83YHA2",
-    "group": null,
-    "hostname": "ZVSSLFW1",
-    "name": "X11103QPX83YHA2",
-    "firmwareVersion": "XGS116_XN01_19.5.3.652",
-    "externalIpv4Addresses": [
-        "87.138.199.170"
-    ],
-    "model": "XGS116_XN01_SFOS 19.5.3 MR-3-Build652",
-    "status": {
-        "managingStatus": "approvedByCustomer",
-        "reportingStatus": "approvedByCustomer",
-        "connected": false,
-        "suspended": true
-    },
-    "stateChangedAt": "2024-08-29T08:54:00.19Z",
-    "capabilities": [
-        "highAvailability",
-        "configImport",
-        "sdwanGroup",
-        "sdwanMultiGroup"
-    ],
-    "createdBy": {
-        "id": null,
-        "type": null,
-        "name": null,
-        "accountType": "tenant",
-        "accountId": "a2b050e8-9c01-4fd1-aed6-5df3811919b1"
-    },
-    "createdAt": "2021-12-08T07:50:22.852Z",
-    "updatedBy": {
-        "id": null,
-        "type": null,
-        "name": null,
-        "accountType": "tenant",
-        "accountId": "a2b050e8-9c01-4fd1-aed6-5df3811919b1"
-    },
-    "updatedAt": "2024-09-28T08:58:55.996Z",
-    "geoLocation": null
-}
     
-     */
     public function definition(): array
     {
 

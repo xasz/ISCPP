@@ -11,19 +11,7 @@ use Illuminate\Support\Str;
  */
 class SCTenantFactory extends Factory
 {
-    /**
-     * Representative tenant profiles captured from the live database.
-     *
-     * @var list<array{
-     *     dataGeography: ?string,
-     *     dataRegion: ?string,
-     *     billingType: string,
-     *     apiHost: ?string,
-     *     status: ?string,
-     *     products: list<string>
-     * }>
-     */
-
+ 
     private const REAL_GEO = [
         ['dataGeography' => 'DE', 'dataRegion' => 'eu02', 'apiHost' => 'https://api-eu02.central.sophos.com'],
         ['dataGeography' => 'IE', 'dataRegion' => 'eu01', 'apiHost' => 'https://api-eu01.central.sophos.com'],
