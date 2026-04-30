@@ -5,10 +5,9 @@
 - Sophos Central Alert forwording to anywhere
 - Searching Endpoints over all tenants
 - Healthscore over all tenants
-
+- Easy Firewall Upgrade
+- Healthscores overview
 - a lot planned
-- Massschedule Tools for Firewalls
-- Forward HealthScore Data to PSAs
 
 This project is a personal endeavor, and while I strive to ensure the application is secure and reliable to the best of my abilities and knowledge, I cannot accept liability for any misuse or issues that may arise.
 
@@ -29,6 +28,10 @@ I understand there is still much work to be done, but I wanted to release ISCPP 
 ## Webhooks for Sophos Central Alerts
 
 ![alt text](docs/images/alerts.png)
+
+# Easy Firewall Upgrade Planning
+<img width="875" height="702" alt="image" src="https://github.com/user-attachments/assets/7ad1a3db-c08a-4fa6-b703-36a59678f605" />
+
 
 ## Sophos Central Billing Integration for Halo
 
