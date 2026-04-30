@@ -21,6 +21,7 @@ Thanks to the testers and there feedback.
 
 I understand there is still much work to be done, but I wanted to release ISCPP to allow users to start benefiting from its features and provide valuable feedback. Your input will help shape the future of this project and ensure it meets the needs of its users effectively.
 
+
 ## Fast overview over alle tenants
 
 ![alt text](docs/images/tenants.png)
@@ -43,6 +44,24 @@ I understand there is still much work to be done, but I wanted to release ISCPP 
 ![image](https://github.com/user-attachments/assets/6a2b5031-aa49-400c-829d-feb56b28199b)
 
 
+## New Designlanguage
+
+I tried to to improve the design to have a fluid look and feel:
+
+<img width="1403" height="671" alt="image" src="https://github.com/user-attachments/assets/37ba2c88-98d7-42b6-84f4-2bd43a0b04ca" />
+
+Tenant overview and search
+<img width="1125" height="792" alt="image" src="https://github.com/user-attachments/assets/2b2f501d-73d5-44bd-b4c9-649617710672" />
+
+Alerts
+<img width="1393" height="927" alt="image" src="https://github.com/user-attachments/assets/639c0e4e-c3eb-4f69-9e23-d46923637792" />
+
+
+Endpoints
+<img width="1110" height="419" alt="image" src="https://github.com/user-attachments/assets/0c34d718-b9f9-4398-90ce-431dd62d6d71" />
+
+Firewalls
+<img width="1192" height="574" alt="image" src="https://github.com/user-attachments/assets/be6eb9cf-f1a5-4ef9-8b45-2da3cf4def97" />
 
 
 ## Roadmap
