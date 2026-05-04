@@ -1,81 +1,82 @@
-# ISCPP - Improve Sophos Central Partner Package
+# ISCPP
 
-- Halo PSA Billing Integration !
-- NinjaOne Sophos Endpoint Agent deployment !
-- Sophos Central Alert forwording to anywhere
-- Searching Endpoints over all tenants
-- Healthscore over all tenants
-- Easy Firewall Upgrade
-- Healthscores overview
-- a lot planned
+ISCPP (Improve Sophos Central Partner Package) operations platform for MSPs that use Sophos Central.
 
-This project is a personal endeavor, and while I strive to ensure the application is secure and reliable to the best of my abilities and knowledge, I cannot accept liability for any misuse or issues that may arise.
+It helps teams manage multiple tenants from one place, automate recurring operational tasks, and integrate Sophos data into PSA workflows.
 
-This project aims to leverage the Sophos Central API to develop a tool that addresses some missing features that could benefit MSPs. 
-Additionally, it seeks to integrate with PSA systems to enhance billing processes.
+## Why ISCPP
 
-[You ask why](https://github.com/xasz/ISCPP/wiki)
+Sophos Central is powerful, but MSP workflows often require cross-tenant visibility and automation that are not available out of the box.
 
-This is software is still in alpha, but have passed some first live tests.
-Thanks to the testers and there feedback.
+ISCPP focuses on those gaps by combining:
 
-I understand there is still much work to be done, but I wanted to release ISCPP to allow users to start benefiting from its features and provide valuable feedback. Your input will help shape the future of this project and ensure it meets the needs of its users effectively.
+- Cross-tenant monitoring and search
+- Alert forwarding and webhook workflows
+- Billing-related data exports and integrations
+- Firewall upgrade planning support
+- Centralized health score reporting
 
+More background: [Project Wiki](https://github.com/xasz/ISCPP/wiki)
 
-## Fast overview over alle tenants
+## Core Features
 
-![alt text](docs/images/tenants.png)
+- **Multi-tenant overview** dashboard
+- **Search endpoints** across all Sophos Central tenants
+- Sophos Central **alert forwarding** via webhooks
+- **Halo PSA** billing integration
+- **NinjaOne** endpoint deployment support
+- F**irewall** upgrade planning
+- Tenant **health score** reporting
 
-## Webhooks for Sophos Central Alerts
+## Screenshots
 
-![alt text](docs/images/alerts.png)
+### Tenant Overview
 
-# Easy Firewall Upgrade Planning
-<img width="875" height="702" alt="image" src="https://github.com/user-attachments/assets/7ad1a3db-c08a-4fa6-b703-36a59678f605" />
+![Tenant overview](docs/images/tenants.png)
 
+### Alert Webhooks
 
-## Sophos Central Billing Integration for Halo
+![Alert webhooks](docs/images/alerts.png)
 
-![alt text](docs/images/centralbilling.png)
+### Halo Billing Integration
 
+![Halo billing integration](docs/images/centralbilling.png)
 
-## Overall Tenant Health Reporting
+### Firewall Upgrade Planning
 
-![image](https://github.com/user-attachments/assets/6a2b5031-aa49-400c-829d-feb56b28199b)
+<img width="875" height="702" alt="Firewall upgrade planning" src="https://github.com/user-attachments/assets/7ad1a3db-c08a-4fa6-b703-36a59678f605" />
 
+### Health and Design Preview
 
-## New Designlanguage
+<img width="1403" height="671" alt="Design preview" src="https://github.com/user-attachments/assets/37ba2c88-98d7-42b6-84f4-2bd43a0b04ca" />
+<img width="1125" height="792" alt="Tenant overview and search" src="https://github.com/user-attachments/assets/2b2f501d-73d5-44bd-b4c9-649617710672" />
+<img width="1393" height="927" alt="Alerts view" src="https://github.com/user-attachments/assets/639c0e4e-c3eb-4f69-9e23-d46923637792" />
+<img width="1110" height="419" alt="Endpoints view" src="https://github.com/user-attachments/assets/0c34d718-b9f9-4398-90ce-431dd62d6d71" />
+<img width="1192" height="574" alt="Firewalls view" src="https://github.com/user-attachments/assets/be6eb9cf-f1a5-4ef9-8b45-2da3cf4def97" />
+<img width="1200" height="630" alt="Overall tenant health reporting" src="https://github.com/user-attachments/assets/6a2b5031-aa49-400c-829d-feb56b28199b" />
 
-I tried to to improve the design to have a fluid look and feel:
+## Quick Start
 
-<img width="1403" height="671" alt="image" src="https://github.com/user-attachments/assets/37ba2c88-98d7-42b6-84f4-2bd43a0b04ca" />
+```bash
+git clone https://github.com/xasz/iscpp-docker
+docker `compose up -d'
+```
 
-Tenant overview and search
-<img width="1125" height="792" alt="image" src="https://github.com/user-attachments/assets/2b2f501d-73d5-44bd-b4c9-649617710672" />
+## Installation Guide
 
-Alerts
-<img width="1393" height="927" alt="image" src="https://github.com/user-attachments/assets/639c0e4e-c3eb-4f69-9e23-d46923637792" />
+Detailed installation steps are available in the wiki:
+[Installation Guide](https://github.com/xasz/ISCPP/wiki/1.-Installation)
 
+## Project Status
 
-Endpoints
-<img width="1110" height="419" alt="image" src="https://github.com/user-attachments/assets/0c34d718-b9f9-4398-90ce-431dd62d6d71" />
+ISCPP is currently in alpha. It is already used in early live environments, and active feedback is shaping upcoming releases.
 
-Firewalls
-<img width="1192" height="574" alt="image" src="https://github.com/user-attachments/assets/be6eb9cf-f1a5-4ef9-8b45-2da3cf4def97" />
+## Support
 
+- Discord: https://discord.gg/GqTMtdMY
+- Issues: https://github.com/xasz/ISCPP/issues
 
-## Roadmap
-https://github.com/users/xasz/projects/1
+## Disclaimer
 
-# Installation
-
-Look here: https://github.com/xasz/ISCPP/wiki/1.-Installation
-
-> I am currently not able to host instances for you, but you will set this up in minutes.
-
-# Need Help - Sure
-
-Join the really new discord server.
-
-https://discord.gg/GqTMtdMY
+This project is provided as-is. While care is taken to build secure and reliable functionality, you are responsible for validating suitability, security, and compliance in your own environment.
 
