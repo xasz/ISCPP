@@ -28,32 +28,32 @@ More background: [Project Wiki](https://github.com/xasz/ISCPP/wiki)
 - F**irewall** upgrade planning
 - Tenant **health score** reporting
 
-## Screenshots
+## Screenshots and Impressions
 
-### Tenant Overview
+### Tenant
 
-![Tenant overview](docs/images/tenants.png)
+<img width="1415" height="1045" alt="image" src="https://github.com/user-attachments/assets/06817d14-14b3-43b6-ba2c-034931478041" />
 
-### Alert Webhooks
+### Alerts
 
-![Alert webhooks](docs/images/alerts.png)
+<img width="1418" height="991" alt="image" src="https://github.com/user-attachments/assets/c7e59fb6-aa8e-493f-abfb-e521c2b1a8cf" />
 
-### Halo Billing Integration
+### Healthscores
 
-![Halo billing integration](docs/images/centralbilling.png)
+<img width="1411" height="748" alt="image" src="https://github.com/user-attachments/assets/470d693c-1407-4472-a6cc-d6d5705ea7a3" />
 
-### Firewall Upgrade Planning
+### Firewall Upgrade Schedule
 
-<img width="875" height="702" alt="Firewall upgrade planning" src="https://github.com/user-attachments/assets/7ad1a3db-c08a-4fa6-b703-36a59678f605" />
+<img width="1435" height="759" alt="image" src="https://github.com/user-attachments/assets/ef4b53b6-5761-4d8b-b787-4ac0dad86788" />
 
-### Health and Design Preview
+### Webhook Forwarding
 
-<img width="1403" height="671" alt="Design preview" src="https://github.com/user-attachments/assets/37ba2c88-98d7-42b6-84f4-2bd43a0b04ca" />
-<img width="1125" height="792" alt="Tenant overview and search" src="https://github.com/user-attachments/assets/2b2f501d-73d5-44bd-b4c9-649617710672" />
-<img width="1393" height="927" alt="Alerts view" src="https://github.com/user-attachments/assets/639c0e4e-c3eb-4f69-9e23-d46923637792" />
-<img width="1110" height="419" alt="Endpoints view" src="https://github.com/user-attachments/assets/0c34d718-b9f9-4398-90ce-431dd62d6d71" />
-<img width="1192" height="574" alt="Firewalls view" src="https://github.com/user-attachments/assets/be6eb9cf-f1a5-4ef9-8b45-2da3cf4def97" />
-<img width="1200" height="630" alt="Overall tenant health reporting" src="https://github.com/user-attachments/assets/6a2b5031-aa49-400c-829d-feb56b28199b" />
+<img width="1407" height="937" alt="image" src="https://github.com/user-attachments/assets/f6fbbd2c-cebf-4126-9925-7f7ae48b23b7" />
+
+# Fetch and Push Billing Data From Sophos Central
+
+<img width="1428" height="282" alt="image" src="https://github.com/user-attachments/assets/f1ec41d3-3fca-4524-9385-880e4c17b05c" />
+
 
 ## Quick Start
 
