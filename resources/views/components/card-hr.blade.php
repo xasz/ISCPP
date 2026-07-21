@@ -1,1 +1,1 @@
-<hr class="my-6 border-gray-200 dark:border-gray-700" />
+<hr class="my-6 border-zinc-200 dark:border-zinc-800" />

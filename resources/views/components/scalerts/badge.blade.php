@@ -2,9 +2,9 @@
 @php
     $color = match(strtolower($scalert->severity ?? '')) {
         'high'   => 'red',
-        'medium' => 'yellow',
-        'low'    => 'blue',
-        default  => 'neutral',
+        'medium' => 'amber',
+        'low'    => 'zinc',
+        default  => 'zinc',
     };
 @endphp
 <flux:badge color="{{ $color }}" size="sm">

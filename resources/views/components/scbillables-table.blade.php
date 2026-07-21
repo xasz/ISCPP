@@ -1,7 +1,7 @@
 @props(['scbillables', 'hideSCTenant' => false])
 <div class="relative overflow-x-auto">
     <x-table.table>
-        <thead>
+        <x-table.thead>
             <tr>
                 <x-table.th>Order Line Item Number</x-table.th>
                 <x-table.th>Product Group</x-table.th>
@@ -13,7 +13,7 @@
                 <x-table.th>Product Description</x-table.th>
                 <x-table.th>Account Id</x-table.th>
             </tr>
-        </thead>
+        </x-table.thead>
         <tbody>
             @foreach($scbillables as $data)
             <x-table.tr>
@@ -43,7 +43,7 @@
     </x-table.table>
 
     @if(is_object($scbillables) && method_exists($scbillables, 'hasPages') && $scbillables->hasPages())
-        <div class="px-4 py-3 border-t border-neutral-100 dark:border-neutral-800">
+        <div class="px-4 py-3 border-t border-zinc-100 dark:border-zinc-800">
             {{ $scbillables->appends(request()->query())->links() }}
         </div>
     @endif
