@@ -25,9 +25,11 @@ Route::middleware('guest')->group(function () {
 
     // Invitation routes
     Route::get('invitation/{token}', [UserManagementController::class, 'showAcceptForm'])
+        ->middleware('throttle:10,1')
         ->name('invitation.accept');
-    
+
     Route::post('invitation', [UserManagementController::class, 'acceptInvitation'])
+        ->middleware('throttle:10,1')
         ->name('invitation.process');
 });
 

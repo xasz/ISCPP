@@ -48,9 +48,23 @@
                                 {{ __('No data') }}
                             @else
                                 @foreach ($event->data as $key => $value)
-                                <div class="text-xs">
-                                    <span class="font-semibold">{{ $key }}:</span>{{ json_encode($value) }}
-                                </div>    
+                                    @switch($key)
+                                        @case('SCTenant')
+                                            <div class="text-xs">
+                                                <span class="font-semibold">{{ $key }}:</span><a href="{{ route('sctenants.tenantDetails', ['sctenant' => $value]) }}">{{ json_encode($value) }}</a>
+                                            </div>    
+                                        @break
+                                        @case('SCAlert')
+                                            <div class="text-xs">
+                                                <span class="font-semibold">{{ $key }}:</span><a href="{{ route('scalerts.alertDetails', ['id' => $value]) }}">{{ json_encode($value) }}</a>
+                                            </div>    
+                                        @break
+                                        @default
+                                            <div class="text-xs">
+                                                <span class="font-semibold">{{ $key }}:</span>{{ json_encode($value) }}
+                                            </div>    
+                                        @break
+                                    @endswitch
                                 @endforeach
                             @endif
                         </x-table.td>

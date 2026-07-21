@@ -28,14 +28,14 @@ class RefreshSCAlerts implements ShouldBeUniqueUntilProcessing, ShouldQueue
 
     public function handle(SCService $scService): void
     {
-        Event::log('scalerts', 'info', ['message' => 'SC Alerts refresh initiated']);
+        Event::logInfo('scalerts', 'SC Alerts refresh initiated', ['SCTenant' => $this->tenantID]);
 
         $tenant = SCTenant::find($this->tenantID);
 
         if (! $tenant) {
             Event::log('scalerts', 'error', [
                 'message' => 'Tenant not found',
-                'TenantID' => $this->tenantID,
+                'SCTenant' => $tenant->id,
             ]);
 
             return;
@@ -45,7 +45,7 @@ class RefreshSCAlerts implements ShouldBeUniqueUntilProcessing, ShouldQueue
         if ($this->allEvents) {
             $from = now()->subDays(9999);
         }
-        Event::logInfo('scalerts', 'Fetching alerts for tenant '.$tenant->id.' from '.$from->toDateTimeString());
+        Event::logInfo('scalerts', 'Fetching alerts starting at: '.$from->toDateTimeString(), ['SCTenant' => $this->tenantID]);
 
         try {
             $alerts = $scService->alerts($tenant, $from);
@@ -53,7 +53,7 @@ class RefreshSCAlerts implements ShouldBeUniqueUntilProcessing, ShouldQueue
         } catch (\Exception $e) {
             Event::log('scalerts', 'error', [
                 'message' => 'Could not load alerts for tenant',
-                'tenant' => $tenant->id,
+                'SCTenant' => $tenant->id,
                 'error' => $e->getMessage(),
             ]);
 
@@ -98,14 +98,14 @@ class RefreshSCAlerts implements ShouldBeUniqueUntilProcessing, ShouldQueue
             } catch (\Exception $e) {
                 Event::log('scalerts', 'error', [
                     'message' => 'Could not save alert',
-                    'alert' => $alert['id'],
-                    'tenant' => $tenant->id,
+                    'SCAlert' => $alert['id'],
+                    'SCTenant' => $tenant->id,
                     'rawData' => json_encode($alert),
                     'error' => $e->getMessage(),
                 ]);
             }
         }
-        Event::logInfo('scalerts', $alerts->count().' Alerts fetched for tenant '.$tenant->id);
+        Event::logInfo('scalerts', $alerts->count().' Alerts fetched', ['SCTenant' => $this->tenantID]);
     }
 
     public function uniqueId(): string

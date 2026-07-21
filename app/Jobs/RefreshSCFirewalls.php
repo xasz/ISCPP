@@ -32,7 +32,7 @@ class RefreshSCFirewalls implements ShouldBeUniqueUntilProcessing, ShouldQueue
         if (! $tenant) {
             Event::log('scfirewalls', 'error', [
                 'message' => 'Tenant not found',
-                'TenantID' => $this->tenantID,
+                'SCTenant' => $this->tenantID,
             ]);
 
             return;
@@ -45,7 +45,7 @@ class RefreshSCFirewalls implements ShouldBeUniqueUntilProcessing, ShouldQueue
         } catch (\Exception $e) {
             Event::log('scfirewalls', 'error', [
                 'message' => 'Could not load firewalls for tenant',
-                'tenant' => $tenant->id,
+                'SCTenant' => $tenant->id,
                 'error' => $e->getMessage(),
             ]);
 
@@ -67,7 +67,7 @@ class RefreshSCFirewalls implements ShouldBeUniqueUntilProcessing, ShouldQueue
                 Event::log('scfirewalls', 'error', [
                     'message' => 'Could not save firewall for tenant',
                     'firewall' => $firewall['id'],
-                    'tenantId' => $tenant->id,
+                    'SCTenant' => $tenant->id,
                     'rawData' => json_encode($firewall),
                     'error' => $e->getMessage(),
                 ]);

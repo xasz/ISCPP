@@ -28,37 +28,37 @@ class Event extends Model
         ]);
     }
 
-    public static function logInfo(string $event, string $message): void
+    public static function logInfo(string $event, string $message, array $data = []): void
     {
         Log::log('info', "Event: $event - Message: $message");
-        self::log($event, 'info', ['message' => $message]);
+        
+        self::log($event, 'info', array_merge(['message' => $message], $data));
     }
 
-    public static function logWarning(string $event, string $message): void
+    public static function logWarning(string $event, string $message, array $data = []): void
     {
         Log::log('warning', "Event: $event - Message: $message");
-        self::log($event, 'warning', ['message' => $message]);
+        self::log($event, 'warning', array_merge(['message' => $message], $data));
     }
 
-    public static function logError(string $event, string $message): void
+    public static function logError(string $event, string $message, array $data = []): void
     {
         Log::log('error', "Event: $event - Message: $message");
-        self::log($event, 'error', ['message' => $message]);
+        self::log($event, 'error', array_merge(['message' => $message], $data));
     }
 
-    public static function throwError(string $event, string $message): void
+    public static function throwError(string $event, string $message, array $data = []): void
     {
         Log::log('error', "Event: $event - Message: $message");
-        self::log($event, 'error', ['message' => $message]);
+        self::log($event, 'error', array_merge(['message' => $message], $data));
         throw new Exception($message);
     }
 
-
-    public static function logDebug(string $event, string $message, array $context = []): void
+    public static function logDebug(string $event, string $message, array $data = []): void
     {
         if(config('app.debug', false)){
-            Log::log('debug', "Event: $event - Message: $message", $context);
-            self::log($event, 'debug', array_merge(['message' => $message], $context));
+            Log::log('debug', "Event: $event - Message: $message", $data);
+            self::log($event, 'debug', array_merge(['message' => $message], $data));
         }
     }
 

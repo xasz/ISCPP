@@ -10,7 +10,11 @@ class SCAlertAcknowledgeAction
 {
     public function execute(SCAlert $scalert): void
     {
-        Event::logInfo('scalerts', 'SC Alert Acknowledge triggered for alert ID: ' . $scalert->id);
+        
+        Event::log('scalerts', 'info', [
+            'message' => 'SC Alert Acknowledge triggered',
+            'SCAlert' => $scalert->id,
+        ]);
         try {
             app(SCService::class)->alertsAction($scalert->SCTenant, $scalert, 'acknowledge', 'Auto-acknowledged by ISCPP');
             $scalert->is_acknowledged = true;

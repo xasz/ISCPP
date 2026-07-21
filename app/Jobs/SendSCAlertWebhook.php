@@ -28,7 +28,7 @@ class SendSCAlertWebhook implements ShouldQueue, ShouldBeUniqueUntilProcessing
     {
         Event::log("webhook", "info" , [
             'message' => 'Start sending webhook for SCAlert ',
-            'SCalertID' => $this->scalert->id]
+            'SCAlert' => $this->scalert->id]
         );
 
         $response = $wService->runWebhook($this->scalert);
@@ -38,7 +38,7 @@ class SendSCAlertWebhook implements ShouldQueue, ShouldBeUniqueUntilProcessing
             $this->scalert->save();
             Event::log("webhook", "info" , [
                 'message' => __('Webhook sent successfully'),
-                'SCalertID' => $this->scalert->id]
+                'SCAlert' => $this->scalert->id]
             );
             return;
         }
@@ -49,14 +49,14 @@ class SendSCAlertWebhook implements ShouldQueue, ShouldBeUniqueUntilProcessing
             
             Event::log("webhook", "error" , [
                 'message' => __('Webhook failed - no more retry'),
-                'SCalertID' => $this->scalert->id]
+                'SCAlert' => $this->scalert->id]
             );
             return;
         }
 
         Event::log("webhook", "warning" , [
             'message' => __('Webhook failed - retrying in 120 seconds'),
-            'SCalertID' => $this->scalert->id]
+            'SCAlert' => $this->scalert->id]
         );
         $this->release(120);
         
