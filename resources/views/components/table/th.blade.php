@@ -1,3 +1,5 @@
-<th scope="col" {{ $attributes->merge(['class' => 'px-2 py-1']) }}>
+@props(['compact' => false])
+
+<th scope="col" {{ $attributes->merge(['class' => $compact ? 'px-3 py-2' : 'px-4 py-3']) }}>
     {{$slot}}
 </th>

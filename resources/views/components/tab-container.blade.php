@@ -13,7 +13,7 @@
     }"
     {{ $attributes->class(['']) }}
 >
-    <div class="border-b border-neutral-200 dark:border-neutral-700 mb-6">
+    <div class="border-b border-zinc-200 dark:border-zinc-800 mb-6">
         <nav class="-mb-px flex gap-1 overflow-x-auto">
             {{ $tabs }}
         </nav>

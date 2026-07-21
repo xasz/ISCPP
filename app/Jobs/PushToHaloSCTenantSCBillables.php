@@ -33,13 +33,13 @@ class PushToHaloSCTenantSCBillables implements ShouldQueue, ShouldBeUniqueUntilP
     {
         Event::log("scbillables", "info" , [
             'message' => 'Start sending SCBillables for SCTenant to Halo',
-            'SCTenantID' => $this->sctenant->id
+            'SCTenant' => $this->sctenant->id
         ]);
 
         if($this->sctenant->haloclient_id == -1){
             Event::log("scbillables", "error" , [
                 'message' => __('SCBillables sent to halo failed - no haloclient_id'),
-                'SCTenantID' => $this->sctenant->id
+                'SCTenant' => $this->sctenant->id
             ]);
             $this->release(120);
             return;
@@ -53,7 +53,7 @@ class PushToHaloSCTenantSCBillables implements ShouldQueue, ShouldBeUniqueUntilP
         if($scbillables->count() == 0){
             Event::log("scbillables", "warning" , [
                 'message' => __('No SCBillables to send to Halo'),
-                'SCTenantID' => $this->sctenant->id,
+                'SCTenant' => $this->sctenant->id,
                 'year' => $this->year,
                 'month' => $this->month,
             ]);
@@ -124,7 +124,7 @@ class PushToHaloSCTenantSCBillables implements ShouldQueue, ShouldBeUniqueUntilP
             });
             Event::log("scbillables", "info" , [
                 'message' => __('SCBillables pushed successfull'),
-                'SCTenantID' => $this->sctenant->id,
+                'SCTenant' => $this->sctenant->id,
                 'query' => $query,
             ]);
             return;
@@ -136,7 +136,7 @@ class PushToHaloSCTenantSCBillables implements ShouldQueue, ShouldBeUniqueUntilP
     {                 
         Event::log("scbillables", "error" , [
             'message' => __('SCBillable sent to halo failed - no more retry'),
-            'SCTenantID' => $this->sctenant->id,
+            'SCTenant' => $this->sctenant->id,
             'year' => $this->year,
             'month' => $this->month,
         ]);    

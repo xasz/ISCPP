@@ -30,13 +30,13 @@ class PushToNinjaSCTenantDownload implements ShouldBeUniqueUntilProcessing, Shou
     {
         Event::log('SCTenantDownload', 'info', [
             'message' => 'Start sending SCBillables for SCTenant to Halo',
-            'SCTenantID' => $this->sctenant->id,
+            'SCTenant' => $this->sctenant->id,
         ]);
 
         if ($this->sctenant->ninjaorg_id == -1) {
             Event::log('SCTenantDownload', 'error', [
                 'message' => __('SCTenantDownload sent to ninja failed - no ninjaorg_id'),
-                'SCTenantID' => $this->sctenant->id,
+                'SCTenant' => $this->sctenant->id,
             ]);
             $this->release(120);
 
@@ -61,7 +61,7 @@ class PushToNinjaSCTenantDownload implements ShouldBeUniqueUntilProcessing, Shou
 
         Event::log('SCTenantDownload', 'info', [
             'message' => __('Pushed successfull'),
-            'SCTenantID' => $this->sctenant->id,
+            'SCTenant' => $this->sctenant->id,
             'ninjaorg_id' => $this->sctenant->ninjaorg_id,
             'fields' => $fields,
         ]);
@@ -73,7 +73,7 @@ class PushToNinjaSCTenantDownload implements ShouldBeUniqueUntilProcessing, Shou
         $ninjaSettings = app(NinjaServiceSettings::class);
         Event::log('SCTenantDownload', 'error', [
             'message' => __('SCTenantDownload Push to Ninja failed- no more retry'),
-            'SCTenantID' => $this->sctenant->id,
+            'SCTenant' => $this->sctenant->id,
             'ninjaorg_id' => $this->sctenant->ninjaorg_id,
             'exception' => $exception->getMessage(),
             'field' => $ninjaSettings->windowsSophosCentralEndpointInstallerUrl,

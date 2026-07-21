@@ -36,7 +36,7 @@
     </x-table.table>
 
     @if($scfirewalls->hasPages())
-        <div class="px-4 py-3 border-t border-neutral-100 dark:border-neutral-800">
+        <div class="px-4 py-3 border-t border-zinc-100 dark:border-zinc-800">
             {{ $scfirewalls->appends(request()->query())->links() }}
         </div>
     @endif

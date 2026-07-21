@@ -32,7 +32,7 @@ class RefreshSCEndpoints implements ShouldBeUniqueUntilProcessing, ShouldQueue
         if (! $tenant) {
             Event::log('scendpoints', 'error', [
                 'message' => 'Tenant not found',
-                'TenantID' => $this->tenantID,
+                'SCTenant' => $this->tenantID,
             ]);
 
             return;
@@ -46,7 +46,7 @@ class RefreshSCEndpoints implements ShouldBeUniqueUntilProcessing, ShouldQueue
         } catch (\Exception $e) {
             Event::log('scendpoints', 'error', [
                 'message' => 'Could not load endpoints for tenant',
-                'tenant' => $tenant->id,
+                'SCTenant' => $tenant->id,
                 'error' => $e->getMessage(),
             ]);
 
@@ -71,7 +71,7 @@ class RefreshSCEndpoints implements ShouldBeUniqueUntilProcessing, ShouldQueue
                 Event::log('scendpoints', 'error', [
                     'message' => 'Could not save endpoint',
                     'endpoint' => $endpoint['id'],
-                    'tenant' => $tenant->id,
+                    'SCTenant' => $tenant->id,
                     'rawData' => json_encode($endpoint),
                     'error' => $e->getMessage(),
                 ]);

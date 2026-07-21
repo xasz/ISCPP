@@ -25,7 +25,7 @@ class RefreshSCTenantHealthscore implements ShouldBeUniqueUntilProcessing, Shoul
     public function handle(SCService $scService): void
     {
         try {
-            Event::log('sctentant-healthscore', 'info', ['message' => 'SCTenantHealthscore refresh initiated', 'tenantId' => $this->tenantID]);
+            Event::log('sctentant-healthscore', 'info', ['message' => 'SCTenantHealthscore refresh initiated', 'SCTenant' => $this->tenantID]);
             $tenant = SCTenant::findOrFail($this->tenantID);
 
             $data = $scService->tenantHealthscore($tenant);
@@ -38,9 +38,9 @@ class RefreshSCTenantHealthscore implements ShouldBeUniqueUntilProcessing, Shoul
                 ]
             );
         } catch (\Exception $e) {
-            Event::log('sctentant-healthscore', 'error', ['message' => $e->getMessage(), 'tenantId' => $this->tenantID]);
+            Event::log('sctentant-healthscore', 'error', ['message' => $e->getMessage(), 'SCTenant' => $this->tenantID]);
         }
-        Event::log('sctentant-healthscore', 'info', ['message' => 'SCTenantHealthscore refreshed', 'tenantId' => $this->tenantID]);
+        Event::log('sctentant-healthscore', 'info', ['message' => 'SCTenantHealthscore refreshed', 'SCTenant' => $this->tenantID]);
     }
 
     public function uniqueId(): string

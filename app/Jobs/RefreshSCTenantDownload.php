@@ -37,10 +37,10 @@ class RefreshSCTenantDownload implements ShouldBeUniqueUntilProcessing, ShouldQu
                 ]
             );
         } catch (\Exception $e) {
-            Event::log('sctentant-download', 'error', ['message' => $e->getMessage(), 'tenantId' => $this->tenantID]);
+            Event::log('sctentant-download', 'error', ['message' => $e->getMessage(), 'SCTenant' => $this->tenantID]);
         }
 
-        Event::log('sctentant-download', 'info', ['message' => 'SCTenantDownload refreshed', 'tenantId' => $this->tenantID]);
+        Event::log('sctentant-download', 'info', ['message' => 'SCTenantDownload refreshed', 'SCTenant' => $this->tenantID]);
     }
 
     public function uniqueId(): string
