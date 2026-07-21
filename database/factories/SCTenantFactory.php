@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\SCTenant;
+use App\Models\SCTenantHealthscore;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 
@@ -38,6 +39,15 @@ class SCTenantFactory extends Factory
         'CPHISH-MSP',
     ];
 
+    public function configure()
+    {
+        return $this->afterCreating(function (SCTenant $tenant) {
+            SCTenantHealthscore::factory()->create([
+                'tenantId' => $tenant->id,
+            ]);
+        });
+    }
+    
     public function definition(): array
     {
         $id = (string) Str::uuid();
