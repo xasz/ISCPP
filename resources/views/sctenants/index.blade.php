@@ -21,7 +21,6 @@
             </x-slot>
         </x-card-simple-info>
     </div>
-
     <x-card title="Filter">
         <form action="{{ route('sctenants.index') }}" method="GET" class="flex flex-wrap items-end gap-3">
             <div class="min-w-56 flex-1">
@@ -33,7 +32,6 @@
             @endif
         </form>
     </x-card>
-
     <x-card title="Tenants" subtitle="{{ $sctenants->total() }} total">
         <x-table.table>
             <x-table.thead>
