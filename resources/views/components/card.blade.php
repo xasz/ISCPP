@@ -8,11 +8,11 @@
     $cardSubtitle = $subtitle ?? $description;
 @endphp
 
-<div {{ $attributes->class('overflow-hidden rounded-xl border border-zinc-200 bg-white shadow-sm transition-shadow dark:border-zinc-800 dark:bg-zinc-900') }}>
+<div {{ $attributes->class('p-5 overflow-hidden rounded-xl border border-zinc-200 bg-white shadow-sm transition-shadow dark:border-zinc-800 dark:bg-zinc-900') }}>
     @if($title || $cardSubtitle)
-        <header class="flex flex-col gap-0.5 border-b border-zinc-100 px-5 py-4 dark:border-zinc-800">
+        <header class="flex flex-col gap-0.5 border-b pb-3 border-zinc-100 dark:border-zinc-800 mb-4">
             @if($title)
-                <flux:heading size="base" level="2" class="text-zinc-900 dark:text-zinc-100">{{ $title }}</flux:heading>
+                <flux:heading>{{ $title }}</flux:heading>
             @endif
 
             @if($cardSubtitle)
@@ -21,7 +21,7 @@
         </header>
     @endif
 
-    <div class="space-y-4 p-5 text-zinc-800 dark:text-zinc-200">
+    <div class="space-y-4 text-zinc-800 dark:text-zinc-200">
         {{ $slot }}
     </div>
 </div>

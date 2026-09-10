@@ -26,6 +26,8 @@
     --color-accent: var(--color-blue-600);
     --color-accent-content: var(--color-blue-600);
     --color-accent-foreground: var(--color-white);
+
+    --text-tiny: 0.625rem; 
 }
 
 @layer theme {
