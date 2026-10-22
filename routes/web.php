@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EventController;
+use App\Http\Controllers\ISCPPEventController;
 use App\Http\Controllers\SCAlertController;
 use App\Http\Controllers\SCBillableController;
 use App\Http\Controllers\SCBillingController;
@@ -118,8 +119,22 @@ Route::middleware($protectedMiddleware)->group(function () {
         Route::get('/webhookLogs', 'index')->name('webhookLogs.index');
     });
 
+    // Legacy system log. Route path and name are deliberately unchanged; only the
+    // sidebar label now calls it "Legacy".
     Route::controller(EventController::class)->group(function () {
         Route::get('/events', 'index')->name('events.index');
+    });
+
+    Route::controller(ISCPPEventController::class)->group(function () {
+        Route::get('/iscpp/events', 'index')->name('iscpp.events.index');
+        Route::get('/iscpp/info', 'info')->name('iscpp.info');
+
+        // A rule carries its own webhook, so there is one list and one form.
+        Route::get('/iscpp/rules', 'rules')->name('iscpp.rules.index');
+        Route::get('/iscpp/rules/create', 'createRule')->name('iscpp.rules.create');
+        Route::get('/iscpp/rules/{iscppEventRule}/edit', 'editRule')->name('iscpp.rules.edit');
+
+        Route::get('/iscpp/events/{iscppEvent}', 'show')->name('iscpp.events.show');
     });
 
     Route::controller(UserManagementController::class)->group(function () {

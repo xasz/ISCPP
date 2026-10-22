@@ -29,6 +29,7 @@ class RefreshSCTenantHealthscore implements ShouldBeUniqueUntilProcessing, Shoul
             $tenant = SCTenant::findOrFail($this->tenantID);
 
             $data = $scService->tenantHealthscore($tenant);
+            // Threshold state is re-evaluated by SCTenantHealthscoreObserver on save.
             $tenant->SCTenantHealthscore()->updateOrCreate(
                 ['tenantId' => $this->tenantID],
                 [
