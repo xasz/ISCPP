@@ -1,6 +1,6 @@
 <x-sctenants.show.layout :sctenant="$sctenant">
     <livewire:sctenant.card-iscpp-ignore :sctenant="$sctenant" />
-    
+
     <!-- Halo Settings Tab -->
     @if(app(App\Settings\HaloServiceSettings::class)->enabled)
         <livewire:sctenant.card-halosettings :sctenant="$sctenant" />

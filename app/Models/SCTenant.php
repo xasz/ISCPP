@@ -65,6 +65,29 @@ class SCTenant extends Model
         return $this->hasOne(SCTenantHealthscore::class, 'tenantId');
     }
 
+    public function healthscoreThresholds()
+    {
+        return $this->hasMany(SCTenantHealthscoreThreshold::class, 'tenantId');
+    }
+
+    /**
+     * Threshold per score key, filled in with the configured default where no row exists.
+     *
+     * @return array<string, int>
+     */
+    public function healthscoreThresholdMap(): array
+    {
+        $default = SCTenantHealthscoreThreshold::defaultThreshold();
+
+        $stored = $this->healthscoreThresholds
+            ->pluck('threshold', 'score_key')
+            ->all();
+
+        return collect(SCTenantHealthscore::AvailableScores())
+            ->mapWithKeys(fn (string $key) => [$key => (int) ($stored[$key] ?? $default)])
+            ->all();
+    }
+
     public function SCEndpoints()
     {
         return $this->hasMany(SCEndpoint::class, 'tenantId');

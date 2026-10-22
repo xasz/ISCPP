@@ -5,10 +5,12 @@ namespace App\Jobs;
 use App\Models\Event;
 use App\Models\SCEndpoint;
 use App\Models\SCTenant;
+use App\Services\ISCPPEvents;
 use App\Services\SCService;
 use Illuminate\Contracts\Queue\ShouldBeUniqueUntilProcessing;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
+use Illuminate\Support\Collection;
 
 class RefreshSCEndpoints implements ShouldBeUniqueUntilProcessing, ShouldQueue
 {
@@ -52,6 +54,22 @@ class RefreshSCEndpoints implements ShouldBeUniqueUntilProcessing, ShouldQueue
 
             return;
         }
+        // Endpoint sync is off by default, so the first run after enabling it imports
+        // every endpoint at once. That is a backfill, not a stream of new endpoints.
+        $isBackfill = $tenant->SCEndpoints()->doesntExist();
+
+        ISCPPEvents::muteIf($isBackfill, function () use ($endpoints, $tenant) {
+            $this->importEndpoints($endpoints, $tenant);
+        });
+
+        Event::logInfo('scendpoints', $endpoints->count().' endpoints fetched for tenant '.$tenant->id);
+    }
+
+    /**
+     * @param  Collection<int, array<string, mixed>>  $endpoints
+     */
+    protected function importEndpoints($endpoints, SCTenant $tenant): void
+    {
         foreach ($endpoints as $endpoint) {
             try {
                 SCEndpoint::updateOrCreate(
@@ -77,7 +95,6 @@ class RefreshSCEndpoints implements ShouldBeUniqueUntilProcessing, ShouldQueue
                 ]);
             }
         }
-        Event::logInfo('scendpoints', $endpoints->count().' endpoints fetched for tenant '.$tenant->id);
     }
 
     public function uniqueId(): string
