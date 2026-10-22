@@ -1,5 +1,7 @@
 <x-sctenants.show.layout :sctenant="$sctenant">
-    <x-card title="Healthscore"> 
+    <livewire:sctenant.card-healthscore-thresholds :sctenant="$sctenant" />
+
+    <x-card title="Healthscore">
         @if($sctenant->SCTenantHealthscore()->count() > 0)
             <div class="grid grid-cols-1 gap-4">
                 @if($sctenant->SCTenantHealthscore->hasScores())

@@ -56,9 +56,14 @@ new class extends Component {
             @endif
         </flux:navlist.group>    
         <flux:navlist.group heading="Events" class="grid">
-            <flux:navlist.item icon="cake" :href="route('events.index')" :current="request()->routeIs('events.index')" wire:navigate>System</flux:navlist.item>
-            <flux:navlist.item icon="bolt" :href="route('webhookLogs.index')" :current="request()->routeIs('webhookLogs.index')" wire:navigate>SC Alert Webhooks</flux:navlist.item>
-        </flux:navlist.group>  
+            <flux:navlist.item icon="rectangle-stack" :href="route('iscpp.events.index')" :current="request()->routeIs('iscpp.events.*')" wire:navigate>Event Log</flux:navlist.item>
+            <flux:navlist.item icon="funnel" :href="route('iscpp.rules.index')" :current="request()->routeIs('iscpp.rules.*')" wire:navigate>Rules</flux:navlist.item>
+            <flux:navlist.item icon="information-circle" :href="route('iscpp.info')" :current="request()->routeIs('iscpp.info')" wire:navigate>Event Info</flux:navlist.item>
+        </flux:navlist.group>
+        <flux:navlist.group heading="Logs" class="grid">
+            <flux:navlist.item icon="document-text" :href="route('events.index')" :current="request()->routeIs('events.index')" wire:navigate>System Log</flux:navlist.item>
+            <flux:navlist.item icon="bolt" :href="route('webhookLogs.index')" :current="request()->routeIs('webhookLogs.index')" wire:navigate>SC Alert Webhooks (Legacy)</flux:navlist.item>
+        </flux:navlist.group>
     </flux:navlist>
     
 </div>
