@@ -5,10 +5,12 @@ namespace App\Jobs;
 use App\Models\Event;
 use App\Models\SCAlert;
 use App\Models\SCTenant;
+use App\Services\ISCPPEvents;
 use App\Services\SCService;
 use Illuminate\Contracts\Queue\ShouldBeUniqueUntilProcessing;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
+use Illuminate\Support\Collection;
 
 class RefreshSCAlerts implements ShouldBeUniqueUntilProcessing, ShouldQueue
 {
@@ -41,10 +43,16 @@ class RefreshSCAlerts implements ShouldBeUniqueUntilProcessing, ShouldQueue
             return;
         }
 
-        $from = $tenant->SCAlerts()->orderBy('raisedAt', 'desc')->first()->raisedAt ?? now()->subDays(9999);
+        $latest = $tenant->SCAlerts()->orderBy('raisedAt', 'desc')->first();
+        $from = $latest->raisedAt ?? now()->subDays(9999);
         if ($this->allEvents) {
             $from = now()->subDays(9999);
         }
+
+        // A tenant with no alerts yet pulls its entire history, which is the normal path
+        // for every newly onboarded tenant. Importing that history is not something that
+        // just happened, so it stays out of the ISCPP event log.
+        $isBackfill = $this->allEvents || $latest === null;
         Event::logInfo('scalerts', 'Fetching alerts starting at: '.$from->toDateTimeString(), ['SCTenant' => $this->tenantID]);
 
         try {
@@ -59,6 +67,18 @@ class RefreshSCAlerts implements ShouldBeUniqueUntilProcessing, ShouldQueue
 
             return;
         }
+        ISCPPEvents::muteIf($isBackfill, function () use ($alerts, $tenant) {
+            $this->importAlerts($alerts, $tenant);
+        });
+
+        Event::logInfo('scalerts', $alerts->count().' Alerts fetched', ['SCTenant' => $this->tenantID]);
+    }
+
+    /**
+     * @param  Collection<int, array<string, mixed>>  $alerts
+     */
+    protected function importAlerts($alerts, SCTenant $tenant): void
+    {
         foreach ($alerts as $alert) {
             try {
 
@@ -105,7 +125,6 @@ class RefreshSCAlerts implements ShouldBeUniqueUntilProcessing, ShouldQueue
                 ]);
             }
         }
-        Event::logInfo('scalerts', $alerts->count().' Alerts fetched', ['SCTenant' => $this->tenantID]);
     }
 
     public function uniqueId(): string

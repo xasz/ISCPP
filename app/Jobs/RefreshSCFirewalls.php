@@ -5,6 +5,7 @@ namespace App\Jobs;
 use App\Models\Event;
 use App\Models\SCFirewall;
 use App\Models\SCTenant;
+use App\Services\ISCPPEvents;
 use App\Services\SCService;
 use Illuminate\Contracts\Queue\ShouldBeUniqueUntilProcessing;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -51,6 +52,22 @@ class RefreshSCFirewalls implements ShouldBeUniqueUntilProcessing, ShouldQueue
 
             return;
         }
+        // The first firewall sync of a tenant imports every firewall at once. That is a
+        // backfill, not a stream of new firewalls, so it stays out of the event log.
+        $isBackfill = $tenant->SCFirewalls()->doesntExist();
+
+        ISCPPEvents::muteIf($isBackfill, function () use ($firewalls, $tenant) {
+            $this->importFirewalls($firewalls, $tenant);
+        });
+
+        Event::logInfo('scfirewalls', count($firewalls).' firewalls fetched for tenant '.$tenant->id);
+    }
+
+    /**
+     * @param  iterable<int, array<string, mixed>>  $firewalls
+     */
+    protected function importFirewalls(iterable $firewalls, SCTenant $tenant): void
+    {
         foreach ($firewalls as $firewall) {
             try {
                 SCFirewall::updateOrCreate(
@@ -73,7 +90,6 @@ class RefreshSCFirewalls implements ShouldBeUniqueUntilProcessing, ShouldQueue
                 ]);
             }
         }
-        Event::logInfo('scfirewalls', count($firewalls).' firewalls fetched for tenant '.$tenant->id);
     }
 
     public function uniqueId(): string

@@ -9,10 +9,10 @@
         "@tailwindcss/vite": "^4.3.2",
         "autoprefixer": "^10.4.20",
         "axios": "^1.16.0",
-        "concurrently": "^9.0.1",
+        "concurrently": "^9.2.5",
         "laravel-vite-plugin": "^3.1",
         "tailwindcss": "^4.0.7",
-        "vite": "^8.1"
+        "vite": "^8.3"
     },
     "optionalDependencies": {
         "@rollup/rollup-linux-x64-gnu": "4.9.5",

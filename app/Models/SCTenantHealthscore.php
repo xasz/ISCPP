@@ -2,14 +2,34 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Collection;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+
 
 class SCTenantHealthscore extends Model
 {
     use HasFactory;
 
     protected $table = 'sc_tenant_healthscores';
+
+    public static function AvailableScores() : array
+    {
+        return [
+            'protection.computer.score',
+            'protection.server.score',
+            'policy.computer.threat-protection.score',
+            'policy.server.server-threat-protection.score',
+            'exclusions.policy.computer.score',
+            'exclusions.policy.server.score',
+            'exclusions.global.score',
+            'tamperProtection.computer.score',
+            'tamperProtection.server.score',
+            'tamperProtection.globalDetail.score',
+            'mdrDataTelemetry.protectionImprovement.score',
+            'mdrAuthorizedContact.contact.score',
+        ];
+    }
 
     protected $fillable = [
         'rawData',
@@ -25,135 +45,29 @@ class SCTenantHealthscore extends Model
         return $this->belongsTo(SCTenant::class, 'tenantId');
     }
 
-    public function hasEndpointProtectionHealthscore()
+    public function hasScores() : bool
     {
-        return $this->rawData && isset($this->rawData['endpoint']['protection']) && count($this->rawData['endpoint']['protection']) > 0;
+        return $this->rawData && isset($this->rawData['endpoint']) && count($this->rawData['endpoint']) > 0;
     }
-
-    public function hasEndpointPolicyHealthscore()
+    
+    public function getScores() : Collection
     {
-        return $this->rawData && isset($this->rawData['endpoint']['policy']) && count($this->rawData['endpoint']['policy']) > 0;
+        $results = [];
+        collect(self::AvailableScores())->each(function ($scorePath) use (&$results) {
+            $keys = explode('.', 'endpoint.' . $scorePath);
+            $value = $this->rawData;
+            foreach ($keys as $key) {
+                if (!isset($value[$key])) {
+                    $value = -1;
+                    break;
+                }
+                $value = $value[$key];
+            }
+            $results[$scorePath] = $value;
+        });
+        return collect($results);
+
     }
-
-    public function hasEndpointExclusionsHealthscore()
-    {
-        return $this->rawData && isset($this->rawData['endpoint']['exclusions']) && count($this->rawData['endpoint']['exclusions']) > 0;
-    }
-
-    public function hasEndpointTamperProtectionHealthscore()
-    {
-        return $this->rawData && isset($this->rawData['endpoint']['tamperProtection']) && count($this->rawData['endpoint']['tamperProtection']) > 0;
-    }
-
-    public function hasEndpointMDRDataTelemetryHealthscore()
-    {
-        return $this->rawData && isset($this->rawData['endpoint']['mdrDataTelemetry']) && count($this->rawData['endpoint']['mdrDataTelemetry']) > 0;
-    }
-
-    public function hasEndpointMDRContactHealthscore()
-    {
-        return $this->rawData && isset($this->rawData['endpoint']['mdrAuthorizedContact']) && count($this->rawData['endpoint']['mdrDataTelemetry']) > 0;
-    }
-
-    public function getEndpointProtectionComputerHealthscore()
-    {
-        if (! $this->hasEndpointProtectionHealthscore()) {
-            return -1;
-        }
-
-        return $this->rawData['endpoint']['protection']['computer']['score'] ?? -1;
-    }
-
-    public function getEndpointProtectionServerHealthscore()
-    {
-        if (! $this->hasEndpointProtectionHealthscore()) {
-            return -1;
-        }
-
-        return $this->rawData['endpoint']['protection']['server']['score'] ?? -1;
-    }
-
-    public function getEndpointPolicyComputerHealthscore()
-    {
-        if (! $this->hasEndpointPolicyHealthscore()) {
-            return -1;
-        }
-
-        return $this->rawData['endpoint']['policy']['computer']['threat-protection']['score'] ?? -1;
-    }
-
-    public function getEndpointPolicyServerHealthscore()
-    {
-        if (! $this->hasEndpointPolicyHealthscore()) {
-            return -1;
-        }
-
-        return $this->rawData['endpoint']['policy']['server']['server-threat-protection']['score'] ?? -1;
-    }
-
-    public function getEndpointExclusionsComputerHealthscore()
-    {
-        if (! $this->hasEndpointExclusionsHealthscore()) {
-            return -1;
-        }
-
-        return $this->rawData['endpoint']['exclusions']['policy']['computer']['score'] ?? -1;
-    }
-
-    public function getEndpointExclusionsServerHealthscore()
-    {
-        if (! $this->hasEndpointExclusionsHealthscore()) {
-            return -1;
-        }
-
-        return $this->rawData['endpoint']['exclusions']['policy']['server']['score'] ?? -1;
-    }
-
-    public function getEndpointExclusionsGlobalHealthscore()
-    {
-        if (! $this->hasEndpointExclusionsHealthscore()) {
-            return -1;
-        }
-
-        return $this->rawData['endpoint']['exclusions']['global']['score'] ?? -1;
-    }
-
-    public function getEndpointTamperProtectionComputerHealthscore()
-    {
-        if (! $this->hasEndpointTamperProtectionHealthscore()) {
-            return -1;
-        }
-
-        return $this->rawData['endpoint']['tamperProtection']['computer']['score'] ?? -1;
-    }
-
-    public function getEndpointTamperProtectionServerHealthscore()
-    {
-        if (! $this->hasEndpointTamperProtectionHealthscore()) {
-            return -1;
-        }
-
-        return $this->rawData['endpoint']['tamperProtection']['server']['score'] ?? -1;
-    }
-
-    public function getEndpointTamperProtectionGlobalHealthscore()
-    {
-        if (! $this->hasEndpointTamperProtectionHealthscore()) {
-            return -1;
-        }
-
-        return $this->rawData['endpoint']['tamperProtection']['globalDetail']['score'] ?? -1;
-    }
-
-    public function getEndpointMDRDataTelemetryProtectionImprovementHealthscore()
-    {
-        if (! $this->hasEndpointMDRDataTelemetryHealthscore()) {
-            return -1;
-        }
-
-        return $this->rawData['endpoint']['mdrDataTelemetry']['protectionImprovement']['score'] ?? -1;
-    }
-
     public function getEndpointMDRContactHealthscore()
     {
         if (! $this->hasEndpointMDRContactHealthscore()) {

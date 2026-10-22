@@ -94,6 +94,7 @@ class SCTenantController extends Controller
     public function healthscores()
     {
         $sctenants = SCTenant::orderBy('name', 'desc')
+            ->with(['SCTenantHealthscore', 'healthscoreThresholds'])
             ->paginate(50);
 
         return view('sctenants.healthscores', compact('sctenants'));
