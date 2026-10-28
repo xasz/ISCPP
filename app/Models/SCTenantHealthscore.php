@@ -2,10 +2,9 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-
 
 class SCTenantHealthscore extends Model
 {
@@ -13,7 +12,7 @@ class SCTenantHealthscore extends Model
 
     protected $table = 'sc_tenant_healthscores';
 
-    public static function AvailableScores() : array
+    public static function AvailableScores(): array
     {
         return [
             'protection.computer.score',
@@ -31,6 +30,40 @@ class SCTenantHealthscore extends Model
         ];
     }
 
+    /**
+     * The available scores grouped by area, with a short column label per score.
+     * Keeps the order of AvailableScores().
+     *
+     * @return array<string, array<string, string>>
+     */
+    public static function ScoreGroups(): array
+    {
+        return [
+            'Protection' => [
+                'protection.computer.score' => 'Computer',
+                'protection.server.score' => 'Server',
+            ],
+            'Policy' => [
+                'policy.computer.threat-protection.score' => 'Computer',
+                'policy.server.server-threat-protection.score' => 'Server',
+            ],
+            'Exclusions' => [
+                'exclusions.policy.computer.score' => 'Computer',
+                'exclusions.policy.server.score' => 'Server',
+                'exclusions.global.score' => 'Global',
+            ],
+            'Tamper Protection' => [
+                'tamperProtection.computer.score' => 'Computer',
+                'tamperProtection.server.score' => 'Server',
+                'tamperProtection.globalDetail.score' => 'Global',
+            ],
+            'MDR' => [
+                'mdrDataTelemetry.protectionImprovement.score' => 'Telemetry',
+                'mdrAuthorizedContact.contact.score' => 'Contact',
+            ],
+        ];
+    }
+
     protected $fillable = [
         'rawData',
         'tenantId',
@@ -45,19 +78,19 @@ class SCTenantHealthscore extends Model
         return $this->belongsTo(SCTenant::class, 'tenantId');
     }
 
-    public function hasScores() : bool
+    public function hasScores(): bool
     {
         return $this->rawData && isset($this->rawData['endpoint']) && count($this->rawData['endpoint']) > 0;
     }
-    
-    public function getScores() : Collection
+
+    public function getScores(): Collection
     {
         $results = [];
         collect(self::AvailableScores())->each(function ($scorePath) use (&$results) {
-            $keys = explode('.', 'endpoint.' . $scorePath);
+            $keys = explode('.', 'endpoint.'.$scorePath);
             $value = $this->rawData;
             foreach ($keys as $key) {
-                if (!isset($value[$key])) {
+                if (! isset($value[$key])) {
                     $value = -1;
                     break;
                 }
@@ -65,9 +98,11 @@ class SCTenantHealthscore extends Model
             }
             $results[$scorePath] = $value;
         });
+
         return collect($results);
 
     }
+
     public function getEndpointMDRContactHealthscore()
     {
         if (! $this->hasEndpointMDRContactHealthscore()) {

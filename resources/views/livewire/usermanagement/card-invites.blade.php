@@ -1,13 +1,24 @@
 <?php
 
+use App\Enums\UserRole;
+use Illuminate\Validation\Rule;
 use Livewire\Volt\Component;
 use App\Models\User;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Hash;
 
 new class extends Component {
+    /**
+     * Runs on every request of this component, not only on mount.
+     */
+    public function boot(): void
+    {
+        \Illuminate\Support\Facades\Gate::authorize('manage-users');
+    }
+
     public $name = '';
     public $email = '';
+    public string $role = 'editor';
     public $invitationLink = '';
     public $showLink = false;
     public $pendingInvitations = [];
@@ -28,18 +39,20 @@ new class extends Component {
         $this->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
+            'role' => ['required', Rule::enum(UserRole::class)],
         ]);
-        
+
         $token = Str::random(64);
-        
+
         $user = User::create([
             'name' => $this->name,
             'email' => $this->email,
-            'password' => Hash::make(Str::random(32)), 
+            'password' => Hash::make(Str::random(32)),
+            'role' => $this->role,
         ]);
-        
-        $this->regenerateLink($user->id);        
-        $this->reset(['name', 'email']);
+
+        $this->regenerateLink($user->id);
+        $this->reset(['name', 'email', 'role']);
         $this->refreshPendingInvitations();
     }
     
@@ -76,6 +89,15 @@ new class extends Component {
         @error('name') <div class="mt-2 text-sm text-red-600">{{ $message }}</div> @enderror
         <x-card-details-input label="Email" wire:model="email" type="email" />
         @error('email') <div class="mt-2 text-sm text-red-600">{{ $message }}</div> @enderror
+        <div class="max-w-xs">
+            <flux:select wire:model="role" label="{{ __('Role') }}">
+                @foreach(App\Enums\UserRole::options() as $value => $label)
+                    <option value="{{ $value }}">{{ $label }}</option>
+                @endforeach
+            </flux:select>
+        </div>
+        <flux:text size="sm" class="text-zinc-500">{{ __('Editors can use everything except User Management and General Settings.') }}</flux:text>
+        @error('role') <div class="mt-2 text-sm text-red-600">{{ $message }}</div> @enderror
         <x-a-button wire:click="createInvitation">Create Invitation</x-a-button>
         
         @if($showLink)
@@ -101,6 +123,7 @@ new class extends Component {
                     <tr>
                         <x-table.th>Name</x-table.th>
                         <x-table.th>Email</x-table.th>
+                        <x-table.th>Role</x-table.th>
                         <x-table.th>Created At</x-table.th>
                         <x-table.th>Actions</x-table.th>
                     </tr>
@@ -110,6 +133,7 @@ new class extends Component {
                         <x-table.tr>
                             <x-table.td>{{ $invitation->name }}</x-table.td>
                             <x-table.td>{{ $invitation->email }}</x-table.td>
+                            <x-table.td><flux:badge size="sm" :color="$invitation->role->badgeColor()">{{ $invitation->role->label() }}</flux:badge></x-table.td>
                             <x-table.td>{{ $invitation->created_at->format('Y-m-d H:i') }}</x-table.td>
                             <x-table.td>
                                 <div class="flex space-x-2">

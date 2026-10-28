@@ -17,14 +17,20 @@
 
             <flux:spacer />
 
+            @canany(['manage-users', 'manage-settings'])
             <flux:navlist variant="outline">
+                @can('manage-users')
                 <flux:navlist.item  :href="route('usermanagement.index')" :current="request()->routeIs('usermanagement.index')" wire:navigate>
                     User Management
                 </flux:navlist.item>
+                @endcan
+                @can('manage-settings')
                 <flux:navlist.item  :href="route('generalsettings.index')" :current="request()->routeIs('generalsettings.*')" wire:navigate>
                     General Settings
                 </flux:navlist.item>
+                @endcan
             </flux:navlist>
+            @endcanany
 
             <!-- Desktop User Menu -->
             <flux:dropdown position="bottom" align="start">

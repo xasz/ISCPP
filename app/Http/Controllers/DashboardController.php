@@ -9,7 +9,7 @@ use App\Settings\HaloServiceSettings;
 use App\Settings\NinjaServiceSettings;
 use App\Settings\SCServiceSettings;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Queue;
 
 class DashboardController extends Controller
 {
@@ -69,7 +69,7 @@ class DashboardController extends Controller
             'awareness' => $awareness,
             'tenantsCount' => SCTenant::count(),
             'alerts24HCount' => SCAlert::whereDate('raisedAt', '>=', now()->subHours(24))->count(),
-            'jobsInQueue' => DB::connection(queue_connection())->table('jobs')->count(),
+            'jobsInQueue' => Queue::size(),
         ]);
     }
 }

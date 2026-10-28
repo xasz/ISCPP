@@ -10,6 +10,7 @@ class WebhookLogController extends Controller
     {
         $webhookLogs = WebhookLog::orderBy('created_at', 'desc')
             ->paginate(50);
+
         return view('webhookLog.index', compact('webhookLogs'));
     }
 }

@@ -1,7 +1,9 @@
 <x-layouts.app>
     <x-card title="Tenants">
         @php
-            $scores = \App\Models\SCTenantHealthscore::AvailableScores();
+            $scoreGroups = \App\Models\SCTenantHealthscore::ScoreGroups();
+            // Cells follow the group order, so they always line up with the grouped header.
+            $scores = collect($scoreGroups)->flatMap(fn (array $groupScores) => array_keys($groupScores))->all();
         @endphp
 
         <div class="flex items-center gap-2 pb-2">
@@ -12,26 +14,47 @@
             </flux:text>
         </div>
 
+        <div class="flex items-center gap-2 pb-2">
+            @if($belowThreshold)
+                <flux:button href="{{ route('sctenants.healthscores') }}" variant="ghost" size="sm">
+                    {{ __('Alle anzeigen') }}
+                </flux:button>
+            @else
+                <flux:button href="{{ route('sctenants.healthscores', ['belowThreshold' => 1]) }}" variant="ghost" size="sm" icon="funnel">
+                    {{ __('Nur unter Threshold') }}
+                </flux:button>
+            @endif
+        </div>
+
         <div class="relative overflow-x-auto">
             <x-table.table nofull>
                 <x-table.thead>
                     <tr>
-                        <x-table.th class="max-w-100" >SCTenant</x-table.th>
-                        @foreach($scores as $score)
-                            <x-table.th class="w-40 max-w-40 min-w-40 text-tiny">{{ Str::replace('.', ' ', $score) }}</x-table.th>
+                        <x-table.th rowspan="2" class="align-bottom">SCTenant</x-table.th>
+                        @foreach($scoreGroups as $group => $groupScores)
+                            <x-table.th colspan="{{ count($groupScores) }}" class="border-x border-b border-zinc-200 text-center dark:border-zinc-700" compact>{{ $group }}</x-table.th>
+                        @endforeach
+                    </tr>
+                    <tr>
+                        @foreach($scoreGroups as $group => $groupScores)
+                            @foreach($groupScores as $score => $label)
+                                <x-table.th class="w-24 min-w-24 text-center text-xs font-normal" compact title="{{ $group }} – {{ $label }}">{{ $label }}</x-table.th>
+                            @endforeach
                         @endforeach
                     </tr>
                 </x-table.thead>
                 <tbody>
                     @foreach ($sctenants as $sctenant)
                         <x-table.tr>
-                            <x-table.td class="max-w-100">
-                                    <x-table.a href="{{ route('sctenants.tenantDetails', $sctenant) }}">
+                            <x-table.td>
+                                {{-- A fixed width block is needed: table cells ignore max-width, so truncate alone would not cut the name. --}}
+                                <div class="w-64">
+                                    <x-table.a class="block truncate" href="{{ route('sctenants.tenantDetails', $sctenant) }}" title="{{ $sctenant->name }}">
                                         {{ $sctenant->name }}
                                     </x-table.a>
-                                    <br>
-                                    <span class="text-xs">{{ __('ShowAs: ') }} {{ $sctenant->showAs }} </span>
-                            </x-table.td>  
+                                    <span class="block truncate text-xs" title="{{ $sctenant->showAs }}">{{ __('ShowAs: ') }} {{ $sctenant->showAs }}</span>
+                                </div>
+                            </x-table.td>
                             @if($sctenant->SCTenantHealthscore == null)
                                 @foreach($scores as $score)
                                     <x-table.td></x-table.td>
@@ -43,7 +66,7 @@
                                 @endphp
                                 @foreach ($scores as $score)
                                     @if($tenantScores[$score] >= 0)
-                                        <x-table.td class="w-40 max-w-40 min-w-40">
+                                        <x-table.td class="w-24 min-w-24">
                                             <div class="flex justify-center">
                                                 <x-healthscore-badge :score="$tenantScores[$score]" :threshold="$thresholds[$score] ?? null" />
                                             </div>

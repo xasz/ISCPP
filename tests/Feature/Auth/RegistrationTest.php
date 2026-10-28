@@ -1,10 +1,9 @@
 <?php
 
-use App\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Volt\Volt as LivewireVolt;
 
-
-uses(\Illuminate\Foundation\Testing\RefreshDatabase::class);
+uses(RefreshDatabase::class);
 
 test('registration screen can be rendered', function () {
     $response = $this->get('/register');
@@ -19,7 +18,7 @@ test('new users can register once', function () {
         ->set('password', 'password')
         ->set('password_confirmation', 'password')
         ->call('register');
-    
+
     $response
         ->assertHasNoErrors();
 

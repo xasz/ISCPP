@@ -3,11 +3,11 @@
 namespace App\Actions;
 
 use App\Events\ISCPPHealthScoreThresholdDropped;
+use App\Events\ISCPPHealthScoreThresholdRaised;
 use App\Events\ISCPPHealthScoreThresholdRecovered;
 use App\Models\SCTenant;
 use App\Models\SCTenantHealthscore;
 use App\Models\SCTenantHealthscoreThreshold;
-use App\Services\ISCPPEvents;
 
 /**
  * The single place that decides a healthscore threshold state.
@@ -21,6 +21,9 @@ use App\Services\ISCPPEvents;
  *
  * Every write in here goes through the query builder (or withoutEvents), never through
  * a model save. Otherwise the threshold observer would fire on its own evaluation.
+ *
+ * A score above its threshold raises the threshold to that score, so the threshold always
+ * reflects the best known value. That change raises its own event.
  *
  * Only state transitions raise events, so a score that stays low does not re-notify on
  * every refresh. Transitions are conditional updates that also pin the threshold value
@@ -67,14 +70,6 @@ class EvaluateSCTenantHealthscoreThresholds
         $this->evaluate($tenant, $threshold, $value);
     }
 
-    /**
-     * Establish the current state without raising events.
-     */
-    public function seedSilently(SCTenant $tenant, SCTenantHealthscore $healthscore): void
-    {
-        ISCPPEvents::mute(fn () => $this->execute($tenant, $healthscore));
-    }
-
     private function isUsableScore(mixed $value): bool
     {
         // getScores() walks a dotted path and returns whatever node it lands on, so this
@@ -117,7 +112,38 @@ class EvaluateSCTenantHealthscoreThresholds
             return;
         }
 
+        if ($value > $threshold->threshold) {
+            $this->raiseThreshold($tenant, $threshold, $value);
+        }
+
         $this->transitionToOk($tenant, $threshold, $value, $previous);
+    }
+
+    /**
+     * Let the threshold follow a score that rose above it, so it never sits below the best known value.
+     *
+     * Like changeState(), the old threshold is part of the WHERE clause, so an admin edit
+     * in between wins. The in memory threshold is updated afterwards, so the following
+     * state transition compares against the raised value.
+     */
+    private function raiseThreshold(SCTenant $tenant, SCTenantHealthscoreThreshold $threshold, int $value): void
+    {
+        $previousThreshold = $threshold->threshold;
+
+        $raised = SCTenantHealthscoreThreshold::whereKey($threshold->getKey())
+            ->where('threshold', $previousThreshold)
+            ->update([
+                'threshold' => $value,
+                'updated_at' => now(),
+            ]);
+
+        if ($raised !== 1) {
+            return;
+        }
+
+        $threshold->threshold = $value;
+
+        ISCPPHealthScoreThresholdRaised::dispatch($tenant, $threshold->fresh(), $value, $previousThreshold);
     }
 
     private function transitionToLow(SCTenant $tenant, SCTenantHealthscoreThreshold $threshold, int $value, ?int $previous): void

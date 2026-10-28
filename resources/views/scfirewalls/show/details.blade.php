@@ -1,26 +1,59 @@
 <x-scfirewalls.show.layout :firewall="$firewall">
-        <x-header-card :title="$firewall->hostname" icon="fire" type="Firewall">
-            <flux:badge size="sm">{{ data_get($firewall->rawData, 'serialNumber', __('N/A')) }}</flux:badge>
-            <flux:badge color="zinc" size="sm">{{ data_get($firewall->rawData, 'firmwareVersion', __('N/A')) }}</flux:badge>
-            <flux:badge :color="data_get($firewall->rawData, 'status.connected') ? 'emerald' : 'red'" size="sm">
-                {{ data_get($firewall->rawData, 'status.connected') ? __('Connected') : __('Offline') }}
-            </flux:badge>
-        </x-header-card>
+    @php
+        $raw = $firewall->rawData ?? [];
+        // The spec types cluster.peers as a list, its example shows a single object.
+        $peers = data_get($raw, 'cluster.peers', []);
+        $peers = is_array($peers) && array_is_list($peers) ? $peers : [$peers];
+        $location = data_get($raw, 'geoLocation');
+    @endphp
 
-        <x-card title="Firewall Details">
-            <div>
-                <x-card-details-row icon="identification" label="ID" :value="$firewall->id" />
-                <x-card-details-row icon="fire" label="Hostname" :value="$firewall->hostname" />
-                <x-card-details-row icon="building-office-2" label="Tenant" :value="$firewall->SCTenant?->name ?? __('Unknown')" />
-                <x-card-details-row icon="tag" label="Serial Number" :value="data_get($firewall->rawData, 'serialNumber', __('N/A'))" />
-                <x-card-details-row icon="server" label="Model" :value="data_get($firewall->rawData, 'model', __('N/A'))" />
-                <x-card-details-row icon="command-line" label="Firmware Version" :value="data_get($firewall->rawData, 'firmwareVersion', __('N/A'))" />
-                <x-card-details-row icon="signal" label="Connected" :value="data_get($firewall->rawData, 'status.connected') ? __('Yes') : __('No')" />
-                <x-card-details-row icon="pause-circle" label="Suspended" :value="data_get($firewall->rawData, 'status.suspended') ? __('Yes') : __('No')" />
-                <x-card-details-row icon="shield-check" label="Managing Status" :value="data_get($firewall->rawData, 'status.managingStatus', __('N/A'))" />
-                <x-card-details-row icon="megaphone" label="Reporting Status" :value="data_get($firewall->rawData, 'status.reportingStatus', __('N/A'))" />
-                <x-card-details-row icon="globe-alt" label="External IPv4 Addresses" :value="collect(data_get($firewall->rawData, 'externalIpv4Addresses', []))->implode(', ') ?: __('N/A')" />
-                <x-card-details-row icon="clock" label="Updated At" :value="data_get($firewall->rawData, 'updatedAt', __('N/A'))" />
+    <div class="grid gap-4 lg:grid-cols-2">
+        <x-card title="{{ __('Firewall') }}">
+            <div class="grid gap-x-6 sm:grid-cols-2">
+                <x-card-details-row label="ID" :value="$firewall->id" />
+                <x-card-details-row label="{{ __('Hostname') }}" :value="$firewall->hostname" />
+                <x-card-details-row label="{{ __('Name') }}" :value="data_get($raw, 'name', __('N/A'))" />
+                <x-card-details-row label="{{ __('Serial Number') }}" :value="data_get($raw, 'serialNumber', __('N/A'))" />
+                <x-card-details-row label="{{ __('Model') }}" :value="data_get($raw, 'model', __('N/A'))" />
+                <x-card-details-row label="{{ __('Firmware Version') }}" :value="data_get($raw, 'firmwareVersion', __('N/A'))" />
+                <x-card-details-row label="{{ __('Group') }}" :value="data_get($raw, 'group.name', __('Ungrouped'))" />
+                <x-card-details-row label="{{ __('Planned Firmware Upgrade') }}" :value="$firewall->plannedFirmwareUpgradeAt ? App\Services\ISCPPFormat::formatDateWithSeconds($firewall->plannedFirmwareUpgradeAt) : __('None')" />
             </div>
         </x-card>
+
+        <x-card title="{{ __('Status') }}">
+            <div class="grid gap-x-6 sm:grid-cols-2">
+                <x-card-details-row label="{{ __('Connected') }}" :value="data_get($raw, 'status.connected') ? __('Yes') : __('No')" />
+                <x-card-details-row label="{{ __('Suspended') }}" :value="data_get($raw, 'status.suspended') ? __('Yes') : __('No')" />
+                <x-card-details-row label="{{ __('Managing Status') }}" :value="data_get($raw, 'status.managingStatus', __('N/A'))" />
+                <x-card-details-row label="{{ __('Reporting Status') }}" :value="data_get($raw, 'status.reportingStatus', __('N/A'))" />
+                <x-card-details-row label="{{ __('State Changed At') }}" :value="data_get($raw, 'stateChangedAt', __('N/A'))" />
+                <x-card-details-row label="{{ __('Updated At') }}" :value="data_get($raw, 'updatedAt', __('N/A'))" />
+            </div>
+        </x-card>
+
+        <x-card title="{{ __('Network') }}">
+            <x-card-details-row label="{{ __('External IPv4 Addresses') }}" :value="collect(data_get($raw, 'externalIpv4Addresses', []))->implode(', ') ?: __('N/A')" />
+            <x-card-details-row label="{{ __('Location') }}" :value="$location ? data_get($location, 'latitude').', '.data_get($location, 'longitude') : __('N/A')" />
+        </x-card>
+
+        <x-card title="{{ __('Capabilities & Cluster') }}">
+            <div class="flex flex-wrap gap-1">
+                @forelse(data_get($raw, 'capabilities', []) as $capability)
+                    <flux:badge size="sm" color="zinc">{{ $capability }}</flux:badge>
+                @empty
+                    <flux:text size="sm" class="text-zinc-500">{{ __('No capabilities reported.') }}</flux:text>
+                @endforelse
+            </div>
+            @if(data_get($raw, 'cluster'))
+                <div class="grid gap-x-6 sm:grid-cols-2">
+                    <x-card-details-row label="{{ __('Cluster Mode') }}" :value="data_get($raw, 'cluster.mode', __('N/A'))" />
+                    <x-card-details-row label="{{ __('Cluster Status') }}" :value="data_get($raw, 'cluster.status', __('N/A'))" />
+                    <x-card-details-row label="{{ __('Cluster Peers') }}" :value="collect($peers)->pluck('serialNumber')->filter()->implode(', ') ?: __('N/A')" />
+                </div>
+            @else
+                <flux:text size="sm" class="text-zinc-500">{{ __('Not part of a cluster.') }}</flux:text>
+            @endif
+        </x-card>
+    </div>
 </x-scfirewalls.show.layout>

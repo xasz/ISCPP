@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\UserRole;
 use App\Models\User;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Facades\Auth;
@@ -25,7 +26,12 @@ new #[Layout('components.layouts.auth')] class extends Component {
             'password' => ['required', 'string', 'confirmed', Rules\Password::defaults()],
         ]);
 
+        // Registration only exists to create the very first account, which therefore gets
+        // every right. The route is guarded too, this also covers a stale component.
+        abort_if(User::exists(), 403);
+
         $validated['password'] = Hash::make($validated['password']);
+        $validated['role'] = UserRole::SuperAdmin;
 
         $user = User::create($validated);
         $user->email_verified_at = now();

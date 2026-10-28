@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Enums\UserRole;
+use Database\Factories\UserFactory;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -10,9 +12,8 @@ use Illuminate\Support\Str;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
+    /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
-
 
     /**
      * The attributes that are mass assignable.
@@ -23,6 +24,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'name',
         'email',
         'password',
+        'role',
     ];
 
     /**
@@ -47,7 +49,23 @@ class User extends Authenticatable implements MustVerifyEmail
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'google2fa_enabled' => 'boolean',
+            'role' => UserRole::class,
         ];
+    }
+
+    public function isSuperAdmin(): bool
+    {
+        return $this->role === UserRole::SuperAdmin;
+    }
+
+    /**
+     * Whether this user is the only remaining superadmin. Such a user must not be
+     * demoted or deleted, otherwise nobody could manage users anymore.
+     */
+    public function isLastSuperAdmin(): bool
+    {
+        return $this->isSuperAdmin()
+            && static::where('role', UserRole::SuperAdmin)->whereKeyNot($this->getKey())->doesntExist();
     }
 
     /**
@@ -61,8 +79,8 @@ class User extends Authenticatable implements MustVerifyEmail
             ->implode('');
     }
 
-    public function timezone (){
+    public function timezone()
+    {
         return config('iscpp.user_timezone');
     }
-
 }

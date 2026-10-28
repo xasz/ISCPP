@@ -16,7 +16,7 @@ new class extends Component {
     public function refreshRules(): void
     {
         $this->rules = ISCPPEventRule::query()
-            ->with('SCTenant')
+            ->with(['SCTenant', 'SCTenantGroup'])
             ->withCount('conditions')
             ->orderBy('name')
             ->get()
@@ -27,6 +27,7 @@ new class extends Component {
                 'eventLabel' => $rule->eventLabel(),
                 'eventKey' => $rule->event_key,
                 'tenant' => $rule->SCTenant?->name,
+                'tenantGroup' => $rule->SCTenantGroup?->name,
                 'url' => $rule->url,
                 'conditionsCount' => $rule->conditions_count,
                 'autoDisabled' => $rule->wasAutoDisabled(),
@@ -90,7 +91,13 @@ new class extends Component {
                             {{ $rule['eventLabel'] }}
                             <div class="text-zinc-400 dark:text-zinc-500">{{ $rule['eventKey'] }}</div>
                         </x-table.td>
-                        <x-table.td compact class="text-xs">{{ $rule['tenant'] ?? __('All tenants') }}</x-table.td>
+                        <x-table.td compact class="text-xs">
+                            @if($rule['tenantGroup'])
+                                <flux:badge size="sm" icon="user-group">{{ $rule['tenantGroup'] }}</flux:badge>
+                            @else
+                                {{ $rule['tenant'] ?? __('All tenants') }}
+                            @endif
+                        </x-table.td>
                         <x-table.td compact>{{ $rule['conditionsCount'] }}</x-table.td>
                         <x-table.td compact class="break-all text-xs">{{ $rule['url'] }}</x-table.td>
                         <x-table.td compact>

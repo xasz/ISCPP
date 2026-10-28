@@ -6,6 +6,14 @@ use App\Settings\HaloServiceSettings;
 use App\Services\HaloService;
 
 new class extends Component {
+    /**
+     * Runs on every request of this component, not only on mount.
+     */
+    public function boot(): void
+    {
+        \Illuminate\Support\Facades\Gate::authorize('manage-settings');
+    }
+
     
     public $enabled;
     public $instance;

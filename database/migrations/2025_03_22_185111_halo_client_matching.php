@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        # add halo id to tenant table
+        // add halo id to tenant table
         Schema::table('sc_tenants', function (Blueprint $table) {
             $table->integer('haloclient_id')->default(-1);
         });

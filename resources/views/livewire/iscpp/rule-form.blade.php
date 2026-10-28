@@ -4,6 +4,7 @@ use App\Models\ISCPPEventLog;
 use App\Models\ISCPPEventRule;
 use App\Models\ISCPPEventRuleCondition;
 use App\Models\SCTenant;
+use App\Models\SCTenantGroup;
 use App\Services\ISCPPEventRegistry;
 use App\Services\ISCPPWebhookSender;
 use Livewire\Volt\Component;
@@ -17,8 +18,12 @@ new class extends Component {
 
     public string $eventKey = '';
 
-    /** Empty string means every tenant. */
+    /** One of "all", "tenant" or "group". */
+    public string $tenantScope = 'all';
+
     public string $tenantId = '';
+
+    public string $tenantGroupId = '';
 
     /** @var array<int, array{path: string, operator: string, value: string}> */
     public array $conditions = [];
@@ -50,6 +55,12 @@ new class extends Component {
         $this->enabled = $rule->enabled;
         $this->eventKey = $rule->event_key;
         $this->tenantId = (string) $rule->tenantId;
+        $this->tenantGroupId = (string) $rule->sc_tenant_group_id;
+        $this->tenantScope = match (true) {
+            $rule->tenantId !== null => 'tenant',
+            $rule->sc_tenant_group_id !== null => 'group',
+            default => 'all',
+        };
         $this->url = $rule->url;
         $this->basicAuthUsername = (string) $rule->basic_auth_username;
         $this->hasStoredPassword = filled($rule->basic_auth_password);
@@ -71,6 +82,7 @@ new class extends Component {
             'eventOptions' => $registry->options(),
             'operatorOptions' => ISCPPEventRuleCondition::operatorOptions(),
             'sctenants' => SCTenant::orderBy('name')->get(['id', 'name']),
+            'sctenantGroups' => SCTenantGroup::orderBy('name')->withCount('tenants')->get(['id', 'name']),
             'suggestedPaths' => ['event.severity' => __('Event severity')] + $registry->filterablePathsFor($this->eventKey),
             'examplePayload' => $registry->examplePayloadFor($this->eventKey),
             'preview' => $this->preview(),
@@ -97,9 +109,12 @@ new class extends Component {
             'name' => $this->name,
             'enabled' => true,
             'event_key' => $this->eventKey,
-            'tenantId' => $this->tenantId ?: null,
+            ...$this->scopeAttributes(),
         ]);
         $rule->enabled = true;
+        $rule->setRelation('SCTenantGroup', $rule->sc_tenant_group_id
+            ? SCTenantGroup::with('tenants:id')->find($rule->sc_tenant_group_id)
+            : null);
 
         $rule->setRelation('conditions', collect($this->conditions)
             ->filter(fn (array $condition) => filled($condition['path'] ?? ''))
@@ -112,6 +127,19 @@ new class extends Component {
         return [
             'total' => $recent->count(),
             'matched' => $recent->filter(fn (ISCPPEventLog $event) => $rule->matches($event))->count(),
+        ];
+    }
+
+    /**
+     * Only the column of the chosen scope is set, so a rule never carries both.
+     *
+     * @return array{tenantId: ?string, sc_tenant_group_id: ?int}
+     */
+    private function scopeAttributes(): array
+    {
+        return [
+            'tenantId' => $this->tenantScope === 'tenant' && $this->tenantId !== '' ? $this->tenantId : null,
+            'sc_tenant_group_id' => $this->tenantScope === 'group' && $this->tenantGroupId !== '' ? (int) $this->tenantGroupId : null,
         ];
     }
 
@@ -139,7 +167,9 @@ new class extends Component {
         $this->validate([
             'name' => 'required|string|max:255',
             'eventKey' => 'required|string|in:'.implode(',', app(ISCPPEventRegistry::class)->keys()),
-            'tenantId' => 'nullable|string|exists:sc_tenants,id',
+            'tenantScope' => 'required|in:all,tenant,group',
+            'tenantId' => 'exclude_unless:tenantScope,tenant|required|string|exists:sc_tenants,id',
+            'tenantGroupId' => 'exclude_unless:tenantScope,group|required|integer|exists:sc_tenant_groups,id',
             'url' => 'required|string|max:2048',
         ]);
 
@@ -157,7 +187,7 @@ new class extends Component {
             'name' => $this->name,
             'enabled' => $this->enabled,
             'event_key' => $this->eventKey,
-            'tenantId' => $this->tenantId ?: null,
+            ...$this->scopeAttributes(),
             'url' => $this->url,
             'basic_auth_username' => $this->basicAuthUsername ?: null,
         ]);
@@ -224,14 +254,39 @@ new class extends Component {
 
     <x-card title="{{ __('2. Tenant') }}">
         <div class="w-full max-w-md">
-            <flux:select wire:model.live="tenantId" label="{{ __('Tenant') }}">
-                <option value="">{{ __('All tenants') }}</option>
-                @foreach($sctenants as $sctenant)
-                    <option value="{{ $sctenant->id }}">{{ $sctenant->name }}</option>
-                @endforeach
+            <flux:select wire:model.live="tenantScope" label="{{ __('Scope') }}">
+                <option value="all">{{ __('All tenants') }}</option>
+                <option value="tenant">{{ __('Single tenant') }}</option>
+                <option value="group">{{ __('Tenant group') }}</option>
             </flux:select>
         </div>
-        @error('tenantId') <flux:text class="text-red-600">{{ $message }}</flux:text> @enderror
+        @error('tenantScope') <flux:text class="text-red-600">{{ $message }}</flux:text> @enderror
+
+        @if($tenantScope === 'tenant')
+            <div class="w-full max-w-md">
+                <flux:select wire:model.live="tenantId" label="{{ __('Tenant') }}">
+                    <option value="">{{ __('Select a tenant') }}</option>
+                    @foreach($sctenants as $sctenant)
+                        <option value="{{ $sctenant->id }}">{{ $sctenant->name }}</option>
+                    @endforeach
+                </flux:select>
+            </div>
+            @error('tenantId') <flux:text class="text-red-600">{{ $message }}</flux:text> @enderror
+        @elseif($tenantScope === 'group')
+            <div class="w-full max-w-md">
+                <flux:select wire:model.live="tenantGroupId" label="{{ __('Tenant group') }}">
+                    <option value="">{{ __('Select a group') }}</option>
+                    @foreach($sctenantGroups as $sctenantGroup)
+                        <option value="{{ $sctenantGroup->id }}">{{ $sctenantGroup->name }} ({{ $sctenantGroup->tenants_count }})</option>
+                    @endforeach
+                </flux:select>
+            </div>
+            @error('tenantGroupId') <flux:text class="text-red-600">{{ $message }}</flux:text> @enderror
+            <flux:text size="sm" class="text-zinc-500">
+                {{ __('Group membership is read when an event is recorded, so tenants added to the group later are covered automatically.') }}
+                <flux:link href="{{ route('sctenantgroups.index') }}" wire:navigate>{{ __('Manage groups') }}</flux:link>
+            </flux:text>
+        @endif
 
         <flux:text size="sm" class="text-zinc-500">
             {{ __('All tenants also covers events that belong to no tenant. Tenants excluded from ISCPP never raise events.') }}

@@ -1,9 +1,13 @@
 <?php
 
+use App\Models\Event;
 use App\Models\User;
+use App\Notifications\TestMailNotification;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Notification;
 use Livewire\Volt\Volt;
 
-uses(\Illuminate\Foundation\Testing\RefreshDatabase::class);
+uses(RefreshDatabase::class);
 
 test('profile page is displayed', function () {
     $this->actingAs($user = User::factory()->create());
@@ -74,4 +78,60 @@ test('correct password must be provided to delete account', function () {
     $response->assertHasErrors(['password']);
 
     expect($user->fresh())->not->toBeNull();
+});
+
+test('a test mail is sent to the saved email address', function () {
+    Notification::fake();
+    config()->set('mail.default', 'smtp');
+    $user = User::factory()->create();
+    $this->actingAs($user);
+
+    Volt::test('settings.profile')
+        ->set('email', 'unsaved@example.com')
+        ->call('sendTestMail')
+        ->assertSet('testMailStatus', 'success')
+        ->assertSee($user->email);
+
+    Notification::assertSentTo($user, TestMailNotification::class);
+    expect(Event::where('event', 'mail')->where('type', 'info')->exists())->toBeTrue();
+});
+
+test('the test mail warns when the mailer does not deliver mail', function () {
+    Notification::fake();
+    config()->set('mail.default', 'log');
+    $this->actingAs(User::factory()->create());
+
+    Volt::test('settings.profile')
+        ->call('sendTestMail')
+        ->assertSet('testMailStatus', 'warning')
+        ->assertSee('This mailer does not deliver mail');
+});
+
+test('a failing test mail shows the error and logs it', function () {
+    config()->set('mail.default', 'missing-mailer');
+    $this->actingAs(User::factory()->create());
+
+    Volt::test('settings.profile')
+        ->call('sendTestMail')
+        ->assertSet('testMailStatus', 'error')
+        ->assertSee('The test mail could not be sent');
+
+    expect(Event::where('event', 'mail')->where('type', 'error')->exists())->toBeTrue();
+});
+
+test('test mails are rate limited', function () {
+    Notification::fake();
+    $user = User::factory()->create();
+    $this->actingAs($user);
+
+    $component = Volt::test('settings.profile');
+    foreach (range(1, 3) as $attempt) {
+        $component->call('sendTestMail');
+    }
+
+    $component->call('sendTestMail')
+        ->assertSet('testMailStatus', 'error')
+        ->assertSee('Too many test mails');
+
+    Notification::assertSentToTimes($user, TestMailNotification::class, 3);
 });

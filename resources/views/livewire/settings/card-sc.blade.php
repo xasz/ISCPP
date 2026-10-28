@@ -8,6 +8,14 @@ use App\Settings\SCServiceSettings;
 
 
 new class extends Component {
+    /**
+     * Runs on every request of this component, not only on mount.
+     */
+    public function boot(): void
+    {
+        \Illuminate\Support\Facades\Gate::authorize('manage-settings');
+    }
+
     public $clientId;
     public $clientSecret;
 

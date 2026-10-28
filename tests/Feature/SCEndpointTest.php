@@ -38,7 +38,7 @@ test('authenticated users can view specific endpoint details page', function () 
 
     $this->get(route('scendpoints.endpointDetails', ['id' => $endpoint->id]))
         ->assertSuccessful()
-        ->assertSee('Endpoint Details')
+        ->assertSee('Operating System')
         ->assertSee($endpoint->hostname)
         ->assertDontSee('Json Data');
 });

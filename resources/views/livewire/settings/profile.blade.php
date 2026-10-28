@@ -1,7 +1,10 @@
 <?php
 
+use App\Models\Event;
 use App\Models\User;
+use App\Notifications\TestMailNotification;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Validation\Rule;
 use Livewire\Volt\Component;
@@ -9,6 +12,11 @@ use Livewire\Volt\Component;
 new class extends Component {
     public string $name = '';
     public string $email = '';
+
+    /** One of "", "success", "warning" or "error". */
+    public string $testMailStatus = '';
+
+    public string $testMailMessage = '';
 
     /**
      * Mount the component.
@@ -67,6 +75,48 @@ new class extends Component {
 
         Session::flash('status', 'verification-link-sent');
     }
+
+    /**
+     * Send a test mail to the stored address of the current user.
+     */
+    public function sendTestMail(): void
+    {
+        $user = Auth::user();
+        $rateLimitKey = 'test-mail:'.$user->id;
+
+        if (RateLimiter::tooManyAttempts($rateLimitKey, 3)) {
+            $this->testMailStatus = 'error';
+            $this->testMailMessage = __('Too many test mails. Try again in :seconds seconds.', ['seconds' => RateLimiter::availableIn($rateLimitKey)]);
+
+            return;
+        }
+
+        RateLimiter::hit($rateLimitKey);
+
+        $mailer = (string) config('mail.default');
+
+        try {
+            $user->notify(new TestMailNotification);
+        } catch (Throwable $exception) {
+            Event::logError('mail', 'Test mail could not be sent', ['recipient' => $user->email, 'mailer' => $mailer, 'error' => $exception->getMessage()]);
+
+            $this->testMailStatus = 'error';
+            $this->testMailMessage = __('The test mail could not be sent: :error', ['error' => $exception->getMessage()]);
+
+            return;
+        }
+
+        Event::logInfo('mail', 'Test mail sent', ['recipient' => $user->email, 'mailer' => $mailer]);
+
+        $this->testMailStatus = 'success';
+        $this->testMailMessage = __('Test mail handed to the ":mailer" mailer for :email.', ['mailer' => $mailer, 'email' => $user->email]);
+
+        // The log and array mailers accept everything without delivering anything.
+        if (in_array($mailer, ['log', 'array'], true)) {
+            $this->testMailStatus = 'warning';
+            $this->testMailMessage .= ' '.__('This mailer does not deliver mail, so nothing will arrive. Set MAIL_MAILER to send real mail.');
+        }
+    }
 }; ?>
 
 <section class="w-full">
@@ -98,6 +148,18 @@ new class extends Component {
                             </p>
                         @endif
                     </div>
+                @endif
+
+                <div class="mt-2 flex flex-wrap items-center gap-3">
+                    <flux:button size="sm" icon="envelope" wire:click.prevent="sendTestMail">{{ __('Send test mail') }}</flux:button>
+                    <flux:text size="sm" class="text-zinc-500">{{ __('Sends a test mail to your saved email address.') }}</flux:text>
+                </div>
+
+                @if ($testMailMessage !== '')
+                    <flux:callout class="mt-2"
+                        :variant="match ($testMailStatus) { 'success' => 'success', 'warning' => 'warning', default => 'danger' }"
+                        :icon="match ($testMailStatus) { 'success' => 'check-circle', 'warning' => 'exclamation-triangle', default => 'x-circle' }"
+                        :heading="$testMailMessage" />
                 @endif
             </div>
 

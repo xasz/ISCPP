@@ -8,7 +8,7 @@ return new class extends SettingsMigration
     {
         $this->migrator->add('sc_service.downloadsScheduleEnabled', true);
         $this->migrator->add('sc_service.healthscoresScheduleEnabled', true);
-        
+
         $this->migrator->add('sc_service.lastDownloadsSchedule', null);
         $this->migrator->add('sc_service.lastHealthscoresSchedule', null);
     }

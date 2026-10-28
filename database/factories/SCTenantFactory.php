@@ -12,24 +12,24 @@ use Illuminate\Support\Str;
  */
 class SCTenantFactory extends Factory
 {
- 
     private const REAL_GEO = [
         ['dataGeography' => 'DE', 'dataRegion' => 'eu02', 'apiHost' => 'https://api-eu02.central.sophos.com'],
         ['dataGeography' => 'IE', 'dataRegion' => 'eu01', 'apiHost' => 'https://api-eu01.central.sophos.com'],
         ['dataGeography' => 'US', 'dataRegion' => 'us03', 'apiHost' => 'https://api-us03.central.sophos.com'],
     ];
+
     private const REAL_BILLING_TYPES = ['trial', 'usage', 'term'];
 
     private const REAL_STATUS = ['active', 'suspended'];
 
     private const REAL_PRODUCTS = [
-        'CMS-MSP', 
-        'SVRCIXAMTR-ADV-MSP', 
-        'CIXAMTR-ADV-MSP', 
-        'CDE-MSP', 
-        'CW7-SUP-MSP', 
-        'CEMA-MSP', 
-        'CPHISH-MSP', 
+        'CMS-MSP',
+        'SVRCIXAMTR-ADV-MSP',
+        'CIXAMTR-ADV-MSP',
+        'CDE-MSP',
+        'CW7-SUP-MSP',
+        'CEMA-MSP',
+        'CPHISH-MSP',
         'NDR-MSP',
         'SVRCLOUDADV-MSP',
         'CIXA-MSP',
@@ -47,21 +47,21 @@ class SCTenantFactory extends Factory
             ]);
         });
     }
-    
+
     public function definition(): array
     {
         $id = (string) Str::uuid();
         $name = fake()->company();
         $showAs = $name;
-        if(fake()->boolean(20)) {
-            $showAs .= ' ' . fake()->companySuffix();
+        if (fake()->boolean(20)) {
+            $showAs .= ' '.fake()->companySuffix();
         }
 
         $profile = fake()->randomElement(self::REAL_GEO) + [
             'billingType' => fake()->randomElement(self::REAL_BILLING_TYPES),
             'status' => fake()->randomElement(self::REAL_STATUS),
             'products' => fake()->randomElements(self::REAL_PRODUCTS, fake()->numberBetween(1, 10)),
-        
+
         ];
         $contact = [
             'firstName' => fake()->firstName(),

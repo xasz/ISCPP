@@ -9,6 +9,6 @@ return new class extends SettingsMigration
         $this->migrator->add('ninja_service.windowsSophosCentralEndpointInstallerUrl', '');
         $this->migrator->add('ninja_service.linuxSophosCentralEndpointInstallerUrl', '');
         $this->migrator->add('ninja_service.macSophosCentralEndpointInstallerUrl', '');
-        $this->migrator->add('ninja_service.autoPushCentralEndpointInstallerUrl', true);        
+        $this->migrator->add('ninja_service.autoPushCentralEndpointInstallerUrl', true);
     }
 };

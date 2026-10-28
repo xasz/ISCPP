@@ -1,11 +1,12 @@
 <?php
 
 use App\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\RateLimiter;
 use Livewire\Volt\Volt as LivewireVolt;
 use PragmaRX\Google2FALaravel\Facade as Google2FA;
 
-uses(\Illuminate\Foundation\Testing\RefreshDatabase::class);
+uses(RefreshDatabase::class);
 
 function createTwoFactorUser(): array
 {

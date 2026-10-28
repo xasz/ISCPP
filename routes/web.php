@@ -9,6 +9,7 @@ use App\Http\Controllers\SCBillingController;
 use App\Http\Controllers\SCEndpointController;
 use App\Http\Controllers\SCFirewallController;
 use App\Http\Controllers\SCTenantController;
+use App\Http\Controllers\SCTenantGroupController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\UserManagementController;
 use App\Http\Controllers\WebhookLogController;
@@ -63,6 +64,10 @@ Route::middleware($protectedMiddleware)->group(function () {
                 ->name('scfirewalls.firewallFirmware');
             Route::get('/scfirewalls/{id}/raw', 'firewallRaw')
                 ->name('scfirewalls.firewallRaw');
+            Route::get('/scfirewalls/{id}/backups', 'firewallBackups')
+                ->name('scfirewalls.firewallBackups');
+            Route::get('/scfirewalls/{id}/backups/{backup}/download', 'firewallBackupDownload')
+                ->name('scfirewalls.backupDownload');
             Route::get('/scfirewalls', 'index')
                 ->name('scfirewalls.index');
         });
@@ -71,6 +76,7 @@ Route::middleware($protectedMiddleware)->group(function () {
     Route::middleware(IsSCEndpointsScheduleEnabled::class)->group(function () {
         Route::controller(SCEndpointController::class)->group(function () {
             Route::get('/scendpoints/{id}/details', 'endpointDetails')->name('scendpoints.endpointDetails');
+            Route::get('/scendpoints/{id}/live', 'endpointLive')->name('scendpoints.endpointLive');
             Route::get('/scendpoints/{id}/raw', 'endpointRaw')->name('scendpoints.endpointRaw');
             Route::get('/scendpoints', 'index')->name('scendpoints.index');
         });
@@ -137,11 +143,13 @@ Route::middleware($protectedMiddleware)->group(function () {
         Route::get('/iscpp/events/{iscppEvent}', 'show')->name('iscpp.events.show');
     });
 
-    Route::controller(UserManagementController::class)->group(function () {
+    // Livewire re-applies the "can" middleware to every component request on these
+    // pages, so the cards on them are covered as well.
+    Route::controller(UserManagementController::class)->middleware('can:manage-users')->group(function () {
         Route::get('/usermanagement', 'index')->name('usermanagement.index');
     });
 
-    Route::controller(SettingsController::class)->group(function () {
+    Route::controller(SettingsController::class)->middleware('can:manage-settings')->group(function () {
         Route::get('/generalsettings', 'index')->name('generalsettings.index');
         Route::get('/generalsettings/sc', 'sc')->name('generalsettings.sc');
         Route::get('/generalsettings/webhook-alerts', 'webhookAlerts')->name('generalsettings.webhookAlerts');
@@ -158,11 +166,20 @@ Route::middleware($protectedMiddleware)->group(function () {
         Route::get('/sctenants/{sctenant}/downloads', 'tenantDownloads')->name('sctenants.tenantDownloads');
         Route::get('/sctenants/{sctenant}/healthscore', 'tenantHealthscore')->name('sctenants.tenantHealthscore');
         Route::get('/sctenants/{sctenant}/endpoints', 'tenantEndpoints')->name('sctenants.tenantEndpoints');
+        Route::get('/sctenants/{sctenant}/endpoint-settings', 'tenantEndpointSettings')
+            ->middleware(IsSCEndpointsScheduleEnabled::class)
+            ->name('sctenants.tenantEndpointSettings');
         Route::get('/sctenants/{sctenant}/firewalls', 'tenantFirewalls')->name('sctenants.tenantFirewalls');
         Route::get('/sctenants/{sctenant}/iscpp-settings', 'tenantISCPPSettings')->name('sctenants.tenantISCPPSettings');
         Route::get('/sctenants/{sctenant}/raw', 'tenantRaw')->name('sctenants.tenantRaw');
 
         Route::get('/sctenants', 'index')->name('sctenants.index');
+    });
+
+    Route::controller(SCTenantGroupController::class)->group(function () {
+        Route::get('/sctenantgroups', 'index')->name('sctenantgroups.index');
+        Route::get('/sctenantgroups/create', 'create')->name('sctenantgroups.create');
+        Route::get('/sctenantgroups/{sctenantgroup}/edit', 'edit')->name('sctenantgroups.edit');
     });
 
 });

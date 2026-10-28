@@ -3,6 +3,7 @@
 use App\Models\ISCPPEventLog;
 use App\Models\ISCPPEventRule;
 use App\Models\SCTenant;
+use App\Models\SCTenantGroup;
 use App\Models\SCTenantHealthscore;
 use App\Models\SCTenantHealthscoreThreshold;
 use App\Models\User;
@@ -137,6 +138,7 @@ test('a rule can be created through the form', function () {
     Volt::test('iscpp.rule-form')
         ->set('name', 'High severity alerts')
         ->set('eventKey', 'sc.alert.created')
+        ->set('tenantScope', 'tenant')
         ->set('tenantId', $tenant->id)
         ->call('addCondition')
         ->set('conditions.0.path', 'data.severity')
@@ -171,6 +173,54 @@ test('a rule with no tenant selected applies to all tenants', function () {
         ->assertHasNoErrors();
 
     expect(ISCPPEventRule::where('name', 'Everything')->value('tenantId'))->toBeNull();
+});
+
+test('a rule can be scoped to a tenant group through the form', function () {
+    $this->actingAs(User::factory()->create());
+    $group = SCTenantGroup::factory()->create();
+
+    Volt::test('iscpp.rule-form')
+        ->set('name', 'Group rule')
+        ->set('eventKey', 'sc.tenant.created')
+        // A tenant chosen before switching scope must not be stored alongside the group.
+        ->set('tenantScope', 'tenant')
+        ->set('tenantId', SCTenant::factory()->create()->id)
+        ->set('tenantScope', 'group')
+        ->set('tenantGroupId', (string) $group->id)
+        ->set('url', 'https://hooks.example.com/group')
+        ->call('save')
+        ->assertHasNoErrors();
+
+    $rule = ISCPPEventRule::where('name', 'Group rule')->sole();
+
+    expect($rule->sc_tenant_group_id)->toBe($group->id)
+        ->and($rule->tenantId)->toBeNull();
+
+    Volt::test('iscpp.rule-form', ['ruleId' => $rule->id])
+        ->assertSet('tenantScope', 'group')
+        ->assertSet('tenantGroupId', (string) $group->id);
+});
+
+test('a group scoped rule requires a group', function () {
+    $this->actingAs(User::factory()->create());
+
+    Volt::test('iscpp.rule-form')
+        ->set('name', 'Group rule')
+        ->set('eventKey', 'sc.tenant.created')
+        ->set('tenantScope', 'group')
+        ->set('url', 'https://hooks.example.com/group')
+        ->call('save')
+        ->assertHasErrors('tenantGroupId');
+});
+
+test('the rules list shows the tenant group of a rule', function () {
+    $this->actingAs(User::factory()->create());
+    $group = SCTenantGroup::factory()->create(['name' => 'Key Accounts']);
+    ISCPPEventRule::factory()->forTenantGroup($group)->create();
+
+    $this->get(route('iscpp.rules.index'))
+        ->assertOk()
+        ->assertSee('Key Accounts');
 });
 
 test('a rule pointing at a private address is rejected', function () {
@@ -250,9 +300,23 @@ test('the healthscore threshold card is reachable on the tenant healthscore tab'
         ->assertSee('Healthscore Thresholds');
 });
 
+test('the healthscore threshold card explains the silent baseline', function () {
+    $this->actingAs(User::factory()->create());
+
+    Volt::test('sctenant.card-healthscore-thresholds', ['sctenant' => SCTenant::factory()->create()])
+        ->assertSee('no ISCPP events are raised and no webhooks are sent');
+});
+
 test('the healthscore threshold card saves per tenant overrides', function () {
     $this->actingAs(User::factory()->create());
     $tenant = SCTenant::factory()->create();
+
+    // The factory scores are random, and a threshold below the current score is raised
+    // to it on save. Pin the score below the override so the stored value is the input.
+    $healthscore = $tenant->SCTenantHealthscore;
+    $raw = $healthscore->rawData;
+    data_set($raw, 'endpoint.protection.computer.score', 40);
+    $healthscore->update(['rawData' => $raw]);
 
     // Index 0 is the first entry of AvailableScores(): protection.computer.score.
     Volt::test('sctenant.card-healthscore-thresholds', ['sctenant' => $tenant])
@@ -283,6 +347,74 @@ test('the healthscores overview marks scores below their threshold', function ()
     $this->get(route('sctenants.healthscores'))
         ->assertStatus(200)
         ->assertSee('Below threshold of 80');
+});
+
+test('the healthscores overview keeps the full tenant name as tooltip for truncated names', function () {
+    $this->actingAs(User::factory()->create());
+    $tenant = SCTenant::factory()->create(['name' => 'A Very Long Tenant Name That Would Otherwise Stretch The Table GmbH']);
+
+    $this->get(route('sctenants.healthscores'))
+        ->assertStatus(200)
+        ->assertSee('title="A Very Long Tenant Name That Would Otherwise Stretch The Table GmbH"', false);
+});
+
+test('the healthscore groups cover every available score', function () {
+    $groupedScores = collect(SCTenantHealthscore::ScoreGroups())
+        ->flatMap(fn (array $groupScores) => array_keys($groupScores))
+        ->sort()
+        ->values()
+        ->all();
+
+    expect($groupedScores)->toBe(collect(SCTenantHealthscore::AvailableScores())->sort()->values()->all());
+});
+
+test('the healthscores overview shows grouped score columns', function () {
+    $this->actingAs(User::factory()->create());
+
+    $this->get(route('sctenants.healthscores'))
+        ->assertStatus(200)
+        ->assertSeeInOrder([
+            'colspan="2"', 'Protection',
+            'colspan="2"', 'Policy',
+            'colspan="3"', 'Exclusions',
+            'colspan="3"', 'Tamper Protection',
+            'colspan="2"', 'MDR',
+            'title="Protection – Computer"',
+            'title="MDR – Contact"',
+        ], false);
+});
+
+test('the healthscores overview can show only tenants below a threshold', function () {
+    $this->actingAs(User::factory()->create());
+
+    $belowTenant = SCTenant::factory()->create(['name' => 'Tenant Below Threshold']);
+    $okTenant = SCTenant::factory()->create(['name' => 'Tenant Within Threshold']);
+
+    $healthscore = $belowTenant->SCTenantHealthscore;
+    $raw = $healthscore->rawData;
+    data_set($raw, 'endpoint.protection.computer.score', 40);
+    $healthscore->update(['rawData' => $raw]);
+
+    SCTenantHealthscoreThreshold::updateOrCreate(
+        ['tenantId' => $belowTenant->id, 'score_key' => 'protection.computer.score'],
+        ['threshold' => 80],
+    );
+
+    $okHealthscore = $okTenant->SCTenantHealthscore;
+    $okRaw = $okHealthscore->rawData;
+    foreach (SCTenantHealthscore::AvailableScores() as $scoreKey) {
+        data_set($okRaw, 'endpoint.'.$scoreKey, 100);
+    }
+    $okHealthscore->update(['rawData' => $okRaw]);
+
+    $this->get(route('sctenants.healthscores', ['belowThreshold' => 1]))
+        ->assertStatus(200)
+        ->assertSee('Tenant Below Threshold')
+        ->assertDontSee('Tenant Within Threshold');
+
+    $this->get(route('sctenants.healthscores'))
+        ->assertSee('Tenant Below Threshold')
+        ->assertSee('Tenant Within Threshold');
 });
 
 test('the healthscores overview leaves scores above their threshold unmarked', function () {
