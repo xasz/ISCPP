@@ -22,6 +22,7 @@ use App\Observers\SCTenantISCPPObserver;
 use App\Services\ISCPPEventRegistry;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 
@@ -36,10 +37,35 @@ class AppServiceProvider extends ServiceProvider
     }
 
     /**
+     * Build every URL from APP_URL in production instead of from the request.
+     *
+     * ISCPP usually runs behind one or more reverse proxies, which pass on an internal
+     * Host header such as "localhost:8880". Proxies tend to rewrite Location headers,
+     * but not the redirect target inside a Livewire JSON response, so a save would
+     * otherwise send the browser to the internal address.
+     */
+    public function forceApplicationUrl(): void
+    {
+        $appUrl = (string) config('app.url');
+
+        if (! $this->app->isProduction() || $appUrl === '') {
+            return;
+        }
+
+        URL::forceRootUrl($appUrl);
+
+        if (str_starts_with($appUrl, 'https://')) {
+            URL::forceScheme('https');
+        }
+    }
+
+    /**
      * Bootstrap any application services.
      */
     public function boot(): void
     {
+        $this->forceApplicationUrl();
+
         View::addNamespace('layouts', resource_path('views/components/layouts'));
 
         // Two abilities rather than one role check, so the areas can be split between
