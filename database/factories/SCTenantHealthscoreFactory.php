@@ -12,7 +12,7 @@ class SCTenantHealthscoreFactory extends Factory
 {
     public function definition(): array
     {
-        $rawData =  [
+        $rawData = [
             'endpoint' => [
                 'protection' => [
                     'computer' => [
@@ -97,19 +97,19 @@ class SCTenantHealthscoreFactory extends Factory
                         'score' => fake()->numberBetween(0, 100),
                         'snoozed' => fake()->boolean(),
                     ],
-                ],                
+                ],
                 'mdrAuthorizedContact' => [
                     'contact' => [
                         'configured' => fake()->boolean(),
                         'score' => fake()->numberBetween(0, 100),
                         'snoozed' => fake()->boolean(),
                     ],
-                ]
-            ]
+                ],
+            ],
         ];
 
         return [
-           'rawData' => $rawData
+            'rawData' => $rawData,
         ];
     }
 }

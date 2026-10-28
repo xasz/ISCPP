@@ -3,6 +3,7 @@
 use App\Models\ISCPPEventLog;
 use App\Models\ISCPPEventRule;
 use App\Models\SCTenant;
+use App\Models\SCTenantGroup;
 
 beforeEach(function () {
     config()->set('iscpp.events.enabled', true);
@@ -61,6 +62,49 @@ describe('tenant scope', function () {
     });
 });
 
+describe('tenant group scope', function () {
+    test('a rule with a tenant group matches only its members', function () {
+        $member = SCTenant::factory()->create();
+        $other = SCTenant::factory()->create();
+        $group = SCTenantGroup::factory()->withTenants([$member])->create();
+
+        $rule = ISCPPEventRule::factory()->forTenantGroup($group)->create();
+
+        expect($rule->matches(ISCPPEventLog::factory()->create(['tenantId' => $member->id])))->toBeTrue()
+            ->and($rule->matches(ISCPPEventLog::factory()->create(['tenantId' => $other->id])))->toBeFalse();
+    });
+
+    test('a rule with a tenant group ignores events with no tenant', function () {
+        $group = SCTenantGroup::factory()->withTenants([SCTenant::factory()->create()])->create();
+
+        $rule = ISCPPEventRule::factory()->forTenantGroup($group)->create();
+
+        expect($rule->matches(ISCPPEventLog::factory()->create(['tenantId' => null])))->toBeFalse();
+    });
+
+    test('an empty tenant group matches nothing', function () {
+        $sctenant = SCTenant::factory()->create();
+        $group = SCTenantGroup::factory()->create();
+
+        $rule = ISCPPEventRule::factory()->forTenantGroup($group)->create();
+
+        expect($rule->matches(ISCPPEventLog::factory()->create(['tenantId' => $sctenant->id])))->toBeFalse();
+    });
+
+    test('cached rules see members added after the rule was created', function () {
+        $member = SCTenant::factory()->create();
+        $group = SCTenantGroup::factory()->create();
+        ISCPPEventRule::factory()->forTenantGroup($group)->create();
+
+        $group->tenants()->attach($member->id);
+        ISCPPEventRule::flushCache();
+
+        $event = ISCPPEventLog::factory()->create(['tenantId' => $member->id]);
+
+        expect(ISCPPEventRule::cachedEnabled()->first()->matches($event))->toBeTrue();
+    });
+});
+
 describe('conditions', function () {
     function eventWithData(array $data, string $severity = 'info'): ISCPPEventLog
     {
@@ -103,6 +147,19 @@ describe('conditions', function () {
         expect($rule->load('conditions')->matches($event))->toBeTrue();
     });
 
+    test('not in matches only values that are not listed', function () {
+        $rule = alertRule();
+        $rule->conditions()->create([
+            'path' => 'data.type',
+            'operator' => 'not_in',
+            'value' => ['Event::Endpoint::UpdateFailure', 'Event::Endpoint::Registered'],
+        ]);
+        $rule->load('conditions');
+
+        expect($rule->matches(eventWithData(['type' => 'Event::Endpoint::Threat::Detected'])))->toBeTrue()
+            ->and($rule->matches(eventWithData(['type' => 'Event::Endpoint::Registered'])))->toBeFalse();
+    });
+
     test('lt and gte compare numerically', function () {
         $event = eventWithData(['value' => 40]);
 
@@ -131,7 +188,7 @@ describe('conditions', function () {
     test('a missing path never matches, not even with neq', function () {
         $event = eventWithData(['product' => 'endpoint']);
 
-        foreach (['eq', 'neq', 'in', 'lt', 'gte'] as $operator) {
+        foreach (['eq', 'neq', 'in', 'not_in', 'lt', 'gte'] as $operator) {
             $rule = alertRule();
             $rule->conditions()->create(['path' => 'data.absent', 'operator' => $operator, 'value' => ['high']]);
 

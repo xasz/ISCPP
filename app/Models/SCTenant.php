@@ -70,6 +70,11 @@ class SCTenant extends Model
         return $this->hasMany(SCTenantHealthscoreThreshold::class, 'tenantId');
     }
 
+    public function SCTenantGroups()
+    {
+        return $this->belongsToMany(SCTenantGroup::class, 'sc_tenant_group_members', 'tenantId', 'sc_tenant_group_id');
+    }
+
     /**
      * Threshold per score key, filled in with the configured default where no row exists.
      *

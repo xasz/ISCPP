@@ -10,7 +10,7 @@ class SCAlertAcknowledgeAction
 {
     public function execute(SCAlert $scalert): void
     {
-        
+
         Event::log('scalerts', 'info', [
             'message' => 'SC Alert Acknowledge triggered',
             'SCAlert' => $scalert->id,
@@ -20,7 +20,7 @@ class SCAlertAcknowledgeAction
             $scalert->is_acknowledged = true;
             $scalert->save();
         } catch (\Throwable $e) {
-            Event::throwError('scalerts', 'SC Alert Acknowledge failed: ' . $e->getMessage());
+            Event::throwError('scalerts', 'SC Alert Acknowledge failed: '.$e->getMessage());
         }
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\SCTenant;
+use App\Models\SCTenantHealthscoreThreshold;
 use App\Services\HaloService;
 use App\Services\SCService;
 
@@ -74,6 +75,11 @@ class SCTenantController extends Controller
         return view('sctenants.show.endpoints', compact('sctenant', 'endpoints'));
     }
 
+    public function tenantEndpointSettings(SCTenant $sctenant)
+    {
+        return view('sctenants.show.endpoint-settings', compact('sctenant'));
+    }
+
     public function tenantFirewalls(SCService $service, SCTenant $sctenant)
     {
         $firewalls = $sctenant->SCFirewalls()->paginate(50);
@@ -93,11 +99,22 @@ class SCTenantController extends Controller
 
     public function healthscores()
     {
+        $validated = request()->validate([
+            'belowThreshold' => 'boolean',
+        ]);
+
+        $belowThreshold = (bool) ($validated['belowThreshold'] ?? false);
+
         $sctenants = SCTenant::orderBy('name', 'desc')
             ->with(['SCTenantHealthscore', 'healthscoreThresholds'])
+            ->when($belowThreshold, function ($query) {
+                $query->whereHas('healthscoreThresholds', function ($query) {
+                    $query->where('state', SCTenantHealthscoreThreshold::STATE_LOW);
+                });
+            })
             ->paginate(50);
 
-        return view('sctenants.healthscores', compact('sctenants'));
+        return view('sctenants.healthscores', compact('sctenants', 'belowThreshold'));
     }
 
     public function haloMatchingHelper()

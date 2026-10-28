@@ -42,6 +42,7 @@ class ISCPPEventRuleCondition extends Model
             'eq' => __('is equal to'),
             'neq' => __('is not equal to'),
             'in' => __('is one of'),
+            'not_in' => __('is not one of'),
             'lt' => __('is less than'),
             'gte' => __('is greater than or equal to'),
         ];
@@ -68,6 +69,7 @@ class ISCPPEventRuleCondition extends Model
             'eq' => $this->asString($actual) === $this->asString($this->singleValue()),
             'neq' => $this->asString($actual) !== $this->asString($this->singleValue()),
             'in' => in_array($this->asString($actual), $this->listValue(), true),
+            'not_in' => ! in_array($this->asString($actual), $this->listValue(), true),
             'lt' => $this->compareNumeric($actual, fn ($a, $b) => $a < $b),
             'gte' => $this->compareNumeric($actual, fn ($a, $b) => $a >= $b),
             default => false,

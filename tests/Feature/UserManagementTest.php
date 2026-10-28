@@ -10,7 +10,7 @@ test('guests are redirected to the login page for user management', function () 
 });
 
 test('authenticated users can visit the user management page', function () {
-    $user = User::factory()->create();
+    $user = User::factory()->superAdmin()->create();
     $this->actingAs($user);
 
     $response = $this->get('/usermanagement');
@@ -19,7 +19,7 @@ test('authenticated users can visit the user management page', function () {
 
 test('users can access invitation acceptance page', function () {
     $token = 'test-token';
-    
+
     $response = $this->get("/invitation/{$token}");
     $response->assertStatus(200);
 });
@@ -30,7 +30,7 @@ test('users can process invitation', function () {
         'email' => 'test@example.com',
         'password' => 'password',
         'password_confirmation' => 'password',
-        'token' => 'test-token'
+        'token' => 'test-token',
     ];
 
     $response = $this->post('/invitation', $data);
@@ -47,7 +47,7 @@ test('a user can accept a valid invitation and set their password', function () 
         'created_at' => now(),
     ]);
 
-    $showResponse = $this->get("/invitation/{$token}?email=" . urlencode($invited->email));
+    $showResponse = $this->get("/invitation/{$token}?email=".urlencode($invited->email));
     $showResponse->assertOk();
 
     $acceptResponse = $this->post('/invitation', [

@@ -39,7 +39,7 @@ test('authenticated users can view specific firewall details page', function () 
 
     $this->get(route('scfirewalls.firewallDetails', ['id' => $firewall->id]))
         ->assertSuccessful()
-        ->assertSee('Firewall Details')
+        ->assertSee('Serial Number')
         ->assertSee($firewall->hostname)
         ->assertDontSee('Json Data');
 });

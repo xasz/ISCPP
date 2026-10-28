@@ -91,7 +91,7 @@ test('the registry discovers every event class and excludes the base and enum', 
     expect($keys)->toContain('sc.tenant.created', 'sc.tenant.removed', 'sc.endpoint.created',
         'sc.endpoint.removed', 'sc.alert.created', 'sc.alert.acknowledged', 'sc.alert.removed',
         'sc.firewall.created', 'sc.firewall.removed', 'healthscore.created', 'healthscore.removed',
-        'healthscore.threshold.dropped', 'healthscore.threshold.recovered');
+        'healthscore.threshold.dropped', 'healthscore.threshold.recovered', 'healthscore.threshold.raised');
 
     foreach ($registry->all() as $class) {
         expect(is_subclass_of($class, ISCPPEventBase::class))->toBeTrue()

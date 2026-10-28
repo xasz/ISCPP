@@ -1,14 +1,15 @@
 <?php
 
 use App\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Livewire\Volt\Volt;
 
-uses(\Illuminate\Foundation\Testing\RefreshDatabase::class);
+uses(RefreshDatabase::class);
 
 test('creating an invitation requires a name and a unique email', function () {
-    $admin = User::factory()->create();
+    $admin = User::factory()->superAdmin()->create();
     $this->actingAs($admin);
 
     Volt::test('usermanagement.card-invites')
@@ -25,7 +26,7 @@ test('creating an invitation requires a name and a unique email', function () {
 });
 
 test('creating an invitation creates an unverified user and a shareable link', function () {
-    $admin = User::factory()->create();
+    $admin = User::factory()->superAdmin()->create();
     $this->actingAs($admin);
 
     $component = Volt::test('usermanagement.card-invites')
@@ -49,7 +50,7 @@ test('creating an invitation creates an unverified user and a shareable link', f
 });
 
 test('regenerating a link replaces the stored token', function () {
-    $admin = User::factory()->create();
+    $admin = User::factory()->superAdmin()->create();
     $this->actingAs($admin);
 
     $invited = User::factory()->unverified()->create(['email' => 'pending@example.com']);
@@ -69,7 +70,7 @@ test('regenerating a link replaces the stored token', function () {
 });
 
 test('deleting an invitation removes the user and its token', function () {
-    $admin = User::factory()->create();
+    $admin = User::factory()->superAdmin()->create();
     $this->actingAs($admin);
 
     $invited = User::factory()->unverified()->create(['email' => 'pending@example.com']);
@@ -87,7 +88,7 @@ test('deleting an invitation removes the user and its token', function () {
 });
 
 test('the user manager lists all users', function () {
-    $admin = User::factory()->create();
+    $admin = User::factory()->superAdmin()->create();
     $other = User::factory()->create();
     $this->actingAs($admin);
 
@@ -97,7 +98,7 @@ test('the user manager lists all users', function () {
 });
 
 test('showing details loads the selected user', function () {
-    $admin = User::factory()->create();
+    $admin = User::factory()->superAdmin()->create();
     $other = User::factory()->create();
     $this->actingAs($admin);
 
@@ -112,7 +113,7 @@ test('showing details loads the selected user', function () {
 });
 
 test('deleting a user removes them', function () {
-    $admin = User::factory()->create();
+    $admin = User::factory()->superAdmin()->create();
     $other = User::factory()->create();
     $this->actingAs($admin);
 

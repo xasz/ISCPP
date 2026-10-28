@@ -8,7 +8,9 @@ use App\Models\SCTenant;
 use App\Settings\SCServiceSettings;
 use Carbon\CarbonInterface;
 use Exception;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Sleep;
 
 class SCService
 {
@@ -103,24 +105,24 @@ class SCService
      */
     private function send($method, $url, $query, $options = ['skipStatusCodeCheck' => false])
     {
-        $http = Http::withToken($this->bearer());
-
-        if (isset($options['partnerID'])) {
-            $http = $http->withHeader('X-Partner-ID', $options['partnerID']);
-        }
-
-        if (isset($options['tenantID'])) {
-            $http = $http->withHeader('X-Tenant-ID', $options['tenantID']);
-        }
-
         $response = null;
         $attempt = 0;
-        $maxAttempts = 10;
+        $maxRetries = 10;
         $base = 1000;
         $cap = 30000;
-        $backoff = rand(50, 200);
 
-        do {
+        while (true) {
+            // The token is resolved per attempt, as it may expire while backing off.
+            $http = Http::withToken($this->bearer());
+
+            if (isset($options['partnerID'])) {
+                $http = $http->withHeader('X-Partner-ID', $options['partnerID']);
+            }
+
+            if (isset($options['tenantID'])) {
+                $http = $http->withHeader('X-Tenant-ID', $options['tenantID']);
+            }
+
             Event::logDebug('sc', "Sophos Partner API Request: {$method} {$url} - Attempt: {$attempt} - Query: ".json_encode($query));
             switch ($method) {
                 case 'GET':
@@ -137,23 +139,22 @@ class SCService
                     break;
             }
 
-            if ($response->tooManyRequests()) {
-                $attempt++;
-                $backoff = rand(0, min($cap, $base * $attempt));
-                Event::logWarning('sc', "Sophos Partner API Rate Limit reached, backoff for {$backoff} ms");
-                if ($backoff > $cap) {
-                    $backoff = $cap;
-                }
-                sleep($backoff);
-            } else {
+            $isRetryable = $response->tooManyRequests() || $response->serverError();
+            if (! $isRetryable || $attempt >= $maxRetries) {
                 break;
             }
-        } while ($attempt < $maxAttempts);
+
+            // Exponential backoff with full jitter, as recommended by Sophos.
+            $backoff = random_int(0, min($cap, $base * (2 ** $attempt)));
+            Event::logWarning('sc', "Sophos Partner API returned {$response->status()}, backoff for {$backoff} ms");
+            Sleep::for($backoff)->milliseconds();
+            $attempt++;
+        }
 
         Event::logDebug('sc', "Sophos Partner API Request completed - Status: {$response->status()}");
 
-        if (! $response->successful() && (isset($options['skipStatusCodeCheck']) && $options['skipStatusCodeCheck'] == true)) {
-            throw new Exception("Sophos Partner API Error: {$response->getStatusCode()}");
+        if (! $response->successful() && empty($options['skipStatusCodeCheck'])) {
+            throw new Exception("Sophos Partner API Error: {$response->status()} - {$method} {$url} - ".$response->body());
         }
 
         Event::logDebug('sc', 'Return response: '.json_encode($response->json()));
@@ -197,7 +198,10 @@ class SCService
             $query = array_merge($query, $options['query']);
         }
 
-        $preparedOptions = ['tenantID' => $tenant->id];
+        $preparedOptions = [
+            'tenantID' => $tenant->id,
+            'skipStatusCodeCheck' => $options['skipStatusCodeCheck'] ?? false,
+        ];
 
         if (isset($options['raw']) && $options['raw'] == true) {
             return $this->send($method, $url, $query, $preparedOptions);
@@ -244,7 +248,10 @@ class SCService
             $query['pageTotal'] = $options['pageByKey'];
         }
 
-        $preparedOptions = ['partnerID' => $this->settings->partnerId];
+        $preparedOptions = [
+            'partnerID' => $this->settings->partnerId,
+            'skipStatusCodeCheck' => $options['skipStatusCodeCheck'] ?? false,
+        ];
 
         if (isset($options['raw']) && $options['raw'] == true) {
             return $this->send($method, $url, $query, $preparedOptions);
@@ -350,6 +357,53 @@ class SCService
         ]);
     }
 
+    /**
+     * A single endpoint. "full" includes everything the list view leaves out.
+     *
+     * @return array<string, mixed>
+     */
+    public function endpoint(SCTenant $tenant, string $endpointId, string $view = 'full'): array
+    {
+        return $this->tenantGet($tenant, '/endpoint/v1/endpoints/'.urlencode($endpointId), [
+            'raw' => true,
+            'query' => ['view' => $view],
+        ]);
+    }
+
+    /**
+     * Tamper protection of an endpoint. The response contains the current password in
+     * clear text, so callers must not persist it or put it into client side state.
+     *
+     * @return array{enabled?: bool, password?: string, previousPasswords?: array<int, array{password: string, invalidatedAt: string}>}
+     */
+    public function endpointTamperProtection(SCTenant $tenant, string $endpointId): array
+    {
+        return $this->tenantGet($tenant, '/endpoint/v1/endpoints/'.urlencode($endpointId).'/tamper-protection', ['raw' => true]);
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    public function endpointIsolation(SCTenant $tenant, string $endpointId): array
+    {
+        return $this->tenantGet($tenant, '/endpoint/v1/endpoints/'.urlencode($endpointId).'/isolation', ['raw' => true]);
+    }
+
+    public function endpointPolicies(SCTenant $tenant): Collection
+    {
+        return $this->tenantGet($tenant, '/endpoint/v1/policies', ['pageing' => true]);
+    }
+
+    public function blockedItems(SCTenant $tenant): Collection
+    {
+        return $this->tenantGet($tenant, '/endpoint/v1/settings/blocked-items', ['pageing' => true]);
+    }
+
+    public function blockedAddresses(SCTenant $tenant): Collection
+    {
+        return $this->tenantGet($tenant, '/endpoint/v1/settings/blocked-addresses', ['pageing' => true]);
+    }
+
     public function firewalls(SCTenant $tenant)
     {
         return $this->tenantGet($tenant, '/firewall/v1/firewalls', [
@@ -357,10 +411,58 @@ class SCService
         ]);
     }
 
+    /**
+     * Start a full configuration export. Sophos answers with a transaction id; the
+     * download link appears on that transaction once the firewall has finished.
+     */
+    public function firewallConfigExport(SCTenant $tenant, string $firewallId): string
+    {
+        $response = $this->tenantPost($tenant, '/firewall/v1/firewall-config/firewalls/'.urlencode($firewallId).'/export', [
+            'raw' => true,
+            'query' => ['fullExport' => true],
+        ]);
+
+        $transactionId = $response['transactionId'] ?? null;
+
+        if (! is_string($transactionId) || $transactionId === '') {
+            throw new Exception('Sophos Partner API Error: firewall export returned no transaction id');
+        }
+
+        return $transactionId;
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    public function firewallConfigTransaction(SCTenant $tenant, string $firewallId, string $transactionId): array
+    {
+        return $this->tenantGet($tenant, '/firewall/v1/firewall-config/firewalls/'.urlencode($firewallId).'/transactions/'.urlencode($transactionId), [
+            'raw' => true,
+            'query' => ['fields' => 'request,response,expiryAt,finishedAt'],
+        ]);
+    }
+
+    /**
+     * Download an exported configuration from the pre-signed URL Sophos hands out.
+     *
+     * The URL is signed on its own, so no bearer token is sent with it.
+     */
+    public function downloadFirewallConfigExport(string $url): string
+    {
+        $response = Http::timeout(120)->get($url);
+
+        if (! $response->successful()) {
+            throw new Exception("Firewall config download failed: {$response->status()}");
+        }
+
+        return $response->body();
+    }
+
     public function firewallFirmwareUpgradeCheck(SCTenant $tenant, array $firewallIds): array
     {
         $response = $this->tenantPost($tenant, '/firewall/v1/firewalls/actions/firmware-upgrade-check', [
             'raw' => true,
+            'skipStatusCodeCheck' => true,
             'query' => [
                 'firewalls' => array_values(array_unique($firewallIds)),
             ],
@@ -397,6 +499,7 @@ class SCService
 
         $response = $this->tenantPost($tenant, '/firewall/v1/firewalls/actions/firmware-upgrade', [
             'raw' => true,
+            'skipStatusCodeCheck' => true,
             'query' => [
                 'firewalls' => $firewalls,
             ],
@@ -408,7 +511,8 @@ class SCService
     public function firewallFirmwareUpgradeCancel(SCTenant $tenant, array $firewallIds): array
     {
         $ids = implode(',', $firewallIds);
-        $response = $this->tenantDelete($tenant, '/firewall/v1/firewalls/actions/firmware-upgrade?ids='.$ids, ['raw' => true]);
+        $response = $this->tenantDelete($tenant, '/firewall/v1/firewalls/actions/firmware-upgrade?ids='.$ids, ['raw' => true, 'skipStatusCodeCheck' => true]);
+
         return is_array($response) ? $response : [];
     }
 

@@ -9,7 +9,7 @@ use Illuminate\Contracts\Queue\ShouldBeUniqueUntilProcessing;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 
-class SendSCAlertWebhook implements ShouldQueue, ShouldBeUniqueUntilProcessing
+class SendSCAlertWebhook implements ShouldBeUniqueUntilProcessing, ShouldQueue
 {
     use Queueable;
 
@@ -26,40 +26,42 @@ class SendSCAlertWebhook implements ShouldQueue, ShouldBeUniqueUntilProcessing
      */
     public function handle(WebhookService $wService): void
     {
-        Event::log("webhook", "info" , [
+        Event::log('webhook', 'info', [
             'message' => 'Start sending webhook for SCAlert ',
             'SCAlert' => $this->scalert->id]
         );
 
         $response = $wService->runWebhook($this->scalert);
 
-        if($response != null && $response->successful()){
+        if ($response != null && $response->successful()) {
             $this->scalert->update(['webhook_sent' => 'success']);
             $this->scalert->save();
-            Event::log("webhook", "info" , [
+            Event::log('webhook', 'info', [
                 'message' => __('Webhook sent successfully'),
                 'SCAlert' => $this->scalert->id]
             );
+
             return;
         }
 
-        if($this->scalert->webhookLog()->count() >= 3){
+        if ($this->scalert->webhookLog()->count() >= 3) {
             $this->scalert->update(['webhook_sent' => 'failed']);
             $this->scalert->save();
-            
-            Event::log("webhook", "error" , [
+
+            Event::log('webhook', 'error', [
                 'message' => __('Webhook failed - no more retry'),
                 'SCAlert' => $this->scalert->id]
             );
+
             return;
         }
 
-        Event::log("webhook", "warning" , [
+        Event::log('webhook', 'warning', [
             'message' => __('Webhook failed - retrying in 120 seconds'),
             'SCAlert' => $this->scalert->id]
         );
         $this->release(120);
-        
+
     }
 
     public function uniqueId(): string

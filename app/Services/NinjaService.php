@@ -6,34 +6,42 @@ use App\Models\Event;
 use App\Settings\NinjaServiceSettings;
 use Exception;
 use GuzzleHttp\Client;
+use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Http;
 
 class NinjaService
 {
     private NinjaServiceSettings $settings;
 
-    public function __construct(NinjaServiceSettings $settings){
+    public function __construct(NinjaServiceSettings $settings)
+    {
         $this->settings = $settings;
     }
 
-    public function test(){
-        $this->authenticate();        
+    public function test()
+    {
+        $this->authenticate();
     }
 
-    private function url(){
-        return 'https://' . $this->settings->instance . '.ninjarmm.com';
-    }
-    private function authTokenUrl(){
-        return $this->url() . '/oauth/token';
+    private function url()
+    {
+        return 'https://'.$this->settings->instance.'.ninjarmm.com';
     }
 
-    private function apiUrl(){
-        return $this->url() . '/api';
+    private function authTokenUrl()
+    {
+        return $this->url().'/oauth/token';
     }
 
-    public function authenticate(){
-      
-        $client = new Client();
+    private function apiUrl()
+    {
+        return $this->url().'/api';
+    }
+
+    public function authenticate()
+    {
+
+        $client = new Client;
 
         $response = $client->post($this->authTokenUrl(), [
             'form_params' => [
@@ -45,8 +53,8 @@ class NinjaService
         ]);
         $content = $response->getBody()->getContents();
         $result = json_decode($content);
-        if(property_exists($result, 'access_token') == false){
-            throw new Exception("NinjaOne Authentification failed");
+        if (property_exists($result, 'access_token') == false) {
+            throw new Exception('NinjaOne Authentification failed');
         }
 
         $this->settings->token = $result->access_token;
@@ -57,52 +65,55 @@ class NinjaService
     private function bearer()
     {
         if ($this->settings->token_expires_at == null || time() >= $this->settings->token_expires_at) {
-            Event::logInfo("ninja", "NinjaOne API Token Expired, Regenerating...");
+            Event::logInfo('ninja', 'NinjaOne API Token Expired, Regenerating...');
             $this->authenticate();
         }
+
         return $this->settings->token;
     }
 
     public function ninjaGet(string $endpoint, ?array $body = null)
     {
         $response = Http::withToken($this->bearer())->retry(10, 2000)->get($this->apiUrl().'/'.$endpoint, $body);
+
         return $response;
     }
 
     public function ninjaPost(string $endpoint, $json = null)
     {
         $response = Http::withToken($this->bearer())->retry(10, 2000)->post($this->apiUrl().'/'.$endpoint, $json);
+
         return $response;
     }
 
     public function patchOrganizationCustomField(string $organizationId, string $fieldName, string $value)
     {
         $body = [
-                $fieldName => $value,
+            $fieldName => $value,
         ];
         $response = Http::withToken($this->bearer())
             ->retry(10, 2000)
-            ->patch($this->apiUrl().'/v2/organization/'.$organizationId.'/custom-fields', $body );
+            ->patch($this->apiUrl().'/v2/organization/'.$organizationId.'/custom-fields', $body);
+
         return $response;
     }
 
     /**
      * Patch organization custom fields with a map of field names and values.
      *
-     * @param string $organizationId
-     * @param array $map => [
-     *     'field_name' => 'value',
-     *     'field_name2' => 'value2',
-     *     ...
-     * ]
-     * @return \Illuminate\Http\Client\Response
+     * @param  array  $map  => [
+     *                      'field_name' => 'value',
+     *                      'field_name2' => 'value2',
+     *                      ...
+     *                      ]
+     * @return Response
      */
     public function patchOrganizationCustomFields(string $organizationId, array $map)
     {
         $response = Http::withToken($this->bearer())
             ->retry(10, 2000)
-            ->patch($this->apiUrl().'/v2/organization/'.$organizationId.'/custom-fields', $map );
+            ->patch($this->apiUrl().'/v2/organization/'.$organizationId.'/custom-fields', $map);
+
         return $response;
     }
-
 }

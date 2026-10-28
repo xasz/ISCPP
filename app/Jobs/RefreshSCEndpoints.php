@@ -73,18 +73,9 @@ class RefreshSCEndpoints implements ShouldBeUniqueUntilProcessing, ShouldQueue
         foreach ($endpoints as $endpoint) {
             try {
                 SCEndpoint::updateOrCreate(
-                    [
-                        'id' => $endpoint['id'],
-                    ],
-                    [
-                        'hostname' => $endpoint['hostname'],
-                        'tamperProtectionEnabled' => $endpoint['tamperProtectionEnabled'],
-                        'lastSeen' => $endpoint['lastSeenAt'],
-                        'tenantId' => $tenant->id,
-                        'type' => $endpoint['type'],
-                        'rawData' => json_encode($endpoint),
-                        'healthStatus' => $endpoint['health']['overall'] ?? 'unknown',
-                    ]);
+                    ['id' => $endpoint['id']],
+                    SCEndpoint::attributesFromApi($endpoint, $tenant->id),
+                );
             } catch (\Exception $e) {
                 Event::log('scendpoints', 'error', [
                     'message' => 'Could not save endpoint',

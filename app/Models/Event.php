@@ -2,16 +2,16 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Exception;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Log;
 
 class Event extends Model
 {
     protected $fillable = [
-        'event', 
-        'type', 
-        'data'
+        'event',
+        'type',
+        'data',
     ];
 
     protected $casts = [
@@ -24,14 +24,14 @@ class Event extends Model
         self::create([
             'event' => $event,
             'type' => $type,
-            'data' => $data
+            'data' => $data,
         ]);
     }
 
     public static function logInfo(string $event, string $message, array $data = []): void
     {
         Log::log('info', "Event: $event - Message: $message");
-        
+
         self::log($event, 'info', array_merge(['message' => $message], $data));
     }
 
@@ -56,13 +56,9 @@ class Event extends Model
 
     public static function logDebug(string $event, string $message, array $data = []): void
     {
-        if(config('app.debug', false)){
+        if (config('app.debug', false)) {
             Log::log('debug', "Event: $event - Message: $message", $data);
             self::log($event, 'debug', array_merge(['message' => $message], $data));
         }
     }
-
-
-
-
 }

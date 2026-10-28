@@ -11,6 +11,9 @@ use Illuminate\Support\Facades\Cache;
 /**
  * One event, one tenant scope, one webhook.
  *
+ * The tenant scope is all tenants, a single tenant (tenantId) or a tenant group
+ * (sc_tenant_group_id). At most one of the two columns is set.
+ *
  * Matching and delivery live on one model because a rule always has exactly one webhook.
  * Two rules wanting the same endpoint simply repeat the URL.
  */
@@ -25,6 +28,7 @@ class ISCPPEventRule extends Model
         'enabled',
         'event_key',
         'tenantId',
+        'sc_tenant_group_id',
         'url',
         'basic_auth_username',
         'basic_auth_password',
@@ -57,6 +61,11 @@ class ISCPPEventRule extends Model
         return $this->belongsTo(SCTenant::class, 'tenantId');
     }
 
+    public function SCTenantGroup()
+    {
+        return $this->belongsTo(SCTenantGroup::class, 'sc_tenant_group_id');
+    }
+
     /**
      * Enabled rules, memoised briefly so recording an event does not query per event.
      *
@@ -66,7 +75,7 @@ class ISCPPEventRule extends Model
     {
         return Cache::driver('array')->remember('iscpp:rules:enabled', 10, fn () => static::query()
             ->where('enabled', true)
-            ->with('conditions')
+            ->with(['conditions', 'SCTenantGroup.tenants:id'])
             ->get());
     }
 
@@ -93,16 +102,21 @@ class ISCPPEventRule extends Model
     }
 
     /**
-     * A rule without a tenant matches every tenant, and also events that have no tenant.
      * A rule with a tenant matches only that tenant.
+     * A rule with a tenant group matches only the group's members, never events without a tenant.
+     * A rule with neither matches every tenant, and also events that have no tenant.
      */
     public function matchesTenant(ISCPPEventLog $event): bool
     {
-        if ($this->tenantId === null) {
-            return true;
+        if ($this->tenantId !== null) {
+            return $this->tenantId === $event->tenantId;
         }
 
-        return $this->tenantId === $event->tenantId;
+        if ($this->sc_tenant_group_id !== null) {
+            return (bool) $this->SCTenantGroup?->hasTenant($event->tenantId);
+        }
+
+        return true;
     }
 
     public function eventLabel(): string

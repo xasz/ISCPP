@@ -34,6 +34,22 @@ Schedule::call(function () {
     ->name('schedule-hourly')
     ->hourly();
 
+// Daily configuration backup of every connected firewall. Runs at night, when an
+// export on the firewall disturbs the least.
+Schedule::call(function () {
+    $settings = resolve(SCServiceSettings::class);
+
+    if (! $settings->firewallsScheduleEnabled || ! $settings->firewallBackupsScheduleEnabled) {
+        return;
+    }
+
+    Artisan::call('app:queue-scfirewall-backups-for-all-tenants');
+    $settings->lastFirewallBackupsSchedule = now();
+    $settings->save();
+})
+    ->name('schedule-firewall-backups')
+    ->dailyAt('02:30');
+
 // Prunes ISCPP events past the retention window. Deliveries cascade with their event,
 // so only the event log needs pruning.
 Schedule::command('model:prune', ['--model' => [ISCPPEventLog::class]])

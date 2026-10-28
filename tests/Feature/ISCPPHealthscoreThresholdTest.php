@@ -153,6 +153,81 @@ describe('on healthscore update', function () {
     });
 });
 
+function raisedEvents(): int
+{
+    return ISCPPEventLog::where('key', 'healthscore.threshold.raised')->count();
+}
+
+/**
+ * A tenant with the computer threshold at $threshold and the score at the same value.
+ */
+function tenantWithComputerThreshold(int $threshold): SCTenant
+{
+    $tenant = freshTenant();
+    setComputerScore($tenant, $threshold);
+    computerThreshold($tenant)->update(['threshold' => $threshold]);
+    ISCPPEventLog::query()->delete();
+
+    return $tenant;
+}
+
+describe('threshold follows the score up', function () {
+    test('a score above its threshold raises the threshold and logs the event', function () {
+        $tenant = tenantWithComputerThreshold(80);
+
+        setComputerScore($tenant, 90);
+
+        $event = ISCPPEventLog::where('key', 'healthscore.threshold.raised')->sole();
+
+        expect(computerThreshold($tenant)->threshold)->toBe(90)
+            ->and(computerThreshold($tenant)->state)->toBe('ok')
+            ->and($event->payload['data']['threshold'])->toBe(90)
+            ->and($event->payload['data']['previousThreshold'])->toBe(80)
+            ->and(lowEvents() + okEvents())->toBe(0);
+    });
+
+    test('a score equal to its threshold leaves the threshold unchanged', function () {
+        $tenant = tenantWithComputerThreshold(80);
+
+        setComputerScore($tenant, 80);
+
+        expect(computerThreshold($tenant)->threshold)->toBe(80)
+            ->and(raisedEvents())->toBe(0);
+    });
+
+    test('the threshold never follows the score down', function () {
+        $tenant = tenantWithComputerThreshold(80);
+
+        setComputerScore($tenant, 60);
+
+        expect(computerThreshold($tenant)->threshold)->toBe(80)
+            ->and(computerThreshold($tenant)->state)->toBe('low')
+            ->and(raisedEvents())->toBe(0);
+    });
+
+    test('recovering above the threshold raises it and recovers the state', function () {
+        $tenant = tenantWithComputerThreshold(80);
+        setComputerScore($tenant, 40);
+
+        setComputerScore($tenant, 90);
+
+        expect(computerThreshold($tenant)->threshold)->toBe(90)
+            ->and(computerThreshold($tenant)->state)->toBe('ok')
+            ->and(raisedEvents())->toBe(1)
+            ->and(okEvents())->toBe(1);
+    });
+
+    test('a later drop is measured against the raised threshold', function () {
+        $tenant = tenantWithComputerThreshold(80);
+        setComputerScore($tenant, 90);
+
+        setComputerScore($tenant, 85);
+
+        expect(computerThreshold($tenant)->state)->toBe('low')
+            ->and(lowEvents())->toBe(1);
+    });
+});
+
 describe('on threshold update', function () {
     test('raising a threshold above the current score stores low immediately', function () {
         $tenant = freshTenant();
@@ -219,22 +294,23 @@ describe('on threshold update', function () {
     });
 });
 
-test('seeding the baseline stores state without raising events', function () {
+test('saving thresholds silently on the tenant card evaluates them without raising events', function () {
+    $this->actingAs(User::factory()->create());
     $tenant = freshTenant();
+    setComputerScore($tenant, 90);
+    computerThreshold($tenant)->update(['threshold' => 80]);
+    ISCPPEventLog::query()->delete();
 
-    SCTenantHealthscoreThreshold::where('tenantId', $tenant->id)->update(['state' => 'unknown']);
+    // Index 0 is the first entry of AvailableScores(): protection.computer.score.
+    Volt::test('sctenant.card-healthscore-thresholds', ['sctenant' => $tenant])
+        ->set('thresholds.0.threshold', 95)
+        ->call('saveSilently')
+        ->assertHasNoErrors()
+        ->assertSee('Saved without raising events.');
 
-    $healthscore = $tenant->SCTenantHealthscore()->first();
-    $raw = $healthscore->rawData;
-    data_set($raw, 'endpoint.protection.computer.score', 20);
-
-    // Store the score without the observer so only the silent seed evaluates it.
-    SCTenantHealthscore::withoutEvents(fn () => $healthscore->update(['rawData' => $raw]));
-
-    app(EvaluateSCTenantHealthscoreThresholds::class)->seedSilently($tenant, $healthscore->fresh());
-
-    expect(ISCPPEventLog::count())->toBe(0)
-        ->and(computerThreshold($tenant)->state)->toBe('low');
+    expect(computerThreshold($tenant)->threshold)->toBe(95)
+        ->and(computerThreshold($tenant)->state)->toBe('low')
+        ->and(ISCPPEventLog::count())->toBe(0);
 });
 
 test('a failing evaluation does not stop the healthscore from being stored', function () {

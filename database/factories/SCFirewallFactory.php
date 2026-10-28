@@ -2,14 +2,12 @@
 
 namespace Database\Factories;
 
-use App\Models\SCFirewall;
 use App\Models\SCTenant;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 
 class SCFirewallFactory extends Factory
 {
-    
     public function definition(): array
     {
 
@@ -19,12 +17,12 @@ class SCFirewallFactory extends Factory
                 'id' => (string) Str::uuid(),
             ],
             'serialNumber' => fake()->bothify('X##########'),
-            "group" => null,
+            'group' => null,
             'hostname' => fake()->domainWord(),
             'name' => fake()->bothify('X##########'),
             'firmwareVersion' => fake()->semver(),
             'externalIpv4Addresses' => [fake()->ipv4()],
-            'model' => fake()->randomElement(['XGS117_XN01_SFOS', 'XGS127_XN01_SFOS', 'XGS137_XN01_SFOS']) . ' ' . fake()->semver(),
+            'model' => fake()->randomElement(['XGS117_XN01_SFOS', 'XGS127_XN01_SFOS', 'XGS137_XN01_SFOS']).' '.fake()->semver(),
             'status' => [
                 'managingStatus' => fake()->randomElement(['approvedByCustomer', 'pending', 'rejected']),
                 'reportingStatus' => fake()->randomElement(['approvedByCustomer', 'pending', 'rejected']),
@@ -50,6 +48,7 @@ class SCFirewallFactory extends Factory
             ],
             'updatedAt' => fake()->dateTimeThisYear()->format('Y-m-d\TH:i:s.v\Z'),
         ];
+
         return [
             'id' => $rawData['id'],
             'tenantId' => $rawData['tenant']['id'],
@@ -58,7 +57,7 @@ class SCFirewallFactory extends Factory
         ];
     }
 
-    function forTenant(SCTenant $tenant)
+    public function forTenant(SCTenant $tenant)
     {
         return $this->state(function (array $attributes) use ($tenant) {
             return [

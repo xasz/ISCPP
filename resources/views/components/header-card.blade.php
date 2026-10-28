@@ -10,9 +10,14 @@
                 <flux:text size="xs" class="font-medium tracking-wide text-zinc-400 uppercase dark:text-zinc-500">{{ $type }}</flux:text>
             @endif
             <flux:heading size="xl" level="1" class="truncate text-zinc-900 dark:text-zinc-100">{{ $title }}</flux:heading>
-            <div class="flex flex-wrap items-center gap-1.5">
+            <div class="flex flex-wrap items-center gap-1">
                 {{ $slot }}
             </div>
         </div>
+        @isset($actions)
+            <div class="shrink-0">
+                {{ $actions }}
+            </div>
+        @endisset
     </div>
 </div>

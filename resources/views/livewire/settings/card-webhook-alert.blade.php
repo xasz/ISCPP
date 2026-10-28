@@ -8,6 +8,14 @@ use Livewire\Volt\Component;
 use App\Settings\WebhookSettings;
 
 new class extends Component {
+    /**
+     * Runs on every request of this component, not only on mount.
+     */
+    public function boot(): void
+    {
+        \Illuminate\Support\Facades\Gate::authorize('manage-settings');
+    }
+
     
     public $webhookEnabled;
     public $webhookUrl;

@@ -3,12 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\SCAlert;
-use App\Settings\WebhookSettings;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
-use LaravelDaily\LaravelCharts\Classes\LaravelChart;
 
 class SCAlertController extends Controller
 {
@@ -18,17 +15,17 @@ class SCAlertController extends Controller
         if ($request->filled('hide_acknowledged')) {
             $query->where('is_acknowledged', false);
         }
-        
-        if($request->filled('severity_high') || $request->filled('severity_medium') || $request->filled('severity_low')){
-            $query->where(function($q) use ($request){
+
+        if ($request->filled('severity_high') || $request->filled('severity_medium') || $request->filled('severity_low')) {
+            $query->where(function ($q) use ($request) {
                 if ($request->filled('severity_high')) {
                     $q->orWhere('severity', 'high');
                 }
-    
+
                 if ($request->filled('severity_medium')) {
                     $q->orWhere('severity', 'medium');
                 }
-    
+
                 if ($request->filled('severity_low')) {
                     $q->orWhere('severity', 'low');
                 }
@@ -37,9 +34,8 @@ class SCAlertController extends Controller
 
         $scalerts = $query->clone()->with('SCTenant')->paginate(50)->appends($request->all());
 
-
         $chartData = collect([]);
-        if(env('DB_CONNECTION') != 'sqlite'){            
+        if (env('DB_CONNECTION') != 'sqlite') {
             /*$chartData = SCAlert::selectRaw("date_format(sc_alerts.raisedAt, '%Y-%m-%d') as date, count(*) as aggregate")
             ->whereDate('raisedAt', '>=', now()->subDays(30))
             ->groupBy('date')
@@ -50,10 +46,11 @@ class SCAlertController extends Controller
             })->map(function ($item, $key) {
                 return [
                     'date' => $key,
-                    'aggregate' => $item->count()
+                    'aggregate' => $item->count(),
                 ];
             })->sortBy(function ($item, $key) {
                 $c = Carbon::createFromFormat('Y-m-d', $item['date']);
+
                 return $c->timestamp;
             });
             $chartData = $chartData->values();
@@ -76,12 +73,14 @@ class SCAlertController extends Controller
     public function alertDetails(string $id)
     {
         $scalert = SCAlert::with('SCTenant')->findOrFail($id);
+
         return view('scalerts.show.details', compact('scalert'));
     }
 
     public function alertRaw(string $id)
     {
         $scalert = SCAlert::with('SCTenant')->findOrFail($id);
+
         return view('scalerts.show.raw', compact('scalert'));
     }
 
@@ -94,6 +93,7 @@ class SCAlertController extends Controller
     {
         $scalert = SCAlert::with('SCTenant')->findOrFail($id);
         $scalert->dispatchWebhook();
+
         return Redirect::back()->with('success', 'Webhook dispatched, refreshing alert details...');
     }
 }

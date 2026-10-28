@@ -11,15 +11,20 @@ class EventController extends Controller
     {
         $validated = $request->validated();
 
-
         $events = Event::orderBy('id', 'desc');
-        
+
         $hideInfo = $validated['hideInfo'] ?? false;
-        if($hideInfo) {
+        if ($hideInfo) {
             $events = $events->where('type', '!=', 'info');
         }
 
+        $hideDebug = $validated['hideDebug'] ?? false;
+        if ($hideDebug) {
+            $events = $events->where('type', '!=', 'debug');
+        }
+
         $events = $events->paginate(50);
-        return view('events.index', compact('events', 'hideInfo'));
+
+        return view('events.index', compact('events', 'hideInfo', 'hideDebug'));
     }
 }

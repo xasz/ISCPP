@@ -1,9 +1,9 @@
 <?php
 
-use App\Actions\EvaluateSCTenantHealthscoreThresholds;
 use App\Models\SCTenant;
 use App\Models\SCTenantHealthscore;
 use App\Models\SCTenantHealthscoreThreshold;
+use App\Services\ISCPPEvents;
 use Livewire\Volt\Component;
 
 new class extends Component {
@@ -72,6 +72,32 @@ new class extends Component {
 
     public function save(): void
     {
+        $this->storeThresholds();
+
+        $this->message = __('Saved');
+        $this->loadThresholds();
+    }
+
+    /**
+     * Save the thresholds without raising events.
+     *
+     * Saving evaluates every changed threshold immediately. Muting that evaluation is useful
+     * after changing several thresholds at once when the resulting state is already known
+     * and should not be announced as a batch of transitions.
+     */
+    public function saveSilently(): void
+    {
+        ISCPPEvents::mute(fn () => $this->storeThresholds());
+
+        $this->message = __('Saved without raising events.');
+        $this->loadThresholds();
+    }
+
+    /**
+     * Each changed threshold is evaluated right away by SCTenantHealthscoreThresholdObserver.
+     */
+    private function storeThresholds(): void
+    {
         $this->validate([
             'thresholds.*.threshold' => 'required|integer|min:0|max:100',
         ]);
@@ -82,29 +108,6 @@ new class extends Component {
                 ['threshold' => (int) $row['threshold']],
             );
         }
-
-        $this->message = __('Saved');
-        $this->loadThresholds();
-    }
-
-    /**
-     * Establish the baseline without raising events.
-     *
-     * Useful after changing several thresholds at once when the current state is already
-     * known and should not be announced as a batch of transitions.
-     */
-    public function seedBaseline(EvaluateSCTenantHealthscoreThresholds $action): void
-    {
-        $healthscore = $this->sctenant->SCTenantHealthscore;
-
-        if ($healthscore === null) {
-            $this->message = __('No healthscore has been fetched for this tenant yet.');
-
-            return;
-        }
-
-        $action->seedSilently($this->sctenant, $healthscore);
-        $this->message = __('Baseline updated without raising events.');
     }
 
     public function deleteOrphan(string $scoreKey): void
@@ -175,9 +178,14 @@ new class extends Component {
         </x-table.table>
     </div>
 
-    <div class="mt-4 flex items-center justify-end gap-2">
-        <flux:button variant="ghost" wire:click="seedBaseline">{{ __('Set baseline silently') }}</flux:button>
-        <x-a-button wire:click="save">{{ __('Save') }}</x-a-button>
+    <div class="mt-4 flex flex-wrap items-center justify-end gap-x-4 gap-y-2">
+        <flux:text size="sm" class="mr-auto max-w-xl text-zinc-500">
+            {{ __('Save silently stores the thresholds and evaluates them against the current healthscore like Save, but no ISCPP events are raised and no webhooks are sent.') }}
+        </flux:text>
+        <div class="flex items-center gap-2">
+            <flux:button variant="ghost" wire:click="saveSilently">{{ __('Save silently') }}</flux:button>
+            <x-a-button wire:click="save">{{ __('Save') }}</x-a-button>
+        </div>
     </div>
 
     @if($message !== '')

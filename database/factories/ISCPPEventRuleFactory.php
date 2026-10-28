@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\ISCPPEventRule;
+use App\Models\SCTenantGroup;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -32,6 +33,11 @@ class ISCPPEventRuleFactory extends Factory
     public function forTenant(string $tenantId): static
     {
         return $this->state(fn () => ['tenantId' => $tenantId]);
+    }
+
+    public function forTenantGroup(SCTenantGroup $group): static
+    {
+        return $this->state(fn () => ['sc_tenant_group_id' => $group->id]);
     }
 
     public function disabled(): static

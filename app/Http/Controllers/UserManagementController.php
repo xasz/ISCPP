@@ -4,8 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
 
 class UserManagementController extends Controller
@@ -14,7 +14,7 @@ class UserManagementController extends Controller
     {
         return view('usermanagement.index');
     }
-    
+
     public function showAcceptForm(Request $request, $token)
     {
         $email = $request->email;
@@ -24,14 +24,14 @@ class UserManagementController extends Controller
             ->where('email', $email)
             ->first();
 
-        if (!$resetRecord || !Hash::check($token, $resetRecord->token)) {
+        if (! $resetRecord || ! Hash::check($token, $resetRecord->token)) {
             return view('auth.invitation-error', ['error' => 'Invalid or expired invitation link.']);
         }
 
         // Check if the user exists
         $user = User::where('email', $email)->first();
 
-        if (!$user) {
+        if (! $user) {
             return view('auth.invitation-error', ['error' => 'User not found.']);
         }
 
@@ -60,14 +60,14 @@ class UserManagementController extends Controller
             ->where('email', $request->email)
             ->first();
 
-        if (!$resetRecord || !Hash::check($request->token, $resetRecord->token)) {
+        if (! $resetRecord || ! Hash::check($request->token, $resetRecord->token)) {
             return back()->withErrors(['email' => 'Invalid or expired invitation link.']);
         }
 
         // Find the user
         $user = User::where('email', $request->email)->first();
 
-        if (!$user) {
+        if (! $user) {
             return back()->withErrors(['email' => 'User not found.']);
         }
 

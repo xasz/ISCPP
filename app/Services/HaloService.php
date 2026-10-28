@@ -3,41 +3,47 @@
 namespace App\Services;
 
 use App\Models\Event;
+use App\Settings\HaloServiceSettings;
 use Exception;
 use GuzzleHttp\Client;
 use Illuminate\Support\Facades\Http;
-use App\Settings\HaloServiceSettings;
 
 class HaloService
 {
     private HaloServiceSettings $settings;
 
-    public function __construct(HaloServiceSettings $settings){
+    public function __construct(HaloServiceSettings $settings)
+    {
         $this->settings = $settings;
     }
 
-    public function test(){
-        $this->authenticate();        
+    public function test()
+    {
+        $this->authenticate();
     }
 
-    private function authUrl(){
-        return 'https://' . $this->settings->url . '/auth';
+    private function authUrl()
+    {
+        return 'https://'.$this->settings->url.'/auth';
     }
 
-    private function authTokenUrl(){
-        return $this->authUrl() . '/token';
+    private function authTokenUrl()
+    {
+        return $this->authUrl().'/token';
     }
 
-    private function apiUrl(){
-        return 'https://' . $this->settings->url . '/api';
+    private function apiUrl()
+    {
+        return 'https://'.$this->settings->url.'/api';
     }
 
-    public function authenticate(){
-      
-        $client = new Client();
+    public function authenticate()
+    {
+
+        $client = new Client;
         $response = $client->post($this->authTokenUrl(), [
             'query' => [
-                'tenant' => $this->settings->instance
+                'tenant' => $this->settings->instance,
             ],
             'form_params' => [
                 'client_id' => $this->settings->clientId,
@@ -49,8 +55,8 @@ class HaloService
 
         $content = $response->getBody()->getContents();
         $result = json_decode($content);
-        if(property_exists($result, 'access_token') == false){
-            throw new Exception("Halo PSA Authentification failed");
+        if (property_exists($result, 'access_token') == false) {
+            throw new Exception('Halo PSA Authentification failed');
         }
 
         $this->settings->token = $result->access_token;
@@ -61,26 +67,29 @@ class HaloService
     private function bearer()
     {
         if ($this->settings->token_expires_at == null || time() >= $this->settings->token_expires_at) {
-            Event::logInfo("halo", "Halo API Token Expired, Regenerating...");
+            Event::logInfo('halo', 'Halo API Token Expired, Regenerating...');
             $this->authenticate();
         }
+
         return $this->settings->token;
     }
 
     public function haloGet(string $endpoint, ?array $body = null)
     {
         $response = Http::withToken($this->bearer())->retry(10, 2000)->get($this->apiUrl().'/'.$endpoint, $body);
+
         return $response;
     }
 
     public function haloPost(string $endpoint, $json = null)
     {
         $response = Http::withToken($this->bearer())->retry(10, 2000)->post($this->apiUrl().'/'.$endpoint, $json);
+
         return $response;
     }
 
     public function haloGetPaginate(string $endpoint, $params, $item)
-    {   
+    {
         $pageNumber = 1;
         $pageSize = 50;
         $totalPages = 1;
@@ -88,23 +97,23 @@ class HaloService
         $params = collect([
             'pageinate' => true,
             'page_size' => $pageSize,
-            'page_no' => $pageNumber
+            'page_no' => $pageNumber,
         ])->merge(collect($params))->toArray();
 
         $items = collect();
 
-        do{
+        do {
             $response = Http::withToken($this->bearer())
-                ->withQueryParameters($params)        
+                ->withQueryParameters($params)
                 ->retry(10, 2000)
                 ->get($this->apiUrl().'/'.$endpoint);
-            if($response->ok()){
-                $totalPages = ceil($response->json()['record_count'] / $pageSize);   
+            if ($response->ok()) {
+                $totalPages = ceil($response->json()['record_count'] / $pageSize);
                 $items = $items->merge(collect($response->json()[$item]));
             }
             $pageNumber++;
-        }while($pageNumber < $totalPages);
-        
+        } while ($pageNumber < $totalPages);
+
         return $items;
     }
 }

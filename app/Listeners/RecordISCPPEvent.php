@@ -21,7 +21,7 @@ use Illuminate\Support\Facades\Log;
  * bound to a parent class would never fire for its subclasses.
  *
  * Rules are matched in process rather than in a queued job. One queued job per event
- * would mean a job per imported alert on a single writer SQLite queue; this way a job
+ * would mean a job per imported alert on the queue; this way a job
  * is only queued when a delivery is actually going to happen.
  */
 class RecordISCPPEvent

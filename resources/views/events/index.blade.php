@@ -1,17 +1,21 @@
 <x-layouts.app>
     <x-card title="System Events" subtitle="Recent events raised across the application">
         <div class="flex items-center gap-2">
-            <flux:button href="{{ route('events.index', ['hideInfo' => $hideInfo]) }}" icon="arrow-path" size="sm">
+            <flux:button href="{{ route('events.index', array_filter(['hideInfo' => $hideInfo, 'hideDebug' => $hideDebug])) }}" icon="arrow-path" size="sm">
                 {{ __('Aktualisieren') }}
             </flux:button>
 
-            @if($hideInfo)
+            <flux:button href="{{ route('events.index', array_filter(['hideInfo' => ! $hideInfo, 'hideDebug' => $hideDebug])) }}" variant="ghost" size="sm">
+                {{ $hideInfo ? __('Info anzeigen') : __('Info ausblenden') }}
+            </flux:button>
+
+            <flux:button href="{{ route('events.index', array_filter(['hideInfo' => $hideInfo, 'hideDebug' => ! $hideDebug])) }}" variant="ghost" size="sm">
+                {{ $hideDebug ? __('Debug anzeigen') : __('Debug ausblenden') }}
+            </flux:button>
+
+            @if($hideInfo || $hideDebug)
                 <flux:button href="{{ route('events.index') }}" variant="ghost" size="sm">
                     {{ __('Alle anzeigen') }}
-                </flux:button>
-            @else
-                <flux:button href="{{ route('events.index', ['hideInfo' => 1]) }}" variant="ghost" size="sm">
-                    {{ __('Info ausblenden') }}
                 </flux:button>
             @endif
         </div>

@@ -10,6 +10,7 @@ class WebhookLog extends Model
     use HasFactory;
 
     protected $table = 'webhook_log';
+
     public $incrementing = false;
 
     protected $fillable = [
@@ -19,7 +20,7 @@ class WebhookLog extends Model
         'response',
         'statusCode',
     ];
-    
+
     protected $casts = [
         'payload' => 'array',
     ];
