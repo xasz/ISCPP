@@ -11,7 +11,9 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        //
+        // ISCPP runs in Docker behind nginx, whose address is not fixed, so every proxy
+        // is trusted. The forwarded headers then provide the public host and scheme.
+        $middleware->trustProxies(at: '*');
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //
