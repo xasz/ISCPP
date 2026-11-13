@@ -12,7 +12,7 @@
         "php": "^8.4",
         "bacon/bacon-qr-code": "^3.0",
         "fakerphp/faker": "^1.23",
-        "laravel/framework": "13.30.0",
+        "laravel/framework": "13.40.0",
         "laravel/tinker": "^3.0",
         "livewire/flux": "^2.0",
         "livewire/livewire": "^4.0",
