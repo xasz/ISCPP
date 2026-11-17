@@ -74,14 +74,14 @@ new class extends Component {
         $this->errorMessage = '';
         $this->message = '';
 
-        $sctenants = $this->SCTenantsValidatation();
-        if($sctenants->where('has_haloclient_id', false)->count() > 0){
+        $sctenants = $this->SCTenants();
+        if($sctenants->filter(fn ($sctenant) => $sctenant->haloclient_id <= 0)->count() > 0){
             $this->errorMessage = __('Some tenants do not have Halo Client ID');
             return;
-        }      
+        }
 
         foreach($sctenants as $sctenant){
-            PushToHaloSCTenantSCBillables::dispatch($sctenant['id'], $this->year, $this->month);
+            PushToHaloSCTenantSCBillables::dispatch($sctenant, $this->year, $this->month);
         }
         $this->message = $this->year . '/' . $this->month . 'Pushed SCBillables to Halo';
 

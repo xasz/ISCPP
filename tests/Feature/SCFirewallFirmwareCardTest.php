@@ -185,3 +185,28 @@ test('firmware card shows friendly error when sophos credentials are missing', f
         ->call('check')
         ->assertSee('Sophos Central Partner credentials not found');
 });
+
+test('firmware card shows the sophos error when the upgrade check is rejected', function () {
+    $tenant = SCTenant::factory()->create([
+        'apiHost' => 'https://api-eu02.central.sophos.com',
+    ]);
+
+    $firewall = SCFirewall::factory()->forTenant($tenant)->create();
+
+    $settings = resolve(SCServiceSettings::class);
+    $settings->token = 'test-token';
+    $settings->token_expires_at = time() + 3600;
+    $settings->save();
+
+    Http::fake([
+        'https://api-eu02.central.sophos.com/firewall/v1/firewalls/actions/firmware-upgrade-check' => Http::response([
+            'error' => 'badRequest',
+            'message' => 'Firewall is not connected',
+        ], 400),
+    ]);
+
+    LivewireVolt::test('scfirewalls.card-firmware-upgrade', ['firewall' => $firewall])
+        ->call('check')
+        ->assertSet('errorMessage', 'Firewall is not connected')
+        ->assertSet('firmwareVersions', []);
+});

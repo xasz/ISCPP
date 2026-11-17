@@ -47,9 +47,13 @@
                         <x-table.td>{{ $data['sku'] }}</x-table.td>
                         <x-table.td>{{ $data['productDescription'] }}</x-table.td>
                         <x-table.td>
-                            <x-table.a href="{{ route('sctenants.tenantDetails', $data['tenantId']) }}">
-                            {{ $data->SCTenant->name }}
-                            </x-table.a>
+                            @if($data->SCTenant)
+                                <x-table.a href="{{ route('sctenants.tenantDetails', $data->SCTenant) }}">
+                                {{ $data->SCTenant->name }}
+                                </x-table.a>
+                            @else
+                                {{ __('Unknown') }}
+                            @endif
                         </x-table.td>
                         <x-table.td>
                             <x-table.a href="{{ route('scbillables.show', $data['id']) }}">

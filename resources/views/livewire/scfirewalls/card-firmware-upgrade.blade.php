@@ -37,10 +37,16 @@ new class extends Component {
             $this->errorMessage = $exception->getMessage();
             return;
         };
-        $firewallInfo = collect(collect($response['firewalls'])->where('id', $this->firewall->id)->first());
+
+        if (isset($response['error'])) {
+            $this->errorMessage = (string) ($response['message'] ?? $response['error']);
+            return;
+        }
+
+        $firewallInfo = collect(collect($response['firewalls'] ?? [])->where('id', $this->firewall->id)->first());
 
         $this->availableVersions = $firewallInfo->get('upgradeToVersion', []);
-        $this->firmwareVersions = $response['firmwareVersions'];
+        $this->firmwareVersions = $response['firmwareVersions'] ?? [];
         $this->currentVersion = $firewallInfo->get('firmwareVersion', '');
         $this->selectedVersion = '';
 
