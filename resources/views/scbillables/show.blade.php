@@ -6,7 +6,7 @@
                 <x-card-details-row label="Month" :value="$scbillable->month" />
                 <x-card-details-row label="Year" :value="$scbillable->year" />
                 <x-card-details-row label="Tenant ID" :value="$scbillable->tenantId" />
-                <x-card-details-row label="Tenant Name" :value="$scbillable->SCTenant->name" />
+                <x-card-details-row label="Tenant Name" :value="$scbillable->SCTenant?->name ?? __('Unknown')" />
                 <x-card-details-row label="orderLineItemNumber" :value="$scbillable->orderLineItemNumber" />
                 <x-card-details-row label="productGroup" :value="$scbillable->productGroup" />
                 <x-card-details-row label="billableQuantity" :value="$scbillable->billableQuantity" />

@@ -11,7 +11,8 @@ set_env() {
     KEY=$1
     VALUE=$2
     if grep -q "^$KEY=" .env; then
-        sed -i "s|^$KEY=.*|$KEY=$VALUE|" .env
+        # Without --follow-symlinks sed replaces the symlink to the env volume with a copy
+        sed -i --follow-symlinks "s|^$KEY=.*|$KEY=$VALUE|" .env
     else
         echo "$KEY=$VALUE" >> .env
     fi
@@ -59,6 +60,15 @@ if [ ! -L "$LINK_FILE" ]; then
         ln -s "$ENV_FILE" "$LINK_FILE"
     fi
 fi
+
+# -----------------------------
+# Drop caches of the previous start
+# -----------------------------
+
+# bootstrap/cache survives a container restart. A broken config cache would make
+# every artisan call fail, so the container would restart forever. The caches are
+# rebuilt further below.
+rm -f bootstrap/cache/config.php bootstrap/cache/routes-*.php bootstrap/cache/events.php
 
 # -----------------------------
 # Fixing permissions...

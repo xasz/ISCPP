@@ -4,10 +4,10 @@
         $arr = $json;
     }
     
-    if($arr) {
+    if($arr !== null) {
         $json = json_encode($arr);
     }
-    $pretty = collect(json_decode($json, true))->toJson(JSON_PRETTY_PRINT);
+    $pretty = collect(json_decode((string) $json, true))->toJson(JSON_PRETTY_PRINT);
     
 @endphp
 <div class="mt-4">
